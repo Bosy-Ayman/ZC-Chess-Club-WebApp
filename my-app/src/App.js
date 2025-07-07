@@ -5,6 +5,8 @@ import Signup from "./components/SignUp";
 import Login from "./components/Login";
 import ContactUs from "./components/ContactUs";
 import AboutUs from "./components/About";
+import Tournaments from "./components/Tournaments";
+import Profile from "./components/Profile";
 
 
 function App() {
@@ -16,7 +18,8 @@ function App() {
          <Route path="/login" element={<Login />} />
          <Route path="/contact" element={<ContactUs />} />
          <Route path="/about" element={<AboutUs />} />
-
+         <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

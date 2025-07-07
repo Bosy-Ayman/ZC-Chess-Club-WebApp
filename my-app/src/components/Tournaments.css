@@ -1,0 +1,375 @@
+/* Color Palette - Using CSS Custom Properties (Variables) */
+:root {
+  --color-background-dark: #181611;
+  --color-background-light:#181611;
+  --color-header-border: #362f1d;
+  --color-muted-yellow: #caba91;
+  --color-button-background: #483e23;
+  --color-border-gold: #675832;
+  --color-table-header-bg: #342c19;
+  --color-text-white: #ffffff;
+}
+
+/* Base App Container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background-dark);
+  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+}
+
+.layout-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allows it to take available vertical space */
+  min-height: 100vh; /* Ensures it's at least full viewport height */
+  background-color: var(--color-background-light);
+  overflow-x: hidden; /* Prevents horizontal scroll */
+}
+
+/* Header */
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* gap-4 */
+  color: var(--color-text-white);
+}
+
+.chess-icon {
+  width: 16px; /* size-4 */
+  height: 16px; /* size-4 */
+}
+
+.site-title {
+  color: var(--color-text-white);
+  font-size: 18px; /* text-lg */
+  font-weight: bold;
+  line-height: 1.25; /* leading-tight */
+  letter-spacing: -0.015em;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 36px; /* gap-9 */
+}
+
+.nav-link {
+  color: var(--color-text-white);
+  font-size: 14px; /* text-sm */
+  font-weight: 500; /* font-medium */
+  line-height: normal; /* leading-normal */
+  text-decoration: none; /* Remove underline */
+}
+
+.header-right {
+  display: flex;
+  flex: 1; /* flex-1 */
+  justify-content: flex-end;
+  gap: 32px; /* gap-8 */
+}
+
+/* Search Input */
+.search-label {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px; /* min-w-40 */
+  height: 40px; /* !h-10 */
+  max-width: 256px; /* max-w-64 */
+}
+
+.search-label > div { /* This targets the container div for stretching */
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: stretch;
+  border-radius: 8px; /* rounded-lg */
+  height: 100%;
+}
+
+.search-icon-container {
+  color: var(--color-muted-yellow);
+  display: flex;
+  border: none;
+  background-color: var(--color-button-background);
+  align-items: center;
+  justify-content: center;
+  padding-left: 16px; /* pl-4 */
+  border-top-left-radius: 8px; /* rounded-l-lg */
+  border-bottom-left-radius: 8px;
+  border-right: none; /* border-r-0 */
+}
+
+.search-input {
+  flex: 1; /* flex-1 */
+  width: 100%; /* w-full */
+  min-width: 0; /* min-w-0 */
+  resize: none;
+  overflow: hidden;
+  border-radius: 8px; /* rounded-lg */
+  color: var(--color-text-white);
+  outline: 0; /* focus:outline-0 */
+  box-shadow: none; /* focus:ring-0 */
+  border: none; /* border-none */
+  background-color: var(--color-button-background);
+  height: 100%;
+  padding-left: 8px; /* pl-2 (was 4 and 2, combining) */
+  padding-right: 16px; /* px-4 */
+  border-top-right-radius: 8px; /* rounded-r-none, then explicitly added */
+  border-bottom-right-radius: 8px;
+  border-left: none; /* border-l-0 */
+  font-size: 16px; /* text-base */
+  font-weight: normal; /* font-normal */
+  line-height: normal; /* leading-normal */
+}
+
+.search-input::placeholder {
+  color: var(--color-muted-yellow);
+}
+
+/* Notification Button */
+.notification-button {
+  display: flex;
+  max-width: 480px; /* max-w-[480px] */
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px; /* rounded-lg */
+  height: 40px; /* h-10 */
+  background-color: var(--color-button-background);
+  color: var(--color-text-white);
+  gap: 8px; /* gap-2 */
+  font-size: 14px; /* text-sm */
+  font-weight: bold;
+  line-height: normal; /* leading-normal */
+  letter-spacing: 0.015em;
+  min-width: 0;
+  padding: 0 10px; /* px-2.5 */
+  border: none; /* Remove default button border */
+}
+
+.bell-icon {
+  color: var(--color-text-white);
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 20px 160px; /* px-40 py-5 */
+  display: flex;
+  flex: 1; /* flex-1 */
+  justify-content: center;
+}
+
+.layout-content-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 960px; /* max-w-[960px] */
+  flex: 1; /* flex-1 */
+}
+
+/* Page Header Section */
+.page-header-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px; /* gap-3 */
+  padding: 16px; /* p-4 */
+}
+
+.header-text-group {
+  display: flex;
+  min-width: 288px; /* min-w-72 */
+  flex-direction: column;
+  gap: 12px; /* gap-3 */
+}
+
+.page-title {
+  color: var(--color-text-white);
+  letter-spacing: normal; /* tracking-light was likely a typo, setting to normal */
+  font-size: 32px; /* text-[32px] */
+  font-weight: bold;
+  line-height: 1.25; /* leading-tight */
+}
+
+.page-description {
+  color: var(--color-muted-yellow);
+  font-size: 14px; /* text-sm */
+  font-weight: normal;
+  line-height: normal; /* leading-normal */
+}
+
+/* Filter Buttons */
+.filter-buttons-container {
+  display: flex;
+  gap: 12px; /* gap-3 */
+  padding: 12px 12px 12px 0; /* p-3, pr-4, adjust to make it consistent */
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  display: flex;
+  height: 32px; /* h-8 */
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* gap-x-2 */
+  border-radius: 8px; /* rounded-lg */
+  background-color: var(--color-button-background);
+  padding: 0 16px 0 16px; /* pl-4 pr-2, adjusted for better symmetry */
+  border: none; /* Remove default button border */
+  cursor: pointer;
+}
+
+.filter-text {
+  color: var(--color-text-white);
+  font-size: 14px; /* text-sm */
+  font-weight: 500; /* font-medium */
+  line-height: normal; /* leading-normal */
+}
+
+.caret-icon {
+  color: var(--color-text-white);
+}
+
+/* Tournaments Table */
+.tournaments-table-section {
+  padding: 12px 16px; /* px-4 py-3 */
+}
+
+.table-container {
+  display: flex;
+  overflow: hidden;
+  border-radius: 8px; /* rounded-lg */
+  border: 1px solid var(--color-border-gold);
+  background-color: var(--color-background-light);
+}
+
+table {
+  flex: 1; /* flex-1 */
+  width: 100%; /* Ensure table takes full width of container */
+  border-collapse: collapse; /* For clean borders */
+}
+
+thead tr {
+  background-color: var(--color-table-header-bg);
+}
+
+th {
+  padding: 12px 16px; /* px-4 py-3 */
+  text-align: left;
+  color: var(--color-text-white);
+  font-size: 14px; /* text-sm */
+  font-weight: 500; /* font-medium */
+  line-height: normal; /* leading-normal */
+  white-space: nowrap; /* Prevent wrapping in headers */
+}
+
+/* Specific column widths (can be adjusted) */
+.column-name { width: 30%; }
+.column-type { width: 15%; }
+.column-status { width: 15%; }
+.column-start-date, .column-end-date { width: 15%; }
+.column-players { width: 10%; }
+.column-action {
+  width: 10%;
+  color: var(--color-muted-yellow); /* Specific for Action header */
+}
+
+
+tbody tr {
+  border-top: 1px solid var(--color-border-gold);
+}
+
+td {
+  height: 72px; /* h-[72px] */
+  padding: 8px 16px; /* px-4 py-2 */
+  color: var(--color-text-white);
+  font-size: 14px; /* text-sm */
+  font-weight: normal;
+  line-height: normal;
+  white-space: nowrap; /* Keep content on one line */
+  overflow: hidden; /* Hide overflow if content is too long */
+  text-overflow: ellipsis; /* Add ellipsis for overflowed content */
+}
+
+td.column-type,
+td.column-start-date,
+td.column-end-date,
+td.column-players {
+  color: var(--color-muted-yellow);
+}
+
+td.column-action {
+  color: var(--color-muted-yellow);
+  font-weight: bold;
+  letter-spacing: 0.015em;
+}
+
+.status-button {
+  display: flex;
+  min-width: 84px;
+  max-width: 480px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  height: 32px; /* h-8 */
+  padding: 0 16px; /* px-4 */
+  background-color: var(--color-button-background);
+  color: var(--color-text-white);
+  font-size: 14px;
+  font-weight: 500; /* font-medium */
+  line-height: normal;
+  width: 100%;
+  border: none;
+}
+
+/* Specific status button colors (optional, if they differ) */
+.status-button.ongoing {
+  /* background-color: var(--color-button-background); // already default */
+  /* color: var(--color-text-white); // already default */
+}
+
+.status-button.upcoming {
+  /* background-color: var(--color-button-background); // already default */
+  /* color: var(--color-text-white); // already default */
+}
+
+
+/* Responsive Table Columns using CSS Media Queries */
+/* Instead of @container, we'll use @media (max-width) on the viewport */
+
+@media (max-width: 1000px) { /* Adjust breakpoint as needed */
+  .column-players { display: none; }
+}
+
+@media (max-width: 850px) { /* Adjust breakpoint as needed */
+  .column-end-date { display: none; }
+}
+
+@media (max-width: 700px) { /* Adjust breakpoint as needed */
+  .column-start-date { display: none; }
+}
+
+@media (max-width: 550px) { /* Adjust breakpoint as needed */
+  .column-status { display: none; }
+}
+
+@media (max-width: 400px) { /* Adjust breakpoint as needed */
+  .column-type { display: none; }
+  /* You might need to adjust remaining column widths here if many are hidden */
+  .column-name { width: 70%; }
+  .column-action { width: 30%; }
+}
+
+/* Further reduce for very small screens if needed */
+@media (max-width: 300px) {
+    .column-name { font-size: 12px; padding: 8px; }
+    .column-action { font-size: 12px; padding: 8px; }
+    .filter-button { padding: 0 10px; font-size: 12px; }
+}

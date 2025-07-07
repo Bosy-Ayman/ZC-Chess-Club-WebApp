@@ -7,8 +7,8 @@ export default function LoginPage() {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div
-      className="min-h-screen flex flex-col bg-[#171512] px-4"
+  <div
+      className="relative flex min-h-screen flex-col bg-[#181611] overflow-x-hidden"
       style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
     >
       {/* Header on top */}

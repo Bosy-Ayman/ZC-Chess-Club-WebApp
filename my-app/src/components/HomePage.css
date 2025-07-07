@@ -1,0 +1,60 @@
+/* General font style */
+.homepage {
+  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+  background-color: #181611;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero section video and overlay */
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: black;
+  opacity: 0.5;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* News image background */
+.news-image {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Winner image */
+.winner-image {
+  background-size: cover;
+  background-position: center;
+  border-radius: 0.75rem;
+  aspect-ratio: 1 / 1;
+}
+
+/* Gallery image */
+.gallery-image {
+  background-size: cover;
+  background-position: center;
+  border-radius: 0.75rem;
+  aspect-ratio: 1 / 1;
+}

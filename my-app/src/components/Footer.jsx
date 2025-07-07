@@ -40,7 +40,7 @@ export default function Footer() {
     {/* Chess.com - Pawn Icon */}
     <a href="https://www.chess.com/club/zewail-city-ust" target="_blank" rel="noopener noreferrer" >
     <img 
-        src="/chess_com.png"  // Also in public folder
+        src="/chess_com.png"  
         alt="Chess.com Pawn Icon" 
         width="60" 
         height="30" 
