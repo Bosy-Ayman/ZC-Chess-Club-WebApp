@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import "./Tournaments.css"; // Import the standard CSS file
+import "./Tournaments.css"; 
 
 export default function Tournaments() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -63,7 +63,7 @@ export default function Tournaments() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="column-name">Chess Masters Open</td>
+                      <td className="column-name">Online Blitz Arena</td>
                       <td className="column-type">Swiss</td>
                       <td className="column-status">
                         <button className="status-button ongoing">
@@ -89,7 +89,7 @@ export default function Tournaments() {
                       <td className="column-action view-action">View</td>
                     </tr>
                     <tr>
-                      <td className="column-name">Amateur Chess League</td>
+                      <td className="column-name">Online Blitz Arena</td>
                       <td className="column-type">Swiss</td>
                       <td className="column-status">
                         <button className="status-button upcoming">

@@ -7,6 +7,7 @@ import ContactUs from "./components/ContactUs";
 import AboutUs from "./components/About";
 import Tournaments from "./components/Tournaments";
 import Profile from "./components/Profile";
+import PuzzleChallenge from "./components/PuzzleChallenge";
 
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
          <Route path="/contact" element={<ContactUs />} />
          <Route path="/about" element={<AboutUs />} />
          <Route path="/tournaments" element={<Tournaments />} />
-          <Route path="/profile" element={<Profile />} />
+         <Route path="/profile" element={<Profile />} />
+        <Route path="/puzzlechallenge" element={<PuzzleChallenge />} />
       </Routes>
     </Router>
   );

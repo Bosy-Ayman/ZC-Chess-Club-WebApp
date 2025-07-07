@@ -42,8 +42,8 @@ export default function Footer() {
     <img 
         src="/chess_com.png"  
         alt="Chess.com Pawn Icon" 
-        width="60" 
-        height="30" 
+        width="50" 
+        height="40" 
         style={{ filter: "brightness(0) invert(0.7)" }} 
     />
 </a>
