@@ -1,6 +1,6 @@
 # ♟️ ZC Chess Club - React Web App
 
-Welcome to the official repository for the **ZC Chess Club Web App**, built with **React** and **Tailwind CSS**. This app allows users to sign up, log in, and explore tournaments and announcements.
+Welcome to the official repository for the **ZC Chess Club Web App**, built with **React**. This app allows users to sign up, log in, and explore tournaments and announcements.
 
 ---
 
