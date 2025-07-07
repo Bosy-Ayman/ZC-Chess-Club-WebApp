@@ -1,153 +1,54 @@
-/* Root Container */
-.profile-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #171512;
+/* Set font globally */
+body {
   font-family: "Space Grotesk", "Noto Sans", sans-serif;
 }
 
-/* Full Container */
-.profile-container {
-  background-color: #221d11;
-  overflow-x: hidden;
-}
-
-/* Layout */
+/* Optional layout container styling */
 .layout-container {
-  display: flex;
-  flex-grow: 1;
-  height: 100%;
-  padding: 20px;
-  gap: 20px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Sidebar */
-.profile-sidebar {
-  width: 20rem;
-  background-color: #221d11;
+/* Limit content width inside profile section */
+.layout-content-container {
+  width: 100%;
+  max-width: 100%;
 }
 
-.sidebar-content {
-  min-height: 700px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 16px;
-  background-color: #221d11;
+/* Style for small rounded buttons */
+button span.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Avatar Small */
-.profile-avatar-small {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
+/* Table styles for Past Results section */
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-/* Avatar Large */
-.profile-avatar-large {
-  min-height: 8rem;
-  width: 8rem;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
+/* Table header background color */
+thead tr {
+  background-color: #342c19;
 }
 
-/* Info */
-.profile-header {
-  display: flex;
-  gap: 12px;
+/* Responsive hiding of columns (in Tailwind, you'd use @apply + plugins or container queries) */
+@media (max-width: 120px) {
+  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-120 {
+    display: none;
+  }
 }
-
-.profile-info h1 {
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
+@media (max-width: 240px) {
+  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-240 {
+    display: none;
+  }
 }
-
-.profile-info p {
-  color: #caba91;
-  font-size: 14px;
-}
-
-/* Navigation Items */
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #483e23;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Main Content */
-.profile-main {
-  flex: 1;
-  max-width: 960px;
-}
-
-.profile-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: white;
-  padding: 0 16px;
-}
-
-/* Details Section */
-.profile-details {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 16px;
-  align-items: center;
-}
-
-.profile-hero {
-  display: flex;
-  gap: 16px;
-}
-
-.profile-hero-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.profile-hero-info .name {
-  font-size: 22px;
-  font-weight: bold;
-  color: white;
-}
-
-.profile-hero-info .joined {
-  font-size: 16px;
-  color: #caba91;
-}
-
-.edit-button {
-  background-color: #483e23;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Section Title */
-.section-title {
-  font-size: 22px;
-  font-weight: bold;
-  color: white;
-  padding: 20px 16px 12px;
+@media (max-width: 360px) {
+  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-360 {
+    display: none;
+  }
 }
