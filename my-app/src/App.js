@@ -1,15 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./components/HomePage";
-import Signup from "./components/SignUp";
-import Login from "./components/Login";
-import ContactUs from "./components/ContactUs";
-import AboutUs from "./components/About";
-import Tournaments from "./components/Tournaments";
-import Profile from "./components/Profile";
-import PuzzleChallenge from "./components/PuzzleChallenge";
-import ClubRoles from "./components/ClubRoles";
-import TournamentDetails from "./components/TournamentDetails";
+import HomePage from "./pages/HomePage";
+import Signup from "./pages/SignUp";
+import Login from "./pages/Login";
+import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/About";
+import Tournaments from "./pages/Tournaments";
+import Profile from "./pages/Profile";
+import PuzzleChallenge from "./pages/PuzzleChallenge";
+import ClubRoles from "./pages/ClubRoles";
+import TournamentDetails from "./pages/TournamentDetails";
+import TournamentDetailsKnockout from "./pages/TournamentDetailsKnockout";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
          <Route path="/puzzlechallenge" element={<PuzzleChallenge />} />
          <Route path="/clubroles" element={<ClubRoles />} />
          <Route path="/tournamentdetails" element={<TournamentDetails />} />
+         <Route path="/tournamentdetailsKnockout" element={<TournamentDetailsKnockout />} />
       </Routes>
     </Router>
   );

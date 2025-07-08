@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 export default function About() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleSidebar=() => setSidebarOpen(!sidebarOpen);
 
   return (
     <div
