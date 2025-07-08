@@ -71,7 +71,7 @@ export default function Tournaments() {
                         </button>
                       </td>
                       <td className="column-start-date">2025-04-15</td>
-                      <td className="column-end-date">2024-07-20</td>
+                      <td className="column-end-date">2025-07-20</td>
                       <td className="column-players">64</td>
                       <td className="column-action view-action">View</td>
                     </tr>

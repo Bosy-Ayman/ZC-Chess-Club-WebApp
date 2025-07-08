@@ -11,8 +11,9 @@ export default function About() {
       className="relative flex size-full min-h-screen flex-col bg-[#171512] dark group/design-root overflow-x-hidden"
       style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
     >
+    <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+
       <div className="layout-container flex h-full grow flex-col">
-        <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
 
         <div className="px-40 flex flex-1 justify-center py-5">
@@ -52,7 +53,7 @@ export default function About() {
                   ></div>
                 </div>
                 <div>
-                  <p className="text-white text-base font-medium">Ethan Carter</p>
+                  <p className="text-white text-base font-medium">Bosy Ayman</p>
                   <p className="text-[#b5afa1] text-sm">President</p>
                 </div>
               </div>
@@ -69,7 +70,7 @@ export default function About() {
                   ></div>
                 </div>
                 <div>
-                  <p className="text-white text-base font-medium">Olivia Bennett</p>
+                  <p className="text-white text-base font-medium">Abdelrahman Mohamed</p>
                   <p className="text-[#b5afa1] text-sm">Vice President</p>
                 </div>
               </div>
@@ -86,8 +87,24 @@ export default function About() {
                   ></div>
                 </div>
                 <div>
-                  <p className="text-white text-base font-medium">Noah Thompson</p>
-                  <p className="text-[#b5afa1] text-sm">Treasurer</p>
+                  <p className="text-white text-base font-medium">Aml Maiof</p>
+                  <p className="text-[#b5afa1] text-sm">Head of Human Resources</p>
+                </div>
+              </div>
+              {/* Team Member 4 */}
+              <div className="flex flex-col gap-3 text-center pb-3">
+                <div className="px-4">
+                  <div
+                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full"
+                    style={{
+                      backgroundImage:
+                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDvPAXYY2ptA33LAwV6J1Du6fOThSKMSpS1DTtqVmoU4d4vZJc_6Fu62K9pdbHFhTOLACcG2yLtQLQlcIYnpfdlaEdiCOE4LrYkw07N8NC5V1Liv7qJHp0-hQ01UUL6L4TQx9yv7TAM-HDRqP4zs47C4c0XnTwTx3Y4Za_KlXnuX-qXuSxBgLldqTi3S1J5REAo_if6KWWKxVpxBxqqhColaBruofvTeyrsE3fJYkdfw7ta4dXqnWuTH_la9yybmU7gyUfcemte76_M")',
+                    }}
+                  ></div>
+                </div>
+                <div>
+                  <p className="text-white text-base font-medium">Momen</p>
+                  <p className="text-[#b5afa1] text-sm">Head of Training</p>
                 </div>
               </div>
             </div>

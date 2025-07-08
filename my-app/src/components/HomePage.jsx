@@ -15,7 +15,7 @@ const HomePage = () => {
       <section className="relative min-h-[480px] flex items-center justify-center px-4 py-10 text-center overflow-hidden">
         <video
           className="hero-video"
-          src="/32384-392248811_small.mp4"
+          src="/background_video.mp4"
           autoPlay
           loop
           muted
@@ -47,7 +47,7 @@ const HomePage = () => {
         <div className="bg-[#27241b] rounded-xl flex flex-col sm:flex-row overflow-hidden">
           <div
             className="aspect-video sm:w-1/2 news-image"
-            style={{ backgroundImage: 'url("/Tournament1.png")' }}
+            style={{ backgroundImage: 'url("/images/Tournament1.png")' }}
           ></div>
 
           <div className="p-4 sm:p-6 text-white flex flex-col justify-between sm:w-1/2">

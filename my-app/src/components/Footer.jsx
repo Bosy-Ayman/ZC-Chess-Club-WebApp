@@ -29,7 +29,7 @@ export default function Footer() {
     {/* Lichess - Knight Icon */}
     <a href="https://lichess.org/team/zewail-city-ust" target="_blank" rel="noopener noreferrer" >
         <img 
-            src="/Lichess.png"    
+            src="/Icons/Lichess.png"    
             alt="Lichess Knight Icon" 
             width="27" 
             height="27" 
@@ -40,7 +40,7 @@ export default function Footer() {
     {/* Chess.com - Pawn Icon */}
     <a href="https://www.chess.com/club/zewail-city-ust" target="_blank" rel="noopener noreferrer" >
     <img 
-        src="/chess_com.png"  
+        src="/Icons/chess_com.png"  
         alt="Chess.com Pawn Icon" 
         width="50" 
         height="50" 
