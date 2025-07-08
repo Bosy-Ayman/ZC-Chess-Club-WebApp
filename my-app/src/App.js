@@ -8,7 +8,8 @@ import AboutUs from "./components/About";
 import Tournaments from "./components/Tournaments";
 import Profile from "./components/Profile";
 import PuzzleChallenge from "./components/PuzzleChallenge";
-
+import ClubRoles from "./components/ClubRoles";
+import TournamentDetails from "./components/TournamentDetails";
 
 function App() {
   return (
@@ -21,7 +22,9 @@ function App() {
          <Route path="/about" element={<AboutUs />} />
          <Route path="/tournaments" element={<Tournaments />} />
          <Route path="/profile" element={<Profile />} />
-        <Route path="/puzzlechallenge" element={<PuzzleChallenge />} />
+         <Route path="/puzzlechallenge" element={<PuzzleChallenge />} />
+         <Route path="/clubroles" element={<ClubRoles />} />
+         <Route path="/tournamentdetails" element={<TournamentDetails />} />
       </Routes>
     </Router>
   );

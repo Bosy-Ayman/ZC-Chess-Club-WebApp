@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
+import "./Login.css";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -7,48 +9,41 @@ export default function LoginPage() {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-  <div
-      className="relative flex min-h-screen flex-col bg-[#181611] overflow-x-hidden"
-      style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
-    >
+    <div className="login-page">
       {/* Header on top */}
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Centered login form */}
-      <div className="flex flex-grow items-center justify-center">
-        <div className="w-full max-w-sm bg-[#1f1d18] p-6 rounded-2xl shadow-lg mt-10">
-          <header className="text-center mb-6">
-            <h2 className="text-white text-2xl font-bold">Welcome Back</h2>
-            <p className="text-[#b5afa1] text-sm mt-1">Log in to your Chess Club account</p>
+      <div className="login-container">
+        <div className="login-card">
+          <header className="login-header">
+            <h2 className="login-title">Welcome Back</h2>
+            <p className="login-subtitle">Log in to your Chess Club account</p>
           </header>
 
-          <form className="flex flex-col gap-4">
+          <form className="login-form">
             <input
               type="email"
               placeholder="Email"
-              className="w-full rounded-xl bg-[#36332b] text-white p-4 placeholder:text-[#b5afa1] text-sm focus:outline-none"
+              className="login-input"
             />
-
             <input
               type="password"
               placeholder="Password"
-              className="w-full rounded-xl bg-[#36332b] text-white p-4 placeholder:text-[#b5afa1] text-sm focus:outline-none"
+              className="login-input"
             />
+            <p className="login-forgot">Forgot password?</p>
 
-            <p className="text-right text-sm text-[#b5afa1] underline cursor-pointer">
-              Forgot password?
-            </p>
-
-            <button
-              type="submit"
-              className="bg-[#f3e8cc] text-[#171512] font-bold py-3 rounded-xl hover:opacity-90 transition"
-            >
+            <button type="submit" className="login-button">
               Log In
             </button>
           </form>
 
-          <p className="text-center text-sm text-[#b5afa1] mt-4">
-            Don't have an account? <span className="underline cursor-pointer">Sign up</span>
+          <p className="login-footer">
+            Don't have an account?
+            <Link to='/signup'>
+            <span className="login-link">Sign up</span>
+            </Link>
           </p>
         </div>
       </div>

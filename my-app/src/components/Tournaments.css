@@ -1,247 +1,172 @@
 :root {
-  --color-background-dark: #181611;
-  --color-background-light:#181611;
-  --color-header-border: #362f1d;
-  --color-muted-yellow: #caba91;
-  --color-button-background: #483e23;
-  --color-border-gold: #675832;
-  --color-table-header-bg: #342c19;
-  --color-text-white: #ffffff;
+  --bg-dark: #181611;
+  --bg-light: #181611;
+  --border-color: #362f1d;
+  --text-white: #fff;
+  --text-muted: #caba91;
+  --btn-bg: #483e23;
+  --table-border: #675832;
+  --table-header-bg: #342c19;
 }
 
-/* Base App Container */
+/* Main Layout */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background-dark);
+  background: var(--bg-dark);
   font-family: "Space Grotesk", "Noto Sans", sans-serif;
 }
 
 .layout-container {
-  position: relative;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allows it to take available vertical space */
-  min-height: 100vh; /* Ensures it's at least full viewport height */
-  background-color: var(--color-background-light);
-  overflow-x: hidden; /* Prevents horizontal scroll */
+  background: var(--bg-light);
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* Content Wrapper */
 .content-wrapper {
-  padding: 20px 160px; /* px-40 py-5 */
+  padding: 20px 16px;
+  flex: 1;
   display: flex;
-  flex: 1; /* flex-1 */
   justify-content: center;
 }
 
 .layout-content-container {
+  width: 100%;
+  max-width: 960px;
   display: flex;
   flex-direction: column;
-  max-width: 960px; /* max-w-[960px] */
-  flex: 1; /* flex-1 */
 }
 
-/* Page Header Section */
+/* Header Section */
 .page-header-section {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px; /* gap-3 */
-  padding: 16px; /* p-4 */
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+@media (min-width: 640px) {
+  .page-header-section {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .header-text-group {
   display: flex;
-  min-width: 288px; /* min-w-72 */
   flex-direction: column;
-  gap: 12px; /* gap-3 */
+  gap: 8px;
 }
 
 .page-title {
-  color: var(--color-text-white);
-  letter-spacing: normal; /* tracking-light was likely a typo, setting to normal */
-  font-size: 32px; /* text-[32px] */
+  font-size: 28px;
   font-weight: bold;
-  line-height: 1.25; /* leading-tight */
+  color: var(--text-white);
 }
 
 .page-description {
-  color: var(--color-muted-yellow);
-  font-size: 14px; /* text-sm */
-  font-weight: normal;
-  line-height: normal; /* leading-normal */
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 /* Filter Buttons */
 .filter-buttons-container {
   display: flex;
-  gap: 14px; /* gap-3 */
-  padding: 12px 16px;
   flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
 }
 
 .filter-button {
   display: flex;
-  height: 32px; /* h-8 */
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* gap-x-2 */
-  border-radius: 8px; /* rounded-lg */
-  background-color: var(--color-button-background);
-  padding: 0 16px 0 16px; /* pl-4 pr-2, adjusted for better symmetry */
-  border: none; /* Remove default button border */
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: var(--text-white);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
   cursor: pointer;
 }
 
-.filter-text {
-  color: var(--color-text-white);
-  font-size: 14px; /* text-sm */
-  font-weight: 500; /* font-medium */
-  line-height: normal; /* leading-normal */
-}
-
-.caret-icon {
-  color: var(--color-text-white);
-}
-
-/* Tournaments Table */
+/* Table Section */
 .tournaments-table-section {
-  padding: 12px 16px; /* px-4 py-3 */
+  padding: 12px 0;
+  
 }
 
 .table-container {
-  display: flex;
-  overflow: hidden;
-  border-radius: 8px; /* rounded-lg */
-  border: 1px solid var(--color-border-gold);
-  background-color: var(--color-background-light);
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--table-border);
+  background: var(--bg-light);
+  
 }
 
 table {
-  flex: 1; /* flex-1 */
-  width: 100%; /* Ensure table takes full width of container */
-  border-collapse: collapse; /* For clean borders */
+  width: 100%;
+  min-width: 600px; /* ensures horizontal scroll on mobile */
+  border-collapse: collapse;
+  background: var(--bg-light);
+  background-color:  #221d11;
 }
 
-thead tr {
-  background-color: var(--color-table-header-bg);
+thead {
+  background: var(--table-header-bg);
+}
+
+th, td {
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 th {
-  padding: 12px 16px; /* px-4 py-3 */
-  text-align: left;
-  color: var(--color-text-white);
-  font-size: 14px; /* text-sm */
-  font-weight: 500; /* font-medium */
-  line-height: normal; /* leading-normal */
-  white-space: nowrap; /* Prevent wrapping in headers */
-}
-
-/* Specific column widths (can be adjusted) */
-.column-name { width: 30%; }
-.column-type { width: 15%; }
-.column-status { width: 15%; }
-.column-start-date, .column-end-date { width: 15%; }
-.column-players { width: 10%; }
-.column-action {
-  width: 10%;
-  color: var(--color-muted-yellow); /* Specific for Action header */
-}
-
-
-tbody tr {
-  border-top: 1px solid var(--color-border-gold);
+  color: var(--text-white);
+  font-weight: 500;
 }
 
 td {
-  height: 72px; /* h-[72px] */
-  padding: 8px 16px; /* px-4 py-2 */
-  color: var(--color-text-white);
-  font-size: 14px; /* text-sm */
-  font-weight: normal;
-  line-height: normal;
-  white-space: nowrap; /* Keep content on one line */
-  overflow: hidden; /* Hide overflow if content is too long */
-  text-overflow: ellipsis; /* Add ellipsis for overflowed content */
+  color: var(--text-white);
+  border-top: 1px solid var(--table-border);
 }
 
 td.column-type,
 td.column-start-date,
 td.column-end-date,
-td.column-players {
-  color: var(--color-muted-yellow);
+td.column-players,
+td.column-action {
+  color: var(--text-muted);
 }
 
 td.column-action {
-  color: var(--color-muted-yellow);
   font-weight: bold;
   letter-spacing: 0.015em;
 }
 
 .status-button {
-  display: flex;
-  min-width: 84px;
-  max-width: 480px;
-  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  height: 32px;
+  padding: 0 12px;
   border-radius: 8px;
-  height: 32px; /* h-8 */
-  padding: 0 16px; /* px-4 */
-  background-color: var(--color-button-background);
-  color: var(--color-text-white);
+  background: var(--btn-bg);
+  color: var(--text-white);
   font-size: 14px;
-  font-weight: 500; /* font-medium */
-  line-height: normal;
-  width: 100%;
+  font-weight: 500;
   border: none;
+  width: 100%;
 }
 
-/* Specific status button colors (optional, if they differ) */
-.status-button.ongoing {
-  /* background-color: var(--color-button-background); // already default */
-  /* color: var(--color-text-white); // already default */
-}
-
-.status-button.upcoming {
-  /* background-color: var(--color-button-background); // already default */
-  /* color: var(--color-text-white); // already default */
-}
-
-
-/* Responsive Table Columns using CSS Media Queries */
-/* Instead of @container, we'll use @media (max-width) on the viewport */
-
-@media (max-width: 1000px) { /* Adjust breakpoint as needed */
-  .column-players { display: none; }
-}
-
-@media (max-width: 850px) { /* Adjust breakpoint as needed */
-  .column-end-date { display: none; }
-}
-
-@media (max-width: 700px) { /* Adjust breakpoint as needed */
-  .column-start-date { display: none; }
-}
-
-@media (max-width: 550px) { /* Adjust breakpoint as needed */
-  .column-status { display: none; }
-}
-
-@media (max-width: 400px) { /* Adjust breakpoint as needed */
-  .column-type { display: none; }
-  /* You might need to adjust remaining column widths here if many are hidden */
-  .column-name { width: 70%; }
-  .column-action { width: 30%; }
-}
-
-/* Further reduce for very small screens if needed */
-@media (max-width: 300px) {
-    .column-name { font-size: 12px; padding: 8px; }
-    .column-action { font-size: 12px; padding: 8px; }
-    .filter-button { padding: 0 10px; font-size: 12px; }
-}
