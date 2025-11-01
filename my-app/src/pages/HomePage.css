@@ -118,48 +118,77 @@
   animation: pulseGlow 2s infinite;
 }
 
-/* News Section */
+/*-------------------- News Section----------------*/
+/* 📰 News Section Container */
 .news-section {
-  padding: 40px 20px;
+  padding: 50px 20px;
+  overflow: hidden;
+  border-radius: 12px;
+  text-align: center;
 }
 
+/* 🏷️ Section Title */
 .news-section h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 28px;
+  margin-bottom: 35px;
+  color: #f3c144;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
+
+/* 🧱 Each News Card */
 .news-card {
   display: flex;
-  flex-direction: column;
-  border-radius: 10px;
+  flex-direction: column; /* mobile default: stacked */
+  border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 20px;
+  margin: 0 auto 24px;
   background-color: #36332b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-/* Mobile default */
+
+/* 🪄 Hover lift */
+.news-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* 🖼️ News Image */
 .news-image {
-  height: 280px;
   width: 100%;
+  height: 280px;
   background-size: cover;
   background-position: center;
+  flex-shrink: 0;
 }
+
+/* 📝 News Text Area */
 .news-text {
-  padding: 16px;
+  padding: 20px;
+  text-align: left;
 }
 
+/* 🧩 Title */
 .news-title {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff1c0;
 }
 
+/* 💬 Description */
 .news-description {
   color: #bab19c;
-  margin: 10px 0;
+  margin: 12px 0 20px;
+  line-height: 1.6;
+  font-size: 15px;
 }
 
+/* 🟡 Register Button */
 .register-btn {
   background-color: #f3c144;
   color: #181611;
-  padding: 10px 22px;
+  padding: 10px 24px;
   border: none;
   border-radius: 999px;
   font-weight: 600;
@@ -180,50 +209,39 @@
   box-shadow: 0 2px 8px rgba(243, 193, 68, 0.4);
 }
 
+/* 🖼️ Gallery Card */
 .gallery-card {
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 12px;
+  text-align: center;
 }
 
-
-/* Desktop */
+/* 💻 Desktop (side-by-side layout) */
 @media (min-width: 768px) {
   .news-card {
     flex-direction: row;
-    min-height: 280px;
+    align-items: stretch;
+    max-width: 1000px; /* centers and limits width */
   }
 
   .news-image {
-    width: 50%;
-    height: auto; /* <-- allow it to grow with content */
+    width: 45%;
+    height: auto;
   }
 
   .news-text {
-    width: 50%;
-    padding: 20px;
+    width: 55%;
+    padding: 30px;
+  }
+
+  .news-section h2 {
+    font-size: 32px;
   }
 }
 
 
 
-/* Winners Section */
-.winners-section {
-  padding: 40px 20px;
-}
-
-.winners-section h2 {
-  font-size: 22px;
-  margin-bottom: 20px;
-}
-
-.winners-grid {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* 🎖 Winners / Members Section */
+/*-----------------🎖 Winners / Members Section-------------------*/
 .winners-section {
   padding: 60px 20px;
   text-align: center;
@@ -234,6 +252,8 @@
   margin-bottom: 30px;
   color: #f3c144;
   letter-spacing: 1px;
+  text-transform: uppercase;
+
 }
 
 /* 🧩 Responsive Grid Layout */
@@ -310,14 +330,20 @@
   animation: softGlow 2s infinite;
 }
 
-/* Gallery Section */
+/*------------------ Gallery Section----------------*/
 .gallery-section {
   padding: 40px 20px;
+  text-align: center;
+
 }
 
 .gallery-section h2 {
-  font-size: 22px;
-  margin-bottom: 20px;
+ font-size: 28px;
+  margin-bottom: 30px;
+  color: #f3c144;
+  letter-spacing: 1px;
+    text-transform: uppercase;
+
 }
 
 .gallery-grid {
