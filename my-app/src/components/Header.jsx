@@ -19,7 +19,9 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
           <div className="logo-icon">
             <img src="\Icons\chess-clublogo.png" alt="Chess Rook Logo" />
           </div>
-          <h2 className="logo-text">ZC Chess Club</h2>
+          <a href='/'>
+            <h2 className="logo-text">ZC Chess Club</h2>
+          </a>
         </div>
 
         {!isMobile && (
@@ -28,17 +30,17 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
               <Link to="/">Home</Link>
               <Link to="/tournaments">Tournaments</Link>
               <Link to="/about">About Us</Link>
-              <Link to="/contact">Contact</Link>
+              {/* <Link to="/contact">Contact</Link> */}
             </nav>
 
-            <div className="auth-buttons">
+            {/* <div className="auth-buttons">
               <Link to="/signup">
                 <button className="signup-btn">Sign Up</button>
               </Link>
               <Link to="/login">
                 <button className="login-btn">Log In</button>
               </Link>
-            </div>
+            </div> */}
           </>
         )}
 
@@ -54,13 +56,13 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
           <Link to="/">Home</Link>
           <Link to="/tournaments">Tournaments</Link>
           <Link to="/about">About Us</Link>
-          <Link to="/contact">Contact</Link>
+          {/* <Link to="/contact">Contact</Link>
           <Link to="/signup">
             <button className="signup-btn">Sign Up</button>
           </Link>
           <Link to="/login">
             <button className="login-btn">Log In</button>
-          </Link>
+          </Link> */}
         </div>
       )}
     </>

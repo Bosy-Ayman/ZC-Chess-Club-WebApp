@@ -73,13 +73,49 @@
 }
 
 .explore-btn {
-  background-color: #393428;
+  background: linear-gradient(135deg, #b88a2d, #a47f29);
   color: white;
-  padding: 10px 24px;
+  padding: 12px 28px;
   border: none;
   border-radius: 999px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba(164, 127, 41, 0.3);
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+/* 🪄 Hover effect: lift + glow */
+.explore-btn:hover {
+  background: linear-gradient(135deg, #cfa539, #b88a2d);
+  box-shadow: 0 6px 18px rgba(200, 160, 60, 0.5);
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* ⚡ Active (click) effect: press down */
+.explore-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(164, 127, 41, 0.4);
+}
+
+/* ✨ Optional glowing animation for attention */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 8px rgba(200, 160, 60, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(200, 160, 60, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(200, 160, 60, 0.3);
+  }
+}
+
+/* 🎇 Apply subtle pulsing animation */
+.explore-btn.glow {
+  animation: pulseGlow 2s infinite;
 }
 
 /* News Section */
@@ -123,11 +159,25 @@
 .register-btn {
   background-color: #f3c144;
   color: #181611;
-  padding: 8px 16px;
+  padding: 10px 22px;
   border: none;
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(243, 193, 68, 0.3);
+}
+
+.register-btn:hover {
+  background-color: #ffda59;
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(243, 193, 68, 0.5);
+}
+
+.register-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(243, 193, 68, 0.4);
 }
 
 .gallery-card {

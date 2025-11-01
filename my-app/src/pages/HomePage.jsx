@@ -40,10 +40,13 @@ const HomePage = () => {
             community of chess enthusiasts today!
           </p>
           <div className="hero-buttons">
-            <a href="/signup">
+            {/* <a href="/signup">
               <button className="signup-btn">Sign Up</button>
-            </a>
+            </a> */}
+            <a href='/tournaments'>
             <button className="explore-btn">Explore Tournaments</button>
+
+            </a>
           </div>
         </div>
       </section>
@@ -59,10 +62,10 @@ const HomePage = () => {
           <div className="news-text">
             <p className="news-title">Upcoming Chess Tournament</p>
             <p className="news-description">
-              Join our annual chess tournament on July 15th. Register now to
+              Join our  chess tournament on week 9. Register now to
               compete for the grand prize!
             </p>
-            <button className="register-btn">Register Now</button>
+            <button className="register-btn">Soon..</button>
           </div>
         </div>
       </section>
