@@ -1,0 +1,91 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #393428;
+  padding: 12px 20px;
+  background-color: transparent;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.logo-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.logo-text {
+  font-size: 1.125rem;
+  font-weight: bold;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: none;
+}
+
+.auth-buttons {
+  display: none;
+}
+
+.hamburger {
+  display: block;
+  color: white;
+  cursor: pointer;
+}
+
+/* Medium and up */
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+  }
+
+  .auth-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+
+.signup-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  background-color: #f3c144;
+  color: #181611;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.login-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  background-color: #393428;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: #27241b;
+  color: white;
+  padding: 16px 20px;
+  gap: 16px;
+}

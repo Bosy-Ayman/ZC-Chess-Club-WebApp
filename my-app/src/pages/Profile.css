@@ -1,54 +1,225 @@
-/* Set font globally */
-body {
+.profile-wrapper {
+  min-height: 100vh;
+  background-color: #181611;
+  color: white;
   font-family: "Space Grotesk", "Noto Sans", sans-serif;
+  padding: 20px;
 }
 
-/* Optional layout container styling */
-.layout-container {
-  padding-left: 1rem;
-  padding-right: 1rem;
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
+.profile {
+  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+  background-color: #181611;
+  color: white;
+  min-height: 102vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Limit content width inside profile section */
-.layout-content-container {
-  width: 100%;
-  max-width: 100%;
+.profile-main {
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 40px;
 }
 
-/* Style for small rounded buttons */
-button span.truncate {
+.profile-header {
+  margin-bottom: 20px;
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.profile-top-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.profile-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-user-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #36332b;
+}
+
+.user-name {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.user-joined {
+  font-size: 14px;
+  color: #b5afa1;
+}
+
+.edit-btn {
+  background-color: #f3e8cc;
+  color: #171512;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.tournament-card {
+  background-color: #1f1d18;
+  padding: 30px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tournament-info .label {
+  font-size: 12px;
+  color: #b5afa1;
+}
+
+.tournament-info .value {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.tournament-info .status {
+  font-size: 14px;
+  color: #b5afa1;
+  margin-top: 4px;
+}
+
+.tournament-image {
+  width: 200px;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  background-color:#171512;
+}
+
+.truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Table styles for Past Results section */
-table {
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
   width: 100%;
-  border-collapse: collapse;
 }
 
-/* Table header background color */
-thead tr {
-  background-color: #342c19;
+.rating-section {
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+  color: white;
 }
 
-/* Responsive hiding of columns (in Tailwind, you'd use @apply + plugins or container queries) */
-@media (max-width: 120px) {
-  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-120 {
-    display: none;
-  }
+.rating-section h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+  text-align: center;
 }
-@media (max-width: 240px) {
-  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-240 {
-    display: none;
-  }
+
+.rating-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
-@media (max-width: 360px) {
-  .table-0fe841bf-5621-4f7b-8a03-3aa2ceb25e59-column-360 {
-    display: none;
-  }
+
+/* Fixed ratio and spacing for rating cards */
+.rating-card {
+  background-color: #1f1d18;
+  border-radius: 12px;
+  width: 220px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+  min-height: 100px;
+}
+
+.rating-card:hover {
+  transform: scale(1.05);
+  cursor: default;
+}
+
+.rating-icon {
+  width: 72px;
+  height: 72px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+  border: 2px solid #f3c144;
+}
+
+.rating-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.rating-type {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.rating-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f3c144;
+}
+.past-tournament-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f1d18;
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: 12px;
+  color: white;
+}
+
+.tournament-info .label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.tournament-info .value {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+
+.tournament-image {
+  width: 120px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  margin-left: 16px;
 }

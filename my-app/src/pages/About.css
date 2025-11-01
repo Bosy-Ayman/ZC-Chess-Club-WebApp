@@ -1,0 +1,132 @@
+.about-page {
+  background-color: #171512;
+  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.about-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.about-wrapper {
+  max-width: 960px;
+  margin: auto;
+}
+
+.about-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.about-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 280px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.subtitle {
+  color: #b5afa1;
+  font-size: 0.9rem;
+}
+
+.section-title {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 1rem 0 0.5rem 0;
+}
+
+.section-text {
+  color: white;
+  font-size: 1rem;
+  padding-bottom: 1rem;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* <- make columns at least 320px */
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.team-member {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 320px; /* prevent shrinking */
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  min-width: 150px;   /* ensure no shrink */
+  min-height: 150px;  /* ensure no shrink */
+  border-radius: 50%;
+  object-fit: cover;  /* cover nicely */
+  margin: 0 auto;
+  display: block;
+}
+
+.member-name {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.member-role {
+  color: #b5afa1;
+  font-size: 0.9rem;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .about-wrapper {
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .section-text,
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  /* For smaller screens, allow avatars to shrink */
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .team-member {
+    min-width: auto;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+  }
+}
