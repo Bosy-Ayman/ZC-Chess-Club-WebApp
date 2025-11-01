@@ -15,12 +15,6 @@ export default function ClubRoles() {
       image: "/Images/training.png",
     },
     {
-      department: "Public Relations",
-      title: "PR Member",
-      desc: "Promote the club, manage social media, and engage with the community to increase club visibility.",
-      image: "/Images/training2.jpeg",
-    },
-    {
       department: "Tournament Organizer",
       title: "OC Member",
       desc: "Plan and execute chess tournaments, ensuring fair play and a positive experience for all participants.",
@@ -37,6 +31,12 @@ export default function ClubRoles() {
       title: "Trainer Member",
       desc: "Train new players, prepare materials for club sessions, and guide members to improve their chess skills.",
       image: "/Images/trainer.jpg",
+    },
+    {
+      department: "Trainee",
+      title: "Trainee Member",
+      desc: "New members who are learning the basics of chess and developing their skills through training sessions.",
+      image: "/Images/training2.jpeg",
     },
   ];
 
