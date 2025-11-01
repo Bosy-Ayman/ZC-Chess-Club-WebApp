@@ -24,9 +24,19 @@ export default function About() {
       image: "/Images/Aml.png", 
     },
     {
-      name: "Momen",
+      name: "Momen Mahmoud",
       role: "Head of Training",
       image: "/Images/momen.png", 
+    },
+    {
+      name: "Rana Ahmed",
+      role: "Head of Multimedia",
+      image: "/Images/training.png", 
+    },
+    {
+      name: "Coming Soon..",
+      role: "Head of Organization",
+      image: "/Images/training.png", 
     },
   ];
 

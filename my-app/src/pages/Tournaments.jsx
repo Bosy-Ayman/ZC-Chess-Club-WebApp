@@ -108,6 +108,7 @@ export default function Tournaments() {
             </div>
           </div>
         </div>
+        
       </div>
       <Footer />
     </div>
