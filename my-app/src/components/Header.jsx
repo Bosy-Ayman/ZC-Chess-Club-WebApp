@@ -30,6 +30,8 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
               <Link to="/">Home</Link>
               <Link to="/tournaments">Tournaments</Link>
               <Link to="/about">About Us</Link>
+              <Link to="/clubroles">Join Us</Link>
+
               {/* <Link to="/contact">Contact</Link> */}
             </nav>
 

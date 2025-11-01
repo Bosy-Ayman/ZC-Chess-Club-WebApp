@@ -96,8 +96,7 @@ export default function About() {
             <p className="section-text">
               If you have any questions or would like to learn more about our club, please feel
               free to reach out to us at{" "}
-              <a href="mailto:zcchessclub@zewailcity.edu.eg">zcchessclub@zewailcity.edu.eg</a> or
-              call us at 01012345678.
+              <a href="mailto:zcchessclub@zewailcity.edu.eg">zcchessclub@zewailcity.edu.eg</a>
             </p>
           </section>
         </div>
