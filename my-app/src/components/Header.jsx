@@ -17,7 +17,7 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
       <header className="header">
         <div className="logo-title">
           <div className="logo-icon">
-            <img src="/Icons/rook.png" alt="Chess Rook Logo" />
+            <img src="\Icons\chess-clublogo.png" alt="Chess Rook Logo" />
           </div>
           <h2 className="logo-text">ZC Chess Club</h2>
         </div>
