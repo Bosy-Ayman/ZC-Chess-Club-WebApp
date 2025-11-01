@@ -40,11 +40,16 @@
   font-size: 1rem;
 }
 
-/* .contact-container .form-textarea {
+.contact-container .form-textarea {
   background-color: #36332b;
   min-height: 150px;
   resize: none;
-} */
+   color: #f3e8cc;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-size: 1rem;
+}
 
 /* Submit Button */
 .contact-container .send-button {
