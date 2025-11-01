@@ -21,12 +21,12 @@ export default function About() {
     {
       name: "Aml Maiof",
       role: "Head of Human Resources",
-      image: "/Images/training.png", 
+      image: "/Images/Aml.png", 
     },
     {
       name: "Momen",
       role: "Head of Training",
-      image: "/Images/training.png", 
+      image: "/Images/momen.png", 
     },
   ];
 
