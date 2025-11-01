@@ -11,7 +11,7 @@ import PuzzleChallenge from "./pages/PuzzleChallenge";
 import ClubRoles from "./pages/ClubRoles";
 import TournamentDetails from "./pages/TournamentDetails";
 import TournamentDetailsKnockout from "./pages/TournamentDetailsKnockout";
-
+import Calendar from './pages/Calendar.jsx'
 function App() {
   return (
     <Router>
@@ -27,6 +27,8 @@ function App() {
          <Route path="/clubroles" element={<ClubRoles />} />
          <Route path="/tournamentdetails" element={<TournamentDetails />} />
          <Route path="/tournamentdetailsKnockout" element={<TournamentDetailsKnockout />} />
+         <Route path="/Calendar" element={<Calendar />} />
+
       </Routes>
     </Router>
   );

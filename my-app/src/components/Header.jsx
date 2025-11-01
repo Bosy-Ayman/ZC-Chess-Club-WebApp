@@ -29,8 +29,10 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
             <nav className="nav-links">
               <Link to="/">Home</Link>
               <Link to="/tournaments">Tournaments</Link>
-              <Link to="/about">About Us</Link>
+               <Link to="/Calendar">Calendar</Link>
+              <Link to="/about">About</Link>
               <Link to="/clubroles">Join Us</Link>
+             
 
               {/* <Link to="/contact">Contact</Link> */}
             </nav>
@@ -57,6 +59,7 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
         <div className="mobile-sidebar">
           <Link to="/">Home</Link>
           <Link to="/tournaments">Tournaments</Link>
+          <Link to="/Calendar">Calendar</Link>
           <Link to="/about">About Us</Link>
           <Link to="/clubroles">Join Us</Link>
           {/* <Link to="/contact">Contact</Link>

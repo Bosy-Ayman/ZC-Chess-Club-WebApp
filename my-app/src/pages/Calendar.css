@@ -1,0 +1,140 @@
+.calendar-container {
+  padding: 40px;
+  text-align: center;
+  color: white;
+}
+
+/* Header */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px auto;
+  background: #232018;
+  border-radius: 15px;
+  padding: 10px 20px;
+  max-width: 800px;
+}
+.calendar-header button {
+  background: #f3c144;
+  border: none;
+  color: #232018;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Grid */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.day-name {
+  font-weight: bold;
+  background: #393428;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.day-cell {
+  background: #2b281f;
+  border-radius: 10px;
+  min-height: 120px;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  overflow-y: auto;
+}
+.day-cell:hover {
+  background: #3b372c;
+}
+
+.day-cell.today {
+  border: 2px solid #f3c144;
+  background-color: #3b372c;
+}
+.day-cell.empty {
+  background: transparent;
+}
+
+.date-num {
+  font-weight: bold;
+  color: #f3c144;
+  margin-bottom: 4px;
+}
+
+/* Events inside day cell */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.event-item {
+  background-color: #393428;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 3px 5px;
+}
+.more-events {
+  font-size: 11px;
+  color: #f3c144;
+}
+
+/* Popup Overlay */
+.day-details-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.day-details {
+  background: #232018;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  text-align: left;
+  box-shadow: 0 0 10px #00000080;
+}
+
+.day-details h3 {
+  color: #f3c144;
+  margin-bottom: 15px;
+}
+
+.event-detail-card {
+  background-color: #393428;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.event-detail-card h4 {
+  margin: 0;
+}
+.event-detail-card p {
+  color: #f3c144;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.no-event-text {
+  color: #bbb;
+}
+
+.close-btn {
+  background: #f3c144;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  color: #232018;
+  font-weight: bold;
+}
