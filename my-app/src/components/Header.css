@@ -89,3 +89,21 @@
   padding: 16px 20px;
   gap: 16px;
 }
+.mobile-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: #27241b;
+  color: white;
+  padding: 16px 20px;
+  gap: 16px;
+  align-items: center; /* centers content horizontally */
+}
+
+.mobile-sidebar a {
+  text-align: center; /* centers link text */
+  width: 100%; /* optional: make links full width for better alignment */
+}
+
+.mobile-sidebar button {
+  text-align: center; /* ensures button text is centered */
+}
