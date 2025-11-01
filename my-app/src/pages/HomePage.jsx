@@ -12,10 +12,10 @@ const HomePage = () => {
   const [date, setDate] = useState(new Date());
 
   const galleryImages = [
-    "/images/image1.jpg",
-    "/images/image4.jpg",
-    "/images/image2.jpg",
-    "/images/image3.jpg",
+    "/Images/image1.jpg",
+    "/Images/image4.jpg",
+    "/Images/image2.jpg",
+    "/Images/image3.jpg",
   ];
 
   return (
