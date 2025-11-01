@@ -14,14 +14,14 @@
 }
 
 /* Title */
-.form-title {
+.contact-container .form-title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 2rem;
 }
 
 /* Form Styles */
-.contact-form {
+.contact-container .contact-form {
   width: 100%;
   max-width: 600px;
   display: flex;
@@ -30,7 +30,7 @@
 }
 
 /* Inputs and Textarea */
-.form-input,
+.contact-container .form-input,
 .form-textarea {
   background-color: #36332b;
   color: #f3e8cc;
@@ -40,7 +40,7 @@
   font-size: 1rem;
 }
 
-.form-textarea {
+.contact-container .form-textarea {
   min-height: 150px;
   resize: none;
 }
