@@ -223,34 +223,91 @@
   flex-wrap: wrap;
 }
 
-.winner-card {
-  background-color: #1f1d17;
-  padding: 16px;
-  border-radius: 12px;
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
+/* 🎖 Winners / Members Section */
+.winners-section {
+  padding: 60px 20px;
+  text-align: center;
 }
 
+.winners-section h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #f3c144;
+  letter-spacing: 1px;
+}
+
+/* 🧩 Responsive Grid Layout */
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  justify-items: center;
+  padding: 0 10px;
+}
+
+/* 🏆 Each Member Card */
+.winner-card {
+  background: linear-gradient(145deg, #1f1d17, #25231c);
+  padding: 20px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.35s ease;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* 🖼 Better Image Display */
 .winner-image {
   width: 100%;
   aspect-ratio: 1 / 1;
   background-size: cover;
   background-position: center;
-  border-radius: 12px;
+  border-radius: 14px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
+/* ✨ Hover Effects */
+.winner-card:hover .winner-image {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(243, 193, 68, 0.5);
+}
+
+.winner-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(243, 193, 68, 0.25);
+}
+
+/* 👤 Text Styling */
 .winner-name {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
+  color: #ffffff;
+  margin-top: 8px;
 }
 
 .winner-title {
-  font-size: 14px;
+  font-size: 15px;
   color: #b5afa1;
   text-align: center;
+  line-height: 1.4;
+}
+
+/* 🪶 Optional glow animation */
+@keyframes softGlow {
+  0% { box-shadow: 0 0 8px rgba(243, 193, 68, 0.3); }
+  50% { box-shadow: 0 0 18px rgba(243, 193, 68, 0.5); }
+  100% { box-shadow: 0 0 8px rgba(243, 193, 68, 0.3); }
+}
+
+.winner-card.glow:hover .winner-image {
+  animation: softGlow 2s infinite;
 }
 
 /* Gallery Section */
@@ -275,17 +332,21 @@
   background-size: cover;
   background-position: center;
   border-radius: 10px;
+   transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.gallery-image:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 16px rgba(243, 193, 68, 0.3);
+}
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
 }
 
-/* Calendar Custom Styling */
-.react-calendar {
-  background-color: #27241b;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-family: "Space Grotesk", "Noto Sans", sans-serif;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  padding: 10px;
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .react-calendar__navigation {

@@ -1,17 +1,20 @@
+/* ------------------ PAGE STRUCTURE ------------------ */
 .about-page {
-  background-color: #171512;
+  background: linear-gradient(180deg, #171512 0%, #1e1b17 100%);
   font-family: "Space Grotesk", "Noto Sans", sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  color: #fff;
 }
 
+/* ------------------ CONTENT ------------------ */
 .about-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 2rem 1rem;
 }
 
 .about-wrapper {
@@ -19,11 +22,12 @@
   margin: auto;
 }
 
+/* ------------------ HEADER ------------------ */
 .about-header {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 1rem;
+  justify-content: center;
+  padding: 1.5rem;
   gap: 1rem;
 }
 
@@ -32,101 +36,156 @@
   flex-direction: column;
   gap: 0.75rem;
   min-width: 280px;
+  text-align: center;
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f8f7f2;
+  letter-spacing: 1px;
 }
 
 .subtitle {
-  color: #b5afa1;
-  font-size: 0.9rem;
+  color: #c8c2b6;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
+/* ------------------ SECTION STYLES ------------------ */
 .section-title {
-  color: white;
-  font-size: 1.4rem;
-  font-weight: bold;
-  padding: 1rem 0 0.5rem 0;
+  color: #f8f7f2;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 1.5rem 0 0.5rem 0;
+  position: relative;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #b38b59;
+  border-radius: 2px;
 }
 
 .section-text {
-  color: white;
+  color: #e6e1d5;
   font-size: 1rem;
+  line-height: 1.6;
   padding-bottom: 1rem;
 }
 
+/* ------------------ TEAM GRID ------------------ */
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* <- make columns at least 320px */
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
   padding: 1rem;
 }
 
 .team-member {
+  background-color: #1f1d18;
+  border: 1px solid #2b2924;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 320px; /* prevent shrinking */
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s forwards;
 }
 
-.avatar {
-  width: 150px;
-  height: 150px;
-  min-width: 150px;   /* ensure no shrink */
-  min-height: 150px;  /* ensure no shrink */
+.team-member:hover {
+  transform: translateY(-6px);
+  background-color: #26231e;
+  box-shadow: 0 4px 20px rgba(179, 139, 89, 0.25);
+}
+
+/* ------------------ AVATAR ------------------ */
+.about-page .avatar {
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  object-fit: cover;  /* cover nicely */
-  margin: 0 auto;
-  display: block;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 4px solid #b38b59;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 15px rgba(179, 139, 89, 0.25);
 }
 
+.team-member:hover .avatar {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(179, 139, 89, 0.4);
+}
+
+/* ------------------ MEMBER INFO ------------------ */
 .member-name {
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .member-role {
-  color: #b5afa1;
-  font-size: 0.9rem;
+  color: #c8c2b6;
+  font-size: 0.95rem;
 }
 
-/* Mobile tweaks */
+/* ------------------ CONTACT LINKS ------------------ */
+.section-text a {
+  color: #b38b59;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.section-text a:hover {
+  color: #e0c48b;
+}
+
+/* ------------------ ANIMATIONS ------------------ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ------------------ MOBILE ------------------ */
 @media (max-width: 768px) {
   .about-wrapper {
     padding: 0 1rem;
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .section-title {
     font-size: 1.2rem;
   }
 
-  .section-text,
   .subtitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
-  /* For smaller screens, allow avatars to shrink */
   .team-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 
-  .team-member {
-    min-width: auto;
-  }
-
   .avatar {
-    width: 100px;
-    height: 100px;
-    min-width: 100px;
-    min-height: 100px;
+    width: 110px;
+    height: 110px;
   }
 }
