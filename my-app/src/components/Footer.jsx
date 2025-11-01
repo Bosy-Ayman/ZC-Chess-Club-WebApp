@@ -3,11 +3,11 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer className="flex flex-col gap-6 px-5 py-10 text-center @container">
-      <div className="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+      {/* <div className="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
         <a className="text-[#bab19c] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
         <a className="text-[#bab19c] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
         <a className="text-[#bab19c] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
-      </div>
+      </div> */}
       <div className="flex flex-wrap justify-center gap-4">
         {/* Facebook */}
         <a href="https://www.facebook.com/chessclubzc">
