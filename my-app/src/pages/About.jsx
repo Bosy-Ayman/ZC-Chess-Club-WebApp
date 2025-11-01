@@ -19,7 +19,7 @@ export default function About() {
       image: "/Winners/Winner1.png",
     },
     {
-      name: "Aml Maiof",
+      name: "Aml Ali",
       role: "Head of Human Resources",
       image: "/Images/Aml.png", 
     },
@@ -31,12 +31,12 @@ export default function About() {
     {
       name: "Rana Ahmed",
       role: "Head of Multimedia",
-      image: "/Images/training.png", 
+      image: "/Images/unknown.png", 
     },
     {
       name: "Coming Soon..",
       role: "Head of Organization",
-      image: "/Images/training.png", 
+      image: "/Images/unknown.png", 
     },
   ];
 
