@@ -54,7 +54,7 @@ const HomePage = () => {
         <div className="news-card">
           <div
             className="news-image"
-            style={{ backgroundImage: `url("/images/Tournament1.png")` }}
+            style={{ backgroundImage: `url("/Images/Tournament1.png")` }}
           ></div>
           <div className="news-text">
             <p className="news-title">Upcoming Chess Tournament</p>
@@ -126,7 +126,7 @@ const HomePage = () => {
       </section>
 
       {/* Calendar Section */}
-      <section className="calendar-section">
+      {/* <section className="calendar-section">
         <h2>Calendar of Events</h2>
         <div className="calendar-container">
           <Calendar onChange={setDate} value={date} />
@@ -134,7 +134,7 @@ const HomePage = () => {
             Selected date: {date.toDateString()}
           </p>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>
