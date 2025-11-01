@@ -40,13 +40,14 @@
   font-size: 1rem;
 }
 
-.contact-container .form-textarea {
+/* .contact-container .form-textarea {
+  background-color: #36332b;
   min-height: 150px;
   resize: none;
-}
+} */
 
 /* Submit Button */
-.send-button {
+.contact-container .send-button {
   background-color: #f3e8cc;
   color: #171512;
   font-weight: bold;
