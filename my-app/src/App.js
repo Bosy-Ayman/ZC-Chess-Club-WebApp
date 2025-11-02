@@ -12,6 +12,9 @@ import ClubRoles from "./pages/ClubRoles";
 import TournamentDetails from "./pages/TournamentDetails";
 import TournamentDetailsKnockout from "./pages/TournamentDetailsKnockout";
 import Calendar from './pages/Calendar.jsx'
+import CalendarEdit from './pages/CalendarEdit.jsx'
+import Archive from "./pages/Archive.jsx";
+
 function App() {
   return (
     <Router>
@@ -27,7 +30,10 @@ function App() {
          <Route path="/clubroles" element={<ClubRoles />} />
          <Route path="/tournamentdetails" element={<TournamentDetails />} />
          <Route path="/tournamentdetailsKnockout" element={<TournamentDetailsKnockout />} />
-         <Route path="/Calendar" element={<Calendar />} />
+         <Route path="/calendar" element={<Calendar />} />
+         <Route path="/calendaredit" element={<CalendarEdit />} />
+         <Route path="/archive" element={<Archive />} />
+
 
       </Routes>
     </Router>

@@ -1,0 +1,282 @@
+.calendar-edit-container {
+  padding: 40px;
+  text-align: center;
+  color: white;
+}
+
+/*-------- Calendar Header----------- */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px auto;
+  background: #232018;
+  border-radius: 15px;
+  padding: 10px 20px;
+  max-width: 800px;
+}
+.calendar-header button {
+  background: #f3c144;
+  border: none;
+  color: #232018;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.day-name {
+  font-weight: bold;
+  background: #393428;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.day-cell {
+  background: #2b281f;
+  border-radius: 10px;
+  min-height: 120px;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  overflow-y: auto;
+}
+.day-cell:hover {
+  background: #3b372c;
+}
+.day-cell.today {
+  border: 2px solid #f3c144;
+  background-color: #3b372c;
+}
+.day-cell.empty {
+  background: transparent;
+}
+
+.date-num {
+  font-weight: bold;
+  color: #f3c144;
+  margin-bottom: 4px;
+}
+
+/*-----------Event List inside Days---------------*/
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.event-item {
+  background-color: #393428;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.more-events {
+  font-size: 11px;
+  color: #f3c144;
+}
+
+/* ------------------Modal / Day Details------------ */
+.day-details-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.day-details {
+  position: relative; 
+  background: #232018;
+  padding: 20px 20px 30px 20px;
+  border-radius: 12px;
+  max-width: 550px;
+  width: 90%;
+  text-align: left;
+  box-shadow: 0 0 10px #00000080;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.day-details h3 {
+  color: #f3c144;
+  margin-bottom: 15px;
+}
+
+.event-detail-card {
+  background-color: #393428;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.event-detail-card h4 {
+  margin: 0;
+}
+
+.event-detail-card p {
+  color: #f3c144;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.event-detail-card .event-location {
+  font-style: italic;
+  font-size: 12px;
+  color: #f3c144cc;
+}
+
+.event-detail-card button {
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ff4d4d;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.event-detail-card button:hover {
+  background-color: #ff1a1a;
+}
+
+.no-event-text {
+  color: #bbb;
+}
+
+/* ==========================
+   Add Event Form
+========================== */
+.add-event-form {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-event-form input,
+.add-event-form textarea {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  background-color: #393428;
+  color: white;
+}
+
+.add-event-form textarea {
+  resize: vertical;
+  min-height: 50px;
+}
+
+.add-event-form div {
+  display: flex;
+  gap: 4%;
+}
+
+.add-event-form input[type="time"] {
+  width: 48%;
+}
+
+/* Form buttons (Add & Close) */
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+.add-event-form button,
+.close-btn {
+  flex: 1; /* equal width buttons */
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f3c144, #e0b120);
+  border: none;
+  color: #232018;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.add-event-form button:hover,
+.close-btn:hover {
+  background: linear-gradient(135deg, #e0b120, #f3c144);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+}
+
+.add-event-form button:active,
+.close-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ==========================
+   Top-right Close X
+========================== */
+.top-right-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #f3c144;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, transform 0.2s ease;
+  z-index: 10;
+}
+
+.top-right-close:hover {
+  color: #e0b120;
+  transform: scale(1.1);
+}
+
+.top-right-close:active {
+  transform: scale(1);
+}
+
+/* ==========================
+   Event Dots (in day cells)
+========================== */
+.event-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f3c144;
+}
+
+.more-dot {
+  font-size: 10px;
+  color: #f3c144;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
