@@ -31,7 +31,7 @@ export default function About() {
     {
       name: "Rana Ahmed",
       role: "Head of Multimedia",
-      image: "/Images/Rana.jpg", 
+      image: "/Images/rana.jpg", 
     },
     {
       name: "Coming Soon..",
