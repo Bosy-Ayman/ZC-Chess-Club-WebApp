@@ -1,6 +1,28 @@
 {
   "dependencies": {
     "chess.js": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.4",
     "react-calendar": "^6.0.0"
-  }
+  },
+  "name": "zc-chess-club-webapp",
+  "version": "1.0.0",
+  "description": "Welcome to the official repository for the **ZC Chess Club Web App**, built with **React**. This app allows users to sign up, log in, and explore tournaments and announcements.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp/issues"
+  },
+  "homepage": "https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp#readme"
 }

@@ -1,0 +1,137 @@
+/* src/pages/ApplicationForm.css */
+
+.form-page-wrapper {
+    background-color: #171512; /* Dark background */
+    min-height: 100vh;
+    font-family: "Space Grotesk", "Noto Sans", sans-serif;
+    color: white;
+}
+
+.form-container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.form-container h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f3e8cc; /* Accent color for the title */
+    margin-bottom: 0.5rem;
+}
+
+.form-description {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: #a0a0a0;
+}
+
+/* --- Section Styling --- */
+.form-section {
+    background-color: #24221f; /* Slightly lighter dark background for sections */
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.form-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: white;
+    border-bottom: 2px solid #36332b;
+    padding-bottom: 0.5rem;
+}
+
+.section-note {
+    font-style: italic;
+    color: #c0c0c0;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* --- Form Elements --- */
+.form-section label {
+    display: block;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    color: #f3e8cc;
+}
+
+.form-section input[type="text"],
+.form-section input[type="email"],
+.form-section input[type="tel"],
+.form-section select,
+.form-section textarea {
+    width: 100%;
+    padding: 1rem;
+    background-color: #36332b; /* Dark input background */
+    color: #f3e8cc; /* Light text color */
+    border: 1px solid #4a453d;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    box-sizing: border-box; /* Important for padding/width calculation */
+}
+
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+    border-color: #f3e8cc;
+    outline: none;
+}
+
+.form-section input[readonly] {
+    opacity: 0.7;
+    cursor: default;
+}
+
+/* --- Radio Button Group --- */
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-group label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #36332b;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: normal;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+}
+
+.radio-group input[type="radio"]:checked + label {
+    background-color: #f3e8cc; /* Accent background when checked */
+    color: #171512; /* Dark text when checked */
+    font-weight: bold;
+}
+
+/* --- Submit Button --- */
+.submit-btn {
+    display: block;
+    margin-top: 2rem;
+    margin-left: auto; /* Align right */
+    background-color: #f3e8cc;
+    color: #171512;
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #ffe0a3;
+}

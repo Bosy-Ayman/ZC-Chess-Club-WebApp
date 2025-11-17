@@ -15,6 +15,14 @@ import Calendar from './pages/Calendar.jsx'
 import CalendarEdit from './pages/CalendarEdit.jsx'
 import Archive from "./pages/Archive.jsx";
 
+
+// import ClubRoles from './pages/ClubRoles';
+import MultimediaForm from './pages/MultimediaForm'; 
+// ADD IMPORTS FOR OTHER FORMS:
+import HRForm from './pages/HRForm';
+import OCMemberForm from './pages/OCMemberForm';
+import TrainerForm from './pages/TrainerForm';
+import TraineeForm from './pages/TraineeForm';
 function App() {
   return (
     <Router>
@@ -33,7 +41,12 @@ function App() {
          <Route path="/calendar" element={<Calendar />} />
          <Route path="/calendaredit" element={<CalendarEdit />} />
          <Route path="/archive" element={<Archive />} />
-
+        {/* New Application Routes */}
+        <Route path="/apply/multimedia" element={<MultimediaForm />} />
+        <Route path="/apply/hr" element={<HRForm />} />
+        <Route path="/apply/oc-member" element={<OCMemberForm />} />
+        <Route path="/apply/trainer" element={<TrainerForm />} />
+        <Route path="/apply/trainee" element={<TraineeForm />} />
 
       </Routes>
     </Router>

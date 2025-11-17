@@ -1,5 +1,8 @@
+// src/pages/ClubRoles.js
+
 import "./ClubRoles.css";
 import React, { useState } from "react";
+import { Link } from "react-router-dom"; // 👈 IMPORT LINK
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -13,37 +16,36 @@ export default function ClubRoles() {
       title: "HR Member",
       desc: "Manage club members, handle inquiries, and ensure smooth communication within the club.",
       image: "/Images/HR.jpg",
+      path: "/apply/hr", // 👈 ADD PATH
     },
     {
       department: "Tournament Organizer",
       title: "OC Member",
       desc: "Plan and execute chess tournaments, ensuring fair play and a positive experience for all participants.",
       image: "/Images/arbiter.jpeg",
+      path: "/apply/oc-member", // 👈 ADD PATH
     },
     {
       department: "Multimedia",
       title: "Media Member",
       desc: "Capture, design, and produce creative content that represents the club’s activities and achievements.",
       image: "/Images/media.jpeg",
+      path: "/apply/multimedia", // 👈 ADD PATH (Matches previous setup)
     },
     {
       department: "Trainer",
       title: "Trainer Member",
       desc: "Train new players, prepare materials for club sessions, and guide members to improve their chess skills.",
       image: "/Images/trainer.jpg",
+      path: "/apply/trainer", // 👈 ADD PATH
     },
     {
       department: "Trainee",
       title: "Trainee Member",
       desc: "New members who are learning the basics of chess and developing their skills through training sessions.",
       image: "/Images/trainee2.jpg",
+      path: "/apply/trainee", // 👈 ADD PATH
     },
-  ];
-
-  const applications = [
-    { role: "HR Member", status: "Pending", date: "2024-07-20" },
-    { role: "Trainer Member", status: "Accepted", date: "2024-07-15" },
-    { role: "PR Member", status: "Rejected", date: "2024-07-10" },
   ];
 
   return (
@@ -69,7 +71,10 @@ export default function ClubRoles() {
                 <p className="department">{role.department}</p>
                 <p className="title">{role.title}</p>
                 <p className="desc">{role.desc}</p>
-                <button className="apply-btn">soon..</button>
+                {/* 🎯 USE LINK FOR NAVIGATION */}
+                <Link to={role.path} className="apply-btn-link">
+                    <button className="apply-btn">Apply Now</button>
+                </Link>
               </div>
               <div
                 className="role-image"
@@ -79,32 +84,7 @@ export default function ClubRoles() {
           ))}
         </div>
 
-        {/* 📋 Your Applications */}
-        {/* <h2 className="section-title">Your Applications</h2>
-        <div className="application-table-wrapper">
-          <table className="application-table">
-            <thead>
-              <tr>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Applied On</th>
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map((app, index) => (
-                <tr key={index}>
-                  <td>{app.role}</td>
-                  <td>
-                    <span className={`status ${app.status.toLowerCase()}`}>
-                      {app.status}
-                    </span>
-                  </td>
-                  <td>{app.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div> */}
+        {/* 📋 Your Applications (Commented out) */}
       </main>
 
       {/* 🦶 Footer */}
