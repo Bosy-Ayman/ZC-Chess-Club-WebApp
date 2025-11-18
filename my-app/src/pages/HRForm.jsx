@@ -39,7 +39,6 @@ const HRForm = () => {
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
       
-      // FIX #2: Pass the required 'department' field
       department="Human Resources" 
     />
   );

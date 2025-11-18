@@ -40,6 +40,7 @@ const MultimediaForm = () => {
       title={roleTitle}
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
+      department="Multimedia" 
     />
   );
 };

@@ -23,6 +23,9 @@ import HRForm from './pages/HRForm';
 import OCMemberForm from './pages/OCMemberForm';
 import TrainerForm from './pages/TrainerForm';
 import TraineeForm from './pages/TraineeForm';
+import ApplicationsTable from './pages/ApplicationsTable';
+
+
 function App() {
   return (
     <Router>
@@ -47,6 +50,8 @@ function App() {
         <Route path="/apply/oc-member" element={<OCMemberForm />} />
         <Route path="/apply/trainer" element={<TrainerForm />} />
         <Route path="/apply/trainee" element={<TraineeForm />} />
+
+        <Route path="/applicationtable" element={<ApplicationsTable/>} />
 
       </Routes>
     </Router>

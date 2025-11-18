@@ -1,0 +1,167 @@
+/* ============================================================= */
+/* MODAL STYLES                                                  */
+/* ============================================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+}
+
+.modal-content {
+  background: #1e1a12;
+  border: 1px solid var(--table-border);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--table-header-bg);
+  border-bottom: 1px solid var(--table-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-white);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+}
+
+.modal-body pre {
+  margin: 0;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #a8e6cf;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border: 1px solid #362f1d;
+}
+
+/* ============================================================= */
+/* VIEW DETAILS BUTTON                                           */
+/* ============================================================= */
+.view-button {
+  padding: 9px 16px;
+  background: var(--highlight);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  min-width: 110px;
+}
+
+.view-button:hover {
+  background: #bda14a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(157, 132, 55, 0.4);
+}
+
+/* Keep everything else from previous version (wide table, etc.) */
+.applications-table {
+  min-width: 1200px; /* still super wide */
+}
+
+/* ============================================================= */
+/* PRETTY ROLE SPECIFIC DATA – BEAUTIFUL DISPLAY                 */
+/* ============================================================= */
+.pretty-role-data,
+.pretty-role-array {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pretty-field {
+  background: rgba(157, 132, 55, 0.08);
+  border-left: 4px solid var(--highlight);
+  padding: 16px 20px;
+  border-radius: 0 10px 10px 0;
+  transition: all 0.2s;
+}
+
+.pretty-field:hover {
+  background: rgba(157, 132, 55, 0.15);
+  transform: translateX(4px);
+}
+
+.pretty-field strong {
+  display: block;
+  color: var(--highlight);
+  font-size: 15px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.pretty-field p {
+  margin: 0;
+  color: #e8d9a6;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* For array responses (e.g. multiple experiences) */
+.pretty-role-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--table-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pretty-role-card h4 {
+  margin: 0 0 16px 0;
+  color: var(--highlight);
+  font-size: 17px;
+  border-bottom: 1px solid var(--highlight);
+  padding-bottom: 8px;
+}

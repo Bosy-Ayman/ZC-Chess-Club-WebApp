@@ -15,10 +15,12 @@ const OCMemberForm = () => {
             </p>
 
             <label htmlFor="oc-member-previous-app">Have you ever applied to this role before? If yes, please tell us about it (include batch/year).*</label>
-            <textarea id="oc-member-previous-app" rows="3" required></textarea>
+            {/* FIX #1: Added 'name' attribute */}
+            <textarea id="oc-member-previous-app" name="oc-member-previous-app" rows="3" required></textarea>
             
             <label>Will you be available to help organize the Swiss tournament that will take place after 4:00 PM?*</label>
             <div className="radio-group">
+                {/* 'name' attribute is already correct here */}
                 <input type="radio" id="swiss-avail-yes" name="swiss-avail" value="yes" required />
                 <label htmlFor="swiss-avail-yes">Yes</label>
                 
@@ -28,6 +30,7 @@ const OCMemberForm = () => {
             
             <label>Will you be available to help organize the knockout tournament that will take place throughout the day?*</label>
             <div className="radio-group">
+                {/* 'name' attribute is already correct here */}
                 <input type="radio" id="knockout-avail-yes" name="knockout-avail" value="yes" required />
                 <label htmlFor="knockout-avail-yes">Yes</label>
                 
@@ -36,7 +39,8 @@ const OCMemberForm = () => {
             </div>
 
             <label htmlFor="oc-member-desc">Additional Description (optional)</label>
-            <textarea id="oc-member-desc" rows="3"></textarea>
+            {/* FIX #2: Added 'name' attribute */}
+            <textarea id="oc-member-desc" name="oc-member-desc" rows="3"></textarea>
 
         </section>
     </Fragment>
@@ -47,6 +51,7 @@ const OCMemberForm = () => {
       title={roleTitle}
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
+      department="Organizer" 
     />
   );
 };
