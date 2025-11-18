@@ -1,90 +1,68 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
+import { NextResponse } from "next/server";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// -------- CONNECT ONCE --------
+let cached = global.mongoose;
 
-// -------- MIDDLEWARE --------
-app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST"],
-}));
-app.use(express.json());
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(process.env.MONGO_URI)
+      .then((mongoose) => mongoose);
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 // -------- SCHEMA --------
 const ApplicationSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    idNumber: { type: String, required: true },
-    phone: { type: String, required: true },
-    major: { type: String, required: true },
-    batch: { type: String, required: true },
-
-    roleTitle: { type: String, required: true },
-    department: { type: String, required: true },
-
-    roleSpecificData: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
-    },
-
-    submissionDate: { type: Date, default: Date.now }
+  name: String,
+  email: { type: String, unique: true },
+  idNumber: String,
+  phone: String,
+  major: String,
+  batch: String,
+  roleTitle: String,
+  department: String,
+  roleSpecificData: mongoose.Schema.Types.Mixed,
+  submissionDate: { type: Date, default: Date.now }
 });
 
-const Application = mongoose.model("Application", ApplicationSchema);
+const Application =
+  mongoose.models.Application ||
+  mongoose.model("Application", ApplicationSchema);
 
-// -------- DATABASE --------
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => {
-        console.error("MongoDB error:", err);
-        process.exit(1);
-    });
+// -------- POST (CREATE) --------
+export async function POST(req) {
+  try {
+    await connectDB();
+    const body = await req.json();
 
-// -------- POST: SUBMIT --------
-app.post("/api/applications", async (req, res) => {
-    try {
-        const {
-            name, email, idNumber, phone, major, batch,
-            roleTitle, department, ...roleSpecificData
-        } = req.body;
+    const app = await Application.create(body);
 
-        const application = new Application({
-            name, email, idNumber, phone, major, batch,
-            roleTitle, department,
-            roleSpecificData
-        });
-
-        await application.save();
-
-        res.status(201).json({
-            message: "Application submitted",
-            id: application._id
-        });
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(409).json({
-                error: "Email already used"
-            });
-        }
-        res.status(500).json({ error: error.message });
+    return NextResponse.json({ message: "Application submitted", id: app._id });
+  } catch (err) {
+    if (err.code === 11000) {
+      return NextResponse.json({ error: "Email already used" }, { status: 409 });
     }
-});
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
 
-// -------- GET: ALL APPLICATIONS --------
-app.get("/api/applications", async (req, res) => {
-    try {
-        const apps = await Application.find().sort({ submissionDate: -1 });
-        res.status(200).json(apps);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// -------- START SERVER --------
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// -------- GET (READ ALL) --------
+export async function GET() {
+  try {
+    await connectDB();
+    const apps = await Application.find().sort({ submissionDate: -1 });
+    return NextResponse.json(apps);
+  } catch (err) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
