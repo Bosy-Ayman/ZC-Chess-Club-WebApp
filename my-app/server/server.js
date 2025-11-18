@@ -6,12 +6,14 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ----------- MIDDLEWARE -----------
-app.use(cors());
+// -------- MIDDLEWARE --------
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+}));
 app.use(express.json());
 
-
-// ----------- MONGOOSE SCHEMA -----------
+// -------- SCHEMA --------
 const ApplicationSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -33,102 +35,56 @@ const ApplicationSchema = new mongoose.Schema({
 
 const Application = mongoose.model("Application", ApplicationSchema);
 
-
-// ----------- MONGODB CONNECTION -----------
-const MONGO_URI = process.env.MONGO_URI;
-
-if (!MONGO_URI) {
-    console.error("ERROR: MONGO_URI missing in .env");
-    process.exit(1);
-}
-
+// -------- DATABASE --------
 mongoose
-    .connect(MONGO_URI)
+    .connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
-    .catch((err) => {
-        console.error("MongoDB connection error:", err);
+    .catch(err => {
+        console.error("MongoDB error:", err);
         process.exit(1);
     });
 
-
-// ----------- POST: SUBMIT APPLICATION -----------
+// -------- POST: SUBMIT --------
 app.post("/api/applications", async (req, res) => {
-    console.log("------------------------------");
-    console.log("Incoming Application:", req.body);
-    console.log("------------------------------");
-
     try {
         const {
-            name,
-            email,
-            idNumber,
-            phone,
-            major,
-            batch,
-            roleTitle,
-            department,
-            ...roleSpecificData
+            name, email, idNumber, phone, major, batch,
+            roleTitle, department, ...roleSpecificData
         } = req.body;
 
-        const newApplication = new Application({
-            name,
-            email,
-            idNumber,
-            phone,
-            major,
-            batch,
-            roleTitle,
-            department,
+        const application = new Application({
+            name, email, idNumber, phone, major, batch,
+            roleTitle, department,
             roleSpecificData
         });
 
-        await newApplication.save();
+        await application.save();
 
         res.status(201).json({
-            message: "Application submitted successfully",
-            id: newApplication._id
+            message: "Application submitted",
+            id: application._id
         });
-
     } catch (error) {
-        // validation errors
-        if (error.name === "ValidationError") {
-            return res.status(400).json({
-                error: "Validation failed",
-                details: Object.keys(error.errors)
-            });
-        }
-
-        // duplicate email
         if (error.code === 11000) {
             return res.status(409).json({
-                error: "This email already submitted an application",
-                field: error.keyValue
+                error: "Email already used"
             });
         }
-
-        res.status(500).json({
-            error: "Server error",
-            message: error.message
-        });
+        res.status(500).json({ error: error.message });
     }
 });
 
-
-// ----------- GET: ALL APPLICATIONS -----------
+// -------- GET: ALL APPLICATIONS --------
 app.get("/api/applications", async (req, res) => {
     try {
-        const applications = await Application.find().sort({ submissionDate: -1 });
-        res.status(200).json(applications);
+        const apps = await Application.find().sort({ submissionDate: -1 });
+        res.status(200).json(apps);
     } catch (error) {
-        res.status(500).json({
-            error: "Failed to fetch applications",
-            message: error.message
-        });
+        res.status(500).json({ error: error.message });
     }
 });
 
-
-// ----------- START SERVER -----------
+// -------- START SERVER --------
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
