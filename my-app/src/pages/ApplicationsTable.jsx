@@ -55,7 +55,7 @@ const ApplicationsTable = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/applications');
+        const response = await fetch('/api/applications');
         if (!response.ok) throw new Error('Failed to fetch applications');
         const result = await response.json();
         setApplications(result);
