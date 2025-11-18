@@ -1,68 +1,68 @@
+// pages/api/applications.js
+import { connectDB } from "./server/mongodb";
 import mongoose from "mongoose";
-import { MongoClient } from "mongodb";
-import { NextResponse } from "next/server";
 
-// -------- CONNECT ONCE --------
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectDB() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose
-      .connect(process.env.MONGO_URI)
-      .then((mongoose) => mongoose);
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
-
-// -------- SCHEMA --------
+// -------- Schema --------
 const ApplicationSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  idNumber: String,
-  phone: String,
-  major: String,
-  batch: String,
-  roleTitle: String,
-  department: String,
-  roleSpecificData: mongoose.Schema.Types.Mixed,
-  submissionDate: { type: Date, default: Date.now }
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  idNumber: { type: String, required: true },
+  phone: { type: String, required: true },
+  major: { type: String, required: true },
+  batch: { type: String, required: true },
+
+  roleTitle: { type: String, required: true },
+  department: { type: String, required: true },
+
+  roleSpecificData: { type: mongoose.Schema.Types.Mixed, default: {} },
+
+  submissionDate: { type: Date, default: Date.now },
 });
 
 const Application =
   mongoose.models.Application ||
   mongoose.model("Application", ApplicationSchema);
 
-// -------- POST (CREATE) --------
-export async function POST(req) {
-  try {
-    await connectDB();
-    const body = await req.json();
+// -------- API HANDLER --------
+export default async function handler(req, res) {
+  await connectDB();
 
-    const app = await Application.create(body);
+  // ----- SUBMIT (POST) -----
+  if (req.method === "POST") {
+    try {
+      const {
+        name, email, idNumber, phone, major, batch,
+        roleTitle, department, ...roleSpecificData
+      } = req.body;
 
-    return NextResponse.json({ message: "Application submitted", id: app._id });
-  } catch (err) {
-    if (err.code === 11000) {
-      return NextResponse.json({ error: "Email already used" }, { status: 409 });
+      const app = await Application.create({
+        name, email, idNumber, phone, major, batch,
+        roleTitle, department,
+        roleSpecificData
+      });
+
+      return res.status(201).json({
+        message: "Application submitted",
+        id: app._id
+      });
+
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({ error: "Email already used" });
+      }
+      return res.status(500).json({ error: err.message });
     }
-    return NextResponse.json({ error: err.message }, { status: 500 });
   }
-}
 
-// -------- GET (READ ALL) --------
-export async function GET() {
-  try {
-    await connectDB();
-    const apps = await Application.find().sort({ submissionDate: -1 });
-    return NextResponse.json(apps);
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  // ----- GET ALL -----
+  if (req.method === "GET") {
+    try {
+      const apps = await Application.find().sort({ submissionDate: -1 });
+      return res.status(200).json(apps);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   }
+
+  return res.status(405).json({ error: "Method not allowed" });
 }
