@@ -19,9 +19,7 @@ const ApplicationSchema = new mongoose.Schema({
   submissionDate: { type: Date, default: Date.now },
 });
 
-const Application =
-  mongoose.models.Application ||
-  mongoose.model("Application", ApplicationSchema);
+const Application = mongoose.model('Application', ApplicationSchema, 'chess_club');
 
 // -------- API HANDLER --------
 export default async function handler(req, res) {
@@ -52,17 +50,4 @@ export default async function handler(req, res) {
       }
       return res.status(500).json({ error: err.message });
     }
-  }
-
-  // ----- GET ALL -----
-  if (req.method === "GET") {
-    try {
-      const apps = await Application.find().sort({ submissionDate: -1 });
-      return res.status(200).json(apps);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
-  }
-
-  return res.status(405).json({ error: "Method not allowed" });
-}
+});
