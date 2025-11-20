@@ -2,21 +2,6 @@ import mongoose from 'mongoose';
 
 const MONGO_URI = process.env.MONGO_URI;
 
-// --- MongoDB Connection ---
-let cached = global.mongoose;
-if (!cached) cached = global.mongoose = { conn: null, promise: null };
-
-async function dbConnect() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGO_URI).then((mongoose) => mongoose);
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
-
-// --- Schema & Model ---
 const ApplicationSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -32,18 +17,18 @@ const ApplicationSchema = new mongoose.Schema({
 
 const Application = mongoose.models.Application || mongoose.model('Application', ApplicationSchema);
 
-// --- API Handler ---
+async function connectToDB() {
+  if (mongoose.connections[0].readyState) return;
+  await mongoose.connect(MONGO_URI);
+}
+
 export default async function handler(req, res) {
-  await dbConnect();
+  await connectToDB();
 
   if (req.method === 'GET') {
-    try {
-      const allApplications = await Application.find().sort({ submissionDate: -1 });
-      res.status(200).json(allApplications);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    const apps = await Application.find().sort({ submissionDate: -1 });
+    return res.status(200).json(apps);
   }
+
+  res.status(405).json({ message: 'Method not allowed' });
 }
