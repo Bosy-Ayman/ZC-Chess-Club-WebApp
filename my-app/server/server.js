@@ -37,7 +37,11 @@ const ApplicationSchema = new mongoose.Schema({
 });
 
 
+<<<<<<< HEAD
 const Application = mongoose.model('Application', ApplicationSchema, 'chess_club');
+=======
+const Application = mongoose.model('Application', ApplicationSchema, 'zcchessclub_db_user');
+>>>>>>> parent of d9cebc3 (add)
 
 // --- MongoDB Connection ---
 const MONGO_URI = process.env.MONGO_URI; 
@@ -113,4 +117,22 @@ app.post('/api/applications', async (req, res) => {
         console.error("Unknown Server Error:", error);
         res.status(500).json({ error: 'Failed to save application to database', details: error.message });
     }
+<<<<<<< HEAD
 });
+=======
+});
+
+// --- API Endpoint: Get All Applications ---
+app.get('/api/applications', async (req, res) => {
+    try {
+        const allApplications = await Application.find().sort({ submissionDate: -1 }); // newest first
+        res.status(200).json(allApplications);
+    } catch (error) {
+        console.error("Failed to fetch applications:", error);
+        res.status(500).json({
+            error: "Failed to fetch applications",
+            details: error.message
+        });
+    }
+});
+>>>>>>> parent of d9cebc3 (add)
