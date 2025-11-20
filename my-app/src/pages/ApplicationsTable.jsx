@@ -11,10 +11,12 @@ const ApplicationsTable = () => {
   const [selectedData, setSelectedData] = useState(null);
 
   useEffect(() => {
+    // Dev: localhost server; Prod: relative path to Vercel serverless
+    const API_BASE = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
     const fetchApplications = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/applications');
+        const response = await fetch(`${API_BASE}/api/applications`);
         if (!response.ok) {
           const text = await response.text();
           throw new Error(`Failed to fetch: ${response.status} – ${text.slice(0, 100)}`);

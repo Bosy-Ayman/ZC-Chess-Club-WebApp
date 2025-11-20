@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
+// Connection caching for serverless
 let conn = null;
 const uri = process.env.MONGO_URI;
 
@@ -29,7 +30,7 @@ const applicationSchema = new mongoose.Schema({
 const Application =
   mongoose.models.Application || mongoose.model('Application', applicationSchema, 'applications');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     await connectDB();
 
@@ -78,12 +79,4 @@ export default async function handler(req, res) {
 
     return res.status(500).json({ error: 'Server error', details: error.message });
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb',
-    },
-  },
 };
