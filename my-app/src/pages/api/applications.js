@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
 const MONGO_URI = process.env.MONGO_URI;
-mongoose.connect(MONGO_URI);
+if (!mongoose.connection.readyState) {
+  await mongoose.connect(MONGO_URI);
+}
 
 const ApplicationSchema = new mongoose.Schema({
     name: String,
