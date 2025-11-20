@@ -1,29 +1,65 @@
 {
-  "dependencies": {
-    "chess.js": "^1.4.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongoose": "^8.19.4",
-    "react-calendar": "^6.0.0"
-  },
   "name": "zc-chess-club-webapp",
   "version": "1.0.0",
-  "description": "Welcome to the official repository for the **ZC Chess Club Web App**, built with **React**. This app allows users to sign up, log in, and explore tournaments and announcements.",
-  "main": "index.js",
-  "scripts": {
-    
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Welcome to the official repository for the ZC Chess Club Web App, built with React. This app allows users to sign up, log in, and explore tournaments and announcements.",
+  "main": "server.js",
+  "homepage": "https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp/issues"
   },
-  "homepage": "https://github.com/Bosy-Ayman/ZC-Chess-Club-WebApp#readme"
+  "author": "ZC Chess Club",
+  "license": "ISC",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "server": "node server.js",
+    "dev": "concurrently \"npm start\" \"npm run server\"",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3",
+    "react-scripts": "5.0.1",
+    "react-calendar": "^6.0.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^13.5.0",
+    "web-vitals": "^2.1.4",
+    "express": "^4.18.2",
+    "mongoose": "^8.19.4",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "chess.js": "^1.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
 }
