@@ -3,78 +3,77 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './ApplicationsTable.css';
 
-export default function ApplicationsTable() {
+const ApplicationsTable = () => {
   const [applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
-  // FIXED BASE URL
+
+  const PrettyRoleData = ({ data }) => {
+  const formatKey = (key) =>
+    key.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+
+  // Recursive rendering
+  const renderData = (obj) => {
+    if (obj === null || obj === undefined) return <em style={{ color: '#666' }}>Not provided</em>;
+    
+    if (Array.isArray(obj)) {
+      return obj.map((item, index) => (
+        <div key={index} className="pretty-role-array-item">
+          <h4>Entry #{index + 1}</h4>
+          {renderData(item)}
+        </div>
+      ));
+    }
+
+    if (typeof obj === 'object') {
+      return Object.entries(obj).map(([key, value]) => (
+        <div key={key} className="pretty-field">
+          <strong>{formatKey(key)}:</strong>
+          <div style={{ paddingLeft: '15px' }}>{renderData(value)}</div>
+        </div>
+      ));
+    }
+
+    // Plain value
+    return <span>{obj}</span>;
+  };
+
+  return (
+    <div className="pretty-role-data">
+      {Object.keys(data || {}).length === 0 ? (
+        <p style={{ color: '#caba91', fontStyle: 'italic' }}>No role-specific data provided.</p>
+      ) : (
+        renderData(data)
+      )}
+    </div>
+  );
+};
+useEffect(() => {
   const API_BASE =
     !process.env.NODE_ENV || process.env.NODE_ENV === "development"
       ? "http://localhost:5000"
-      : "";
+      : "/api/applications"; 
 
-  const PrettyRoleData = ({ data }) => {
-    const formatKey = (key) =>
-      key.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  const fetchApplications = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/applications`);
+      if (!response.ok) throw new Error("Failed to fetch applications");
 
-    const renderData = (obj) => {
-      if (obj === null || obj === undefined)
-        return <em style={{ color: '#666' }}>Not provided</em>;
-
-      if (Array.isArray(obj)) {
-        return obj.map((item, index) => (
-          <div key={index} className="pretty-role-array-item">
-            <h4>Entry #{index + 1}</h4>
-            {renderData(item)}
-          </div>
-        ));
-      }
-
-      if (typeof obj === 'object') {
-        return Object.entries(obj).map(([key, value]) => (
-          <div key={key} className="pretty-field">
-            <strong>{formatKey(key)}:</strong>
-            <div style={{ paddingLeft: '15px' }}>{renderData(value)}</div>
-          </div>
-        ));
-      }
-
-      return <span>{obj}</span>;
-    };
-
-    return (
-      <div className="pretty-role-data">
-        {Object.keys(data || {}).length === 0 ? (
-          <p style={{ color: '#caba91', fontStyle: 'italic' }}>
-            No role-specific data provided.
-          </p>
-        ) : (
-          renderData(data)
-        )}
-      </div>
-    );
+      const result = await response.json();
+      setApplications(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/applications`);
-        if (!res.ok) throw new Error("Failed to fetch applications");
+  fetchApplications();
+}, []);
 
-        const data = await res.json();
-        setApplications(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchApplications();
-  }, []);
 
   const openModal = (data) => {
     setSelectedData(data);
@@ -86,8 +85,39 @@ export default function ApplicationsTable() {
     setSelectedData(null);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (isLoading) {
+    return (
+      <div className="app-container applications-table-page">
+        <Header />
+        <div className="layout-container">
+          <div className="content-wrapper">
+            <div className="layout-content-container">
+              <h1 className="page-title">Loading Applications...</h1>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="app-container applications-table-page">
+        <Header />
+        <div className="layout-container">
+          <div className="content-wrapper">
+            <div className="layout-content-container">
+              <h1 className="page-title" style={{ color: '#ff6b6b' }}>
+                Error: {error}
+              </h1>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="app-container applications-table-page">
@@ -96,11 +126,17 @@ export default function ApplicationsTable() {
       <div className="layout-container">
         <div className="content-wrapper">
           <div className="layout-content-container">
+            {/* Header */}
             <header className="page-header-section">
-              <h1 className="page-title">♟️ Submitted Applications</h1>
-              <p>A total of <strong>{applications.length}</strong> application(s).</p>
+              <div className="header-text-group">
+                <h1 className="page-title">♟️ Submitted Applications</h1>
+                <p className="page-description">
+                  A total of <strong>{applications.length}</strong> application(s) found.
+                </p>
+              </div>
             </header>
 
+            {/* Table */}
             <div className="table-container">
               <table className="applications-table">
                 <thead>
@@ -114,10 +150,11 @@ export default function ApplicationsTable() {
                     <th>Major</th>
                     <th>Batch</th>
                     <th>ID Number</th>
-                    <th>Details</th>
+                  
+                    {/* Sticky Details Header */}
+                    <th className="sticky-details-header">Details</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {applications.map((app) => (
                     <tr key={app._id}>
@@ -130,8 +167,9 @@ export default function ApplicationsTable() {
                       <td>{app.major}</td>
                       <td>{app.batch}</td>
                       <td>{app.idNumber}</td>
-
-                      <td>
+                      
+                      {/* Sticky Details Button */}
+                      <td className="sticky-details-cell">
                         <button
                           className="view-button"
                           onClick={() => openModal(app.roleSpecificData)}
@@ -145,20 +183,21 @@ export default function ApplicationsTable() {
               </table>
             </div>
 
+            {/* Modal */}
+      {/* ==================== INSIDE THE MODAL ==================== */}
             {modalOpen && (
-              <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-overlay" onClick={closeModal}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                  <div className="modal-header">
+                <div className="modal-header">
                     <h2>Role Specific Data</h2>
                     <button className="modal-close" onClick={closeModal}>✕</button>
-                  </div>
-                  <div className="modal-body">
-                    <PrettyRoleData data={selectedData} />
-                  </div>
                 </div>
-              </div>
+                <div className="modal-body">
+                    <PrettyRoleData data={selectedData} />
+                </div>
+                </div>
+            </div>
             )}
-
           </div>
         </div>
       </div>
@@ -166,4 +205,6 @@ export default function ApplicationsTable() {
       <Footer />
     </div>
   );
-}
+};
+
+export default ApplicationsTable;
