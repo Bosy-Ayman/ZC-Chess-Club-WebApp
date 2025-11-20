@@ -8,11 +8,10 @@ const PORT = process.env.PORT || 5000;
 
 // --- Middlewares ---
 app.use(cors({
-    origin: "*",         // works local + vercel
+    origin: "*",
     methods: "GET,POST"
 }));
 app.use(express.json());
-
 
 // --- MongoDB Schema ---
 const ApplicationSchema = new mongoose.Schema({
@@ -34,9 +33,7 @@ const ApplicationSchema = new mongoose.Schema({
     submissionDate: { type: Date, default: Date.now }
 });
 
-// FIX MERGE CONFLICT
-const Application = mongoose.model('Application', ApplicationSchema, 'applications');
-
+const Application = mongoose.model("Application", ApplicationSchema, "applications");
 
 // --- Connect to MongoDB ---
 const MONGO_URI = process.env.MONGO_URI;
@@ -53,10 +50,7 @@ mongoose.connect(MONGO_URI)
             console.log(`Server running on port ${PORT}`);
         });
     })
-    .catch(err => {
-        console.error("MongoDB connection error:", err);
-    });
-
+    .catch(err => console.error("MongoDB connection error:", err));
 
 
 // --- POST: Save a new application ---
@@ -70,7 +64,7 @@ app.post('/api/applications', async (req, res) => {
         const newApplication = new Application({
             name, email, idNumber, phone, major, batch,
             roleTitle, department,
-            roleSpecificData: roleSpecificData
+            roleSpecificData
         });
 
         await newApplication.save();
@@ -84,16 +78,12 @@ app.post('/api/applications', async (req, res) => {
         console.error("Save error:", error);
 
         if (error.code === 11000) {
-            return res.status(409).json({
-                error: "Email already used",
-                details: error.keyValue
-            });
+            return res.status(409).json({ error: "Email already used" });
         }
 
         res.status(500).json({ error: "Server error", details: error.message });
     }
 });
-
 
 
 // --- GET: Fetch all applications ---
@@ -104,7 +94,6 @@ app.get('/api/applications', async (req, res) => {
             .lean();
 
         res.status(200).json(apps);
-
     } catch (error) {
         console.error("Fetch error:", error);
         res.status(500).json({
