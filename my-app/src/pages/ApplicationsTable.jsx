@@ -14,7 +14,7 @@ const ApplicationsTable = () => {
     // Dev: localhost; Prod: your backend Vercel URL
     const API_BASE = process.env.NODE_ENV === 'development'
       ? 'http://localhost:5000'
-      : 'https://chess-club-backend.vercel.app';  // ← Replace with your actual backend URL
+      : 'https://zc-chess-club.vercel.app';  // ← Replace with your actual backend URL
 
     const fetchApplications = async () => {
       try {
