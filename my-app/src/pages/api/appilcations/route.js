@@ -24,11 +24,24 @@ async function connectDB() {
   await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 }
 
-export default async function handler(req, res) {
-  await connectDB();
-  if (req.method === "GET") {
+export async function GET(req) {
+  try {
+    await connectDB();
     const apps = await Application.find().sort({ submissionDate: -1 });
-    return res.status(200).json(apps);
+    return Response.json(apps);
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
   }
-  res.status(405).json({ message: "Method not allowed" });
+}
+
+export async function POST(req) {
+  try {
+    await connectDB();
+    const body = await req.json();
+    const app = new Application(body);
+    await app.save();
+    return Response.json(app, { status: 201 });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 }
