@@ -55,7 +55,7 @@ useEffect(() => {
   const API_BASE =
     !process.env.NODE_ENV || process.env.NODE_ENV === "development"
       ? "http://localhost:5000"
-      : "https://zc-chess-club.vercel.app"; // example: https://zc-chess-api.onrender.com
+      : "/api/applications"; 
 
   const fetchApplications = async () => {
     try {
