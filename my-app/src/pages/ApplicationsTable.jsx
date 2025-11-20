@@ -10,70 +10,69 @@ const ApplicationsTable = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/applications');
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Failed to fetch: ${response.status} – ${text.slice(0, 100)}`);
+        }
+        const data = await response.json();
+        setApplications(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, []);
 
   const PrettyRoleData = ({ data }) => {
-  const formatKey = (key) =>
-    key.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+    const formatKey = (key) =>
+      key.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-  // Recursive rendering
-  const renderData = (obj) => {
-    if (obj === null || obj === undefined) return <em style={{ color: '#666' }}>Not provided</em>;
-    
-    if (Array.isArray(obj)) {
-      return obj.map((item, index) => (
-        <div key={index} className="pretty-role-array-item">
-          <h4>Entry #{index + 1}</h4>
-          {renderData(item)}
-        </div>
-      ));
-    }
+    const renderData = (obj) => {
+      if (obj === null || obj === undefined)
+        return <em style={{ color: '#666' }}>Not provided</em>;
 
-    if (typeof obj === 'object') {
-      return Object.entries(obj).map(([key, value]) => (
-        <div key={key} className="pretty-field">
-          <strong>{formatKey(key)}:</strong>
-          <div style={{ paddingLeft: '15px' }}>{renderData(value)}</div>
-        </div>
-      ));
-    }
+      if (Array.isArray(obj)) {
+        return obj.map((item, i) => (
+          <div key={i} className="pretty-role-array-item">
+            <h4>Entry #{i + 1}</h4>
+            {renderData(item)}
+          </div>
+        ));
+      }
 
-    // Plain value
-    return <span>{obj}</span>;
+      if (typeof obj === 'object' && obj !== null) {
+        return Object.entries(obj).map(([k, v]) => (
+          <div key={k} className="pretty-field">
+            <strong>{formatKey(k)}:</strong>
+            <div style={{ paddingLeft: '15px' }}>{renderData(v)}</div>
+          </div>
+        ));
+      }
+
+      return <span>{obj}</span>;
+    };
+
+    return (
+      <div className="pretty-role-data">
+        {Object.keys(data || {}).length === 0 ? (
+          <p style={{ color: '#caba91', fontStyle: 'italic' }}>
+            No role-specific data provided.
+          </p>
+        ) : (
+          renderData(data)
+        )}
+      </div>
+    );
   };
-
-  return (
-    <div className="pretty-role-data">
-      {Object.keys(data || {}).length === 0 ? (
-        <p style={{ color: '#caba91', fontStyle: 'italic' }}>No role-specific data provided.</p>
-      ) : (
-        renderData(data)
-      )}
-    </div>
-  );
-};
-useEffect(() => {
-  const API_BASE =
-    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-      ? "http://localhost:5000"
-      : "/api/applications"; 
-
-  const fetchApplications = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/applications`);
-      if (!response.ok) throw new Error("Failed to fetch applications");
-
-      const result = await response.json();
-      setApplications(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  fetchApplications();
-}, []);
-
 
   const openModal = (data) => {
     setSelectedData(data);
@@ -126,7 +125,6 @@ useEffect(() => {
       <div className="layout-container">
         <div className="content-wrapper">
           <div className="layout-content-container">
-            {/* Header */}
             <header className="page-header-section">
               <div className="header-text-group">
                 <h1 className="page-title">♟️ Submitted Applications</h1>
@@ -136,7 +134,6 @@ useEffect(() => {
               </div>
             </header>
 
-            {/* Table */}
             <div className="table-container">
               <table className="applications-table">
                 <thead>
@@ -150,8 +147,6 @@ useEffect(() => {
                     <th>Major</th>
                     <th>Batch</th>
                     <th>ID Number</th>
-                  
-                    {/* Sticky Details Header */}
                     <th className="sticky-details-header">Details</th>
                   </tr>
                 </thead>
@@ -167,13 +162,8 @@ useEffect(() => {
                       <td>{app.major}</td>
                       <td>{app.batch}</td>
                       <td>{app.idNumber}</td>
-                      
-                      {/* Sticky Details Button */}
                       <td className="sticky-details-cell">
-                        <button
-                          className="view-button"
-                          onClick={() => openModal(app.roleSpecificData)}
-                        >
+                        <button className="view-button" onClick={() => openModal(app.roleSpecificData)}>
                           View Details
                         </button>
                       </td>
@@ -183,20 +173,20 @@ useEffect(() => {
               </table>
             </div>
 
-            {/* Modal */}
-      {/* ==================== INSIDE THE MODAL ==================== */}
             {modalOpen && (
-            <div className="modal-overlay" onClick={closeModal}>
+              <div className="modal-overlay" onClick={closeModal}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+                  <div className="modal-header">
                     <h2>Role Specific Data</h2>
-                    <button className="modal-close" onClick={closeModal}>✕</button>
-                </div>
-                <div className="modal-body">
+                    <button className="modal-close" onClick={closeModal}>
+                      ✕
+                    </button>
+                  </div>
+                  <div className="modal-body">
                     <PrettyRoleData data={selectedData} />
+                  </div>
                 </div>
-                </div>
-            </div>
+              </div>
             )}
           </div>
         </div>
