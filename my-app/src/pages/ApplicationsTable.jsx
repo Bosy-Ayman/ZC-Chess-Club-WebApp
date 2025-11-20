@@ -51,22 +51,29 @@ const ApplicationsTable = () => {
     </div>
   );
 };
+useEffect(() => {
+  const API_BASE =
+    !process.env.NODE_ENV || process.env.NODE_ENV === "development"
+      ? "http://localhost:5000"
+      : "https://zc-chess-club.vercel.app"; // example: https://zc-chess-api.onrender.com
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await fetch('/api/applications');
-        if (!response.ok) throw new Error('Failed to fetch applications');
-        const result = await response.json();
-        setApplications(result);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchApplications();
-  }, []);
+  const fetchApplications = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/applications`);
+      if (!response.ok) throw new Error("Failed to fetch applications");
+
+      const result = await response.json();
+      setApplications(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchApplications();
+}, []);
+
 
   const openModal = (data) => {
     setSelectedData(data);
