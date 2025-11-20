@@ -3,4 +3,9 @@
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/" }
   ]
+   , "functions": {
+    "api/applications.js": {
+      "maxDuration": 30
+    }
+  }
 }
