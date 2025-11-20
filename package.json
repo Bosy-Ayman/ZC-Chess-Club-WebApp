@@ -12,6 +12,7 @@
   "description": "Welcome to the official repository for the **ZC Chess Club Web App**, built with **React**. This app allows users to sign up, log in, and explore tournaments and announcements.",
   "main": "index.js",
   "scripts": {
+    
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
