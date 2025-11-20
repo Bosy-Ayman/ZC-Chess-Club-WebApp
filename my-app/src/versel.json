@@ -1,11 +1,17 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
-   , "functions": {
-    "api/applications.js": {
-      "maxDuration": 30
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
+  ],
+  "env": {
+    "MONGO_URI": "@mongo_uri"
   }
 }

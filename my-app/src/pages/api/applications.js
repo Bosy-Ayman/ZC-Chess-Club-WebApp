@@ -24,24 +24,29 @@ async function connectDB() {
   await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 }
 
-export async function GET(req) {
-  try {
-    await connectDB();
-    const apps = await Application.find().sort({ submissionDate: -1 });
-    return Response.json(apps);
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-}
 
-export async function POST(req) {
-  try {
-    await connectDB();
-    const body = await req.json();
-    const app = new Application(body);
-    await app.save();
-    return Response.json(app, { status: 201 });
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+  await connectDB();
+
+  if (req.method === "GET") {
+    const apps = await Application.find().sort({ submissionDate: -1 });
+    return res.status(200).json(apps);
   }
+
+  if (req.method === "POST") {
+    const newApp = new Application(req.body);
+    await newApp.save();
+    return res.status(201).json(newApp);
+  }
+
+  res.status(405).json({ message: "Method not allowed" });
 }
