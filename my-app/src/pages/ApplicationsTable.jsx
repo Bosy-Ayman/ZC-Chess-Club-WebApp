@@ -13,7 +13,7 @@ const ApplicationsTable = () => {
   useEffect(() => {
     const API_BASE = process.env.NODE_ENV === 'development'
       ? 'http://localhost:5000'
-      : 'https://zc-chess-club-backend.vercel.app';  // ← Your new backend URL
+      : 'https://zc-chess-club.vercel.app/';  // ← Your new backend URL
 
     const fetchApplications = async () => {
       try {
