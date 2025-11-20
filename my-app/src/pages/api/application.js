@@ -7,12 +7,12 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: "*", // Or set to your frontend URL in prod for security
+  origin: "*", // Update to your frontend URL for security, e.g., "https://zc-chess-club.vercel.app"
   methods: "GET,POST"
 }));
 app.use(express.json());
 
-// MongoDB Schema
+// Schema
 const ApplicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -31,18 +31,13 @@ const ApplicationSchema = new mongoose.Schema({
 
 const Application = mongoose.model("Application", ApplicationSchema, "applications");
 
-// Connect to MongoDB (Vercel handles connection pooling in serverless)
+// MongoDB connection (Vercel serverless handles per-request connections)
 const MONGO_URI = process.env.MONGO_URI;
-
-if (!MONGO_URI) {
-  throw new Error("MONGO_URI missing");
-}
-
 mongoose.connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
 
-// POST: Save a new application
+// POST route
 app.post('/api/applications', async (req, res) => {
   try {
     const {
@@ -71,7 +66,7 @@ app.post('/api/applications', async (req, res) => {
   }
 });
 
-// GET: Fetch all applications
+// GET route
 app.get('/api/applications', async (req, res) => {
   try {
     const apps = await Application.find()
@@ -88,5 +83,5 @@ app.get('/api/applications', async (req, res) => {
   }
 });
 
-// Export the app for Vercel serverless
+// Export for Vercel
 module.exports = app;

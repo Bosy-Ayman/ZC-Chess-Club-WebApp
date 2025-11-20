@@ -11,10 +11,9 @@ const ApplicationsTable = () => {
   const [selectedData, setSelectedData] = useState(null);
 
   useEffect(() => {
-    // Dev: localhost; Prod: your backend Vercel URL
     const API_BASE = process.env.NODE_ENV === 'development'
       ? 'http://localhost:5000'
-      : 'https://chess-club-backend.vercel.app';  // ← Replace with your actual backend URL
+      : 'https://zc-chess-club-backend.vercel.app';  // ← Your new backend URL
 
     const fetchApplications = async () => {
       try {
