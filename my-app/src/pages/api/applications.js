@@ -1,25 +1,23 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) throw new Error("MONGO_URI is missing");
 
-// Schema and model same as before...
-
-async function connectDB() {
-  if (mongoose.connections[0].readyState) return;
-  await mongoose.connect(MONGO_URI);
+if (!MONGO_URI) {
+  throw new Error('Please define the MONGO_URI in your environment variables');
 }
 
-export async function GET() {
-  await connectDB();
-  const apps = await Application.find().sort({ submissionDate: -1 });
-  return Response.json(apps);
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-export async function POST(request) {
-  await connectDB();
-  const body = await request.json();
-  const newApp = new Application(body);
-  await newApp.save();
-  return Response.json(newApp, { status: 201 });
+export async function connectToDatabase() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGO_URI).then((mongoose) => mongoose);
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
 }

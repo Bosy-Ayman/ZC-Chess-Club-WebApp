@@ -1,16 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config(); // Load environment variables from .env
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- Middlewares ---
-app.use(cors()); // Allow requests from frontend (port 3000)
-app.use(express.json()); // Parse incoming JSON
+app.use(cors({
+  origin: [
+    "http://localhost:3000", // local frontend
+    "https://zc-chess-club-web-euimxokx7-bosy-aymans-projects.vercel.app" // your deployed frontend
+  ]
+}));
+app.use(express.json());
 
-// --- Mongoose Schema & Model ---
+// --- MongoDB Schema & Model ---
 const ApplicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -29,7 +34,7 @@ const Application = mongoose.model('Application', ApplicationSchema, 'chess_club
 // --- MongoDB Connection ---
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-  console.error("MONGO_URI not found in .env");
+  console.error("Error: MONGO_URI not defined in environment variables.");
   process.exit(1);
 }
 
@@ -39,7 +44,7 @@ mongoose.connect(MONGO_URI)
 
 // --- Routes ---
 
-// POST: submit a new application
+// POST: submit new application
 app.post('/api/applications', async (req, res) => {
   try {
     const { name, email, idNumber, phone, major, batch, roleTitle, department, ...roleSpecificData } = req.body;
@@ -59,17 +64,13 @@ app.post('/api/applications', async (req, res) => {
     const savedApp = await newApp.save();
     res.status(201).json({ message: 'Application submitted!', data: savedApp });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ error: 'Validation failed', details: error.message });
-    }
-    if (error.code === 11000) {
-      return res.status(409).json({ error: 'Email already exists', details: error.keyValue });
-    }
+    if (error.name === 'ValidationError') return res.status(400).json({ error: 'Validation failed', details: error.message });
+    if (error.code === 11000) return res.status(409).json({ error: 'Email already exists', details: error.keyValue });
     res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
-// GET: fetch all applications (for testing in browser)
+// GET: fetch all applications
 app.get('/api/applications', async (req, res) => {
   try {
     const apps = await Application.find().sort({ submissionDate: -1 });
