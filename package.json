@@ -1,18 +1,38 @@
 {
   "dependencies": {
+<<<<<<< Updated upstream
     "chess.js": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongoose": "^8.19.4",
     "react-calendar": "^6.0.0"
+=======
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "mongoose": "^8.19.4",
+    "react": "^18.2.0",
+    "react-calendar": "^6.0.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.2",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^2.1.4"
+>>>>>>> Stashed changes
   },
   "name": "zc-chess-club-webapp",
   "version": "1.0.0",
   "description": "Welcome to the official repository for the **ZC Chess Club Web App**, built with **React**. This app allows users to sign up, log in, and explore tournaments and announcements.",
   "main": "index.js",
   "scripts": {
+<<<<<<< Updated upstream
     "test": "echo \"Error: no test specified\" && exit 1"
+=======
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+>>>>>>> Stashed changes
   },
   "repository": {
     "type": "git",
