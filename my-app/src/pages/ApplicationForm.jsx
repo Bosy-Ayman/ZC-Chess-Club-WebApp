@@ -10,28 +10,66 @@ const ApplicationForm = ({ title, department, roleDescription, roleSpecificConte
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // This prop 'department' is new and required by your backend schema.
+  // You must update the component that uses ApplicationForm (e.g., HRForm.js)
+  // to pass it, like:
+  // <ApplicationForm department="Human Resources" ... />
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setSuccess(false);
 
-    // --- 1. Gather All Form Data (The New, Robust Way) ---
-    const formData = new FormData(e.target);
-    const payload = Object.fromEntries(formData.entries());
+    const formElements = e.target.elements;
+    
+    // --- 1. Gather All Form Data ---
+    // This approach gathers all named fields from the form,
+    // which works perfectly with your backend's ...roleSpecificData operator.
+    
+    // NOTE: This assumes your role-specific inputs (like in HRForm.js)
+    // have 'name' attributes (e.g., name="hr-experience").
+    const payload = {
+      // --- Section 1: Basic Info ---
+      name: formElements.name.value,
+      email: formElements.email.value,
+      idNumber: formElements.id.value, // Map form 'id' to backend 'idNumber'
+      phone: formElements.phone.value,
+      major: formElements.major.value,
+      batch: formElements.batch.value,
+      
+      // --- Role Info ---
+      roleTitle: title,
+      department: department, // Pass department from props
 
-    // --- 2. Manually add/overwrite fields from props ---
-    // (FormData captures the 'role-choice' input, but we'll overwrite it
-    // with the 'title' prop to be 100% sure)
-    payload.roleTitle = title;
-    payload.department = department;
+      // --- Section 2: Role-Specific Info ---
+      // Dynamically add role-specific fields
+    };
 
-    // Map form 'id' to backend 'idNumber'
-    payload.idNumber = payload.id;
-    delete payload.id; // remove the original 'id' field
-    delete payload['role-choice']; // remove the read-only input field
+    // Find and add all role-specific fields (like 'hr-experience')
+    if (roleSpecificContent?.props?.children) {
+        // This is a way to find the inputs passed in as children
+        const specificInputs = roleSpecificContent.props.children;
+        
+        React.Children.forEach(specificInputs, (section) => {
+            if (section && section.props && section.props.children) {
+                React.Children.forEach(section.props.children, (input) => {
+                    if (input && input.props && input.props.name) {
+                        payload[input.props.name] = formElements[input.props.name]?.value;
+                    }
+                     // Handle Textarea
+                    if (input && input.props && input.props.htmlFor) {
+                         const matchingInput = formElements[input.props.htmlFor];
+                         if (matchingInput && matchingInput.name) {
+                             payload[matchingInput.name] = matchingInput.value;
+                         }
+                    }
+                });
+            }
+        });
+    }
 
-    // --- 3. Send Data to API ---
+    // --- 2. Send Data to API ---
     try {
       const response = await fetch('http://localhost:5000/api/applications', {
         method: 'POST',
@@ -79,7 +117,7 @@ const ApplicationForm = ({ title, department, roleDescription, roleSpecificConte
               Please provide your contact and academic information. All fields marked with * are required.
             </p>
             
-            {/* 'name' attributes are present, which is what FormData needs */}
+            {/* Note: Added 'name' attributes to all inputs for easier data access */}
             <label htmlFor="name">Name*</label>
             <input type="text" id="name" name="name" required />
             
@@ -103,8 +141,6 @@ const ApplicationForm = ({ title, department, roleDescription, roleSpecificConte
           </section>
           
           {/* --- Role Specific Content (Dynamic) --- */}
-          {/* This works perfectly now because FormData will
-              find all 'name' attributes inside this fragment */}
           {roleSpecificContent}
           
           {/* --- Submission & Status Messages --- */}
