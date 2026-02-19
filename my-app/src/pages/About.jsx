@@ -37,6 +37,10 @@ export default function About() {
       name: "Alaa Ibrahim",
       role: "Head of Organization",
       image: "/Images/unknown.png", 
+    },{
+      name: "Adham Elawady",
+      role: "Head of Public Relation",
+      image: "/Images/adham.png", 
     },
   ];
 
