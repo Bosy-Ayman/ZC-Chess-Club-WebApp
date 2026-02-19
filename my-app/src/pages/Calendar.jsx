@@ -20,6 +20,7 @@ export default function Calendar() {
   // Example events
   const events = [
    { date: "2025-11-02", title: "Abdelrahaman vs Youssef", time: "12:00 PM" },
+   { date: "2026-19-02", title: "Ramadan starts", time: "1:00 PM" },
     // { date: "2025-11-02", title: "Team Strategy Talk", time: "6:00 PM" },
     // { date: "2025-11-06", title: "Training Session", time: "5:30 PM" },
     // { date: "2025-11-10", title: "Rapid Tournament", time: "3:00 PM" },
