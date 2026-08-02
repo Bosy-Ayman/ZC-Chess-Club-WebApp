@@ -1,7 +1,8 @@
 /* TournamentDetailsKnockout.css */
 
 /* remove default page spacing */
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -12,14 +13,29 @@ body, html {
 .tournament-knockout {
   width: 100%;
   overflow-x: hidden;
+  background-color: #181611;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* remove any inner spacing */
-.layout-container,
+/* remove any inner spacing and center */
+.layout-container {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
 .main-content {
   width: 100%;
-  margin: 0;
-  padding: 0;
+  padding: 24px 0;
+  flex-grow: 1;
+  box-sizing: border-box;
 }
 
 /* center intro text */
@@ -41,11 +57,18 @@ body, html {
 /* Center the iframe container */
 .iframe-container {
   display: flex;
-  justify-content: center;   /* center horizontally */
-  align-items: center;       /* center vertically if you want */
-  margin: 20px auto;         /* add some spacing and center block */
-  width: 90%;                /* control how wide it is */
-  background-color: #1a1a1a;
+  justify-content: center;
+  /* center horizontally */
+  align-items: center;
+  /* center vertically if you want */
+  margin: 20px auto;
+  /* add some spacing and center block */
+  width: 100%;
+  max-width: 1100px;
+  /* matched to standard width */
+  background-color: #1f1d18;
+  /* card background fallback */
   padding: 10px;
   border-radius: 10px;
+  box-sizing: border-box;
 }

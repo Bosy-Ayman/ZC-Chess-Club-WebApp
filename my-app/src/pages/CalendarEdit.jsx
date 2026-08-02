@@ -1,10 +1,14 @@
 import "./CalendarEdit.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 export default function CalendarEdit() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -13,15 +17,33 @@ export default function CalendarEdit() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState(null);
 
-  const [events, setEvents] = useState([
-    { 
-      date: "2025-11-02", 
-      title: "Abdelrahaman vs Youssef", 
-      time: "11:00 - 12:00", 
-      description: "Friendly match", 
-      location: "Zewail Chess Club"
-    },
-  ]);
+  const [events, setEvents] = useState([]);
+
+  const fetchTournaments = () => {
+    fetch(`${API_BASE}/api/tournaments`)
+      .then(res => res.json())
+      .then(data => {
+        const mapped = data.map(t => ({
+          _id: t._id,
+          date: t.startDate,
+          title: t.title,
+          time: t.time,
+          location: t.location || 'Zewail Chess Club',
+          description: t.description || ''
+        }));
+        setEvents(mapped);
+      })
+      .catch(err => console.error("Error fetching tournaments in CalendarEdit:", err));
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      navigate("/?login=true");
+      return;
+    }
+    fetchTournaments();
+  }, [navigate]);
 
   const months = [
     "January","February","March","April","May","June",
@@ -64,12 +86,51 @@ export default function CalendarEdit() {
     ? events.filter((e) => e.date === selectedDate)
     : [];
 
-  const addEvent = (title, time, description = "", location = "") => {
-    setEvents([...events, { date: selectedDate, title, time, description, location }]);
+  const addEvent = async (title, time, description = "", location = "") => {
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          time,
+          description,
+          location,
+          startDate: selectedDate,
+          type: "Swiss",
+          status: "Upcoming"
+        })
+      });
+      if (res.ok) {
+        fetchTournaments();
+      } else {
+        const errData = await res.json();
+        alert("Failed to add tournament: " + (errData.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Error creating tournament:", err);
+      alert("Error creating tournament: " + err.message);
+    }
   };
 
-  const deleteEvent = (index) => {
-    setEvents(events.filter((e, i) => !(e.date === selectedDate && i === index)));
+  const deleteEvent = async (id) => {
+    if (!id) {
+      alert("Cannot delete this event as it lacks a valid database ID.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${id}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        fetchTournaments();
+      } else {
+        alert("Failed to delete event.");
+      }
+    } catch (err) {
+      console.error("Error deleting tournament:", err);
+    }
   };
 
   return (
@@ -143,7 +204,7 @@ export default function CalendarEdit() {
                     <p>{ev.time}</p>
                     {ev.location && <p className="event-location">{ev.location}</p>}
                     {ev.description && <p>{ev.description}</p>}
-                    <button onClick={() => deleteEvent(events.indexOf(ev))}>Delete</button>
+                    <button onClick={() => deleteEvent(ev._id)}>Delete</button>
                 </div>
                 ))
             ) : <p className="no-event-text">No events this day</p>}

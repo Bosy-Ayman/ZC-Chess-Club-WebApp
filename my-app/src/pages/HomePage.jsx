@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "./HomePage.css";
@@ -8,8 +6,6 @@ import "./HomePage.css";
 const HomePage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const [date, setDate] = useState(new Date());
 
   const galleryImages = [
     "/Images/image1.jpg",

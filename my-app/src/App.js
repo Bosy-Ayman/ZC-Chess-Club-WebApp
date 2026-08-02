@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Signup from "./pages/SignUp";
-import Login from "./pages/Login";
 import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/About";
 import Tournaments from "./pages/Tournaments";
@@ -20,6 +19,8 @@ import OCMemberForm from './pages/OCMemberForm';
 import TrainerForm from './pages/TrainerForm';
 import TraineeForm from './pages/TraineeForm';
 import ApplicationTable from './pages/ApplicationsTable';
+import Admin from './pages/Admin';
+import History from './pages/History';
 
 // API Base URL - works for both local and production
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -30,7 +31,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/tournaments" element={<Tournaments />} />
@@ -42,6 +42,7 @@ function App() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/calendaredit" element={<CalendarEdit />} />
         <Route path="/archive" element={<Archive />} />
+        <Route path="/history" element={<History />} />
         
         {/* Application Forms */}
         <Route path="/apply/multimedia" element={<MultimediaForm />} />
@@ -50,6 +51,7 @@ function App() {
         <Route path="/apply/trainer" element={<TrainerForm />} />
         <Route path="/apply/trainee" element={<TraineeForm />} />
         <Route path="/applicationtable" element={<ApplicationTable />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );

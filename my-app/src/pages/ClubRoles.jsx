@@ -1,14 +1,35 @@
 // src/pages/ClubRoles.js
 
 import "./ClubRoles.css";
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // 👈 IMPORT LINK
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom"; // 👈 IMPORT LINK & NAVIGATE
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function ClubRoles() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const [myApplications, setMyApplications] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const email = localStorage.getItem("adminEmail");
+    if (!email) {
+      navigate("/?login=true");
+      return;
+    }
+    setIsLoggedIn(true);
+    const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+    fetch(`${API_BASE}/api/applications`)
+      .then(res => res.json())
+      .then(data => {
+        const filtered = data.filter(app => app.email.toLowerCase() === email.toLowerCase());
+        setMyApplications(filtered);
+      })
+      .catch(err => console.error("Error fetching applications in ClubRoles:", err));
+  }, [navigate]);
 
   const roles = [
     {
@@ -84,7 +105,41 @@ export default function ClubRoles() {
           ))}
         </div>
 
-        {/* 📋 Your Applications (Commented out) */}
+        {/* 📋 Your Application Status */}
+        {isLoggedIn && myApplications.length > 0 && (
+          <section className="applications-status-section" style={{ marginTop: "50px", borderTop: "1px solid #393428", paddingTop: "30px" }}>
+            <h2 className="section-title">Your Application Status</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginTop: "20px" }}>
+              {myApplications.map((app) => (
+                <div key={app._id} className="role-card" style={{ padding: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div className="role-info" style={{ paddingRight: "0" }}>
+                    <p className="department">{app.department}</p>
+                    <p className="title">{app.roleTitle}</p>
+                    <p className="desc" style={{ marginTop: "5px" }}>Submitted: {new Date(app.submissionDate).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <span 
+                      className={`status-badge ${app.status?.toLowerCase() || 'pending'}`}
+                      style={{ 
+                        padding: "6px 14px", 
+                        borderRadius: "20px", 
+                        fontWeight: "700",
+                        fontSize: "0.9rem",
+                        border: "1px solid",
+                        textTransform: "capitalize",
+                        backgroundColor: app.status === "Accepted" ? "rgba(46, 204, 113, 0.15)" : app.status === "Rejected" ? "rgba(231, 76, 60, 0.15)" : "rgba(230, 126, 34, 0.15)",
+                        borderColor: app.status === "Accepted" ? "#2ecc71" : app.status === "Rejected" ? "#e74c3c" : "#e67e22",
+                        color: app.status === "Accepted" ? "#2ecc71" : app.status === "Rejected" ? "#e74c3c" : "#e67e22"
+                      }}
+                    >
+                      {app.status || 'Pending'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* 🦶 Footer */}

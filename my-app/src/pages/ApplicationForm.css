@@ -1,9 +1,9 @@
 /* src/pages/ApplicationForm.css */
 
 .form-page-wrapper {
-    background-color: #171512; /* Dark background */
+    background-color: #181611; /* Dark background */
     min-height: 100vh;
-    font-family: "Space Grotesk", "Noto Sans", sans-serif;
+    font-family: Montserrat, Inter, sans-serif;
     color: white;
 }
 

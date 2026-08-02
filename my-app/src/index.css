@@ -1,13 +1,75 @@
+:root {
+  --background: #181611;
+  --background-alt: #15120c;
+  --foreground: #FAFAFA;
+  --muted: #1f1d18;
+  --muted-foreground: #bab19c;
+  --accent: #f3c144;
+  --accent-foreground: #181611;
+  --accent-muted: rgba(243, 193, 68, 0.15);
+  --border: rgba(57, 52, 40, 0.4);
+  --border-hover: rgba(243, 193, 68, 0.3);
+  --card: rgba(31, 29, 24, 0.65);
+  --card-solid: #1f1d18;
+  --ring: #f3c144;
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Atmospheric Background Orbs */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(243, 193, 68, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(243, 193, 68, 0.01) 0%, transparent 50%),
+    radial-gradient(ellipse at top, rgba(243, 193, 68, 0.02) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Subtle Noise Texture Overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-mono);
+}
+
+/* Global focus indicator */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }

@@ -1,0 +1,540 @@
+/* ===== HISTORY PAGE — original colors, upgraded font & layout ===== */
+.history-page {
+  font-family: Montserrat, Inter, sans-serif;
+  background-color: #181611;
+  color: #e8e8e8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-content {
+  flex: 1;
+  padding: 56px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Hero intro ── */
+.history-intro {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.history-intro .title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+.history-intro .subtitle {
+  font-size: 15px;
+  color: #b5afa1;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* ── Tab bar ── */
+.history-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.tab-btn {
+  font-family: Montserrat, Inter, sans-serif;
+  background: #1f1d18;
+  color: #b5afa1;
+  border: 1.5px solid #36332b;
+  padding: 11px 26px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #27241b;
+  color: #fff;
+  border-color: #f3c144;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #f3c144, #d4a32a);
+  color: #15120c;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(243, 193, 68, 0.25);
+}
+
+/* ══════════════════════════════════════
+   TOURNAMENT TIMELINE
+══════════════════════════════════════ */
+.timeline {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+/* Center vertical line */
+.timeline::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  background: linear-gradient(to bottom, #f3c144, #675832);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -1.5px;
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
+/* Year section */
+.timeline-year-section {
+  position: relative;
+  margin-bottom: 64px;
+}
+
+/* Year badge */
+.timeline-year-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.year-badge {
+  background: linear-gradient(135deg, #f3c144, #d4a32a);
+  color: #15120c;
+  padding: 7px 22px;
+  border-radius: 5px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(243, 193, 68, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Row of events */
+.board-members-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+}
+
+/* Individual event container */
+.timeline-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.timeline-item.left {
+  flex-direction: row-reverse;
+}
+
+.timeline-item.right {
+  flex-direction: row;
+}
+
+/* Connector dot */
+.timeline-dot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: #f3c144;
+  border: 3px solid #181611;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(243, 193, 68, 0.5);
+}
+
+/* Event card */
+.timeline-card {
+  width: 45%;
+  background-color: #1f1d18;
+  padding: 28px;
+  border-radius: 10px;
+  border: 1px solid #36332b;
+  position: relative;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-card:hover {
+  transform: translateY(-4px);
+  border-color: #f3c144;
+  box-shadow: 0 8px 30px rgba(243, 193, 68, 0.12);
+}
+
+/* Arrow connector */
+.timeline-card::before {
+  content: " ";
+  height: 0;
+  position: absolute;
+  top: 22px;
+  width: 0;
+  z-index: 1;
+  border: medium solid #1f1d18;
+}
+
+.timeline-item.left .timeline-card::before {
+  right: -14px;
+  border-width: 9px 0 9px 14px;
+  border-color: transparent transparent transparent #1f1d18;
+}
+
+.timeline-item.right .timeline-card::before {
+  left: -14px;
+  border-width: 9px 14px 9px 0;
+  border-color: transparent #1f1d18 transparent transparent;
+}
+
+.card-header-group {
+  margin-bottom: 15px;
+}
+
+.card-event-title {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.card-meta-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.card-tag-type {
+  background-color: rgba(243, 193, 68, 0.1);
+  color: #f3c144;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.card-tag-date,
+.card-tag-location {
+  color: #b5afa1;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.card-event-desc {
+  color: #bab19c;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* Card content helpers */
+.member-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.member-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f3c144;
+}
+
+.member-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.member-title {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: #f3c144;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.member-work {
+  color: #b5afa1;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   HIGH BOARD SECTION
+══════════════════════════════════════ */
+.board-history-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.board-year-section {
+  background: #1f1d18;
+  border: 1px solid #36332b;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.25s ease;
+}
+
+.board-year-section:hover {
+  border-color: #675832;
+}
+
+.board-year-title {
+  font-family: Montserrat, Inter, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #36332b;
+  padding-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* "Current" badge */
+.current-badge {
+  background: linear-gradient(135deg, #f3c144, #d4a32a);
+  color: #15120c;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.board-members-grid-custom {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+}
+
+.board-member-card {
+  background: #181611;
+  border: 1px solid #36332b;
+  border-radius: 10px;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.25s ease;
+  cursor: default;
+}
+
+.board-member-card:hover {
+  transform: translateY(-4px);
+  border-color: #f3c144;
+  box-shadow: 0 8px 24px rgba(243, 193, 68, 0.12);
+  background: #1f1d18;
+}
+
+.board-member-avatar {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f3c144;
+  margin-bottom: 14px;
+  background-color: #15120c;
+  transition: box-shadow 0.2s ease;
+}
+
+.board-member-card:hover .board-member-avatar {
+  box-shadow: 0 0 16px rgba(243, 193, 68, 0.4);
+}
+
+.board-member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.board-member-name {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.board-member-role {
+  margin: 0;
+  font-size: 0.77rem;
+  color: #f3c144;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  .history-intro .title {
+    font-size: 1.9rem;
+  }
+
+  .timeline::after {
+    left: 24px;
+  }
+
+  .timeline-year-marker {
+    justify-content: flex-start;
+    padding-left: 48px;
+  }
+
+  .timeline-dot {
+    left: 24px;
+  }
+
+  .timeline-item,
+  .timeline-item.left,
+  .timeline-item.right {
+    flex-direction: column !important;
+    align-items: flex-end;
+  }
+
+  .timeline-card {
+    width: calc(100% - 56px);
+  }
+
+  .timeline-item.left .timeline-card::before,
+  .timeline-item.right .timeline-card::before {
+    left: -14px;
+    right: auto;
+    border-width: 9px 14px 9px 0;
+    border-color: transparent #1f1d18 transparent transparent;
+  }
+
+  .board-members-grid-custom {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+  }
+
+  .board-year-section {
+    padding: 22px;
+  }
+
+  .board-member-avatar {
+    width: 68px;
+    height: 68px;
+  }
+
+  .history-tabs {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tab-btn {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+══════════════════════════════════════ */
+/* Scroll Reveal Container wrapper */
+.scroll-reveal {
+  width: 100%;
+}
+
+/* Event timeline slide-in transitions */
+.timeline-item {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.timeline-item.left {
+  transform: translateX(-40px);
+}
+
+.timeline-item.right {
+  transform: translateX(40px);
+}
+
+.scroll-reveal.is-visible .timeline-item {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+}
+
+/* Board year section fade and slide up */
+.board-year-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.25s ease;
+}
+
+.scroll-reveal.is-visible .board-year-section {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered cards reveal inside the visible board year section */
+.board-members-grid-custom .board-member-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.scroll-reveal.is-visible .board-member-card {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: var(--delay, 0s);
+}
+
+/* Mobile responsive resets for timeline slide-ins */
+@media screen and (max-width: 768px) {
+
+  .timeline-item.left,
+  .timeline-item.right {
+    transform: translateY(20px) translateX(0);
+    /* Slide up instead of sideways on mobile */
+  }
+}

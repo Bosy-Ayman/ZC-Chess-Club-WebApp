@@ -1,7 +1,9 @@
 import "./Calendar.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function Calendar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,16 +19,23 @@ export default function Calendar() {
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Example events
-  const events = [
-   { date: "2025-11-02", title: "Abdelrahaman vs Youssef", time: "12:00 PM" },
-   { date: "2026-19-02", title: "Ramadan starts", time: "1:00 PM" },
-    // { date: "2025-11-02", title: "Team Strategy Talk", time: "6:00 PM" },
-    // { date: "2025-11-06", title: "Training Session", time: "5:30 PM" },
-    // { date: "2025-11-10", title: "Rapid Tournament", time: "3:00 PM" },
-    // { date: "2025-11-14", title: "OC Meeting", time: "1:00 PM" },
-    // { date: "2025-11-18", title: "Team Match", time: "7:00 PM" },
-  ];
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/tournaments`)
+      .then(res => res.json())
+      .then(data => {
+        const mappedEvents = data.map(t => ({
+          date: t.startDate,
+          title: t.title,
+          time: t.time,
+          location: t.location || 'Zewail Chess Club',
+          description: t.description || ''
+        }));
+        setEvents(mappedEvents);
+      })
+      .catch(err => console.error("Error fetching tournaments for calendar:", err));
+  }, []);
 
   // Helper functions
   function daysInMonth(year, month) {
@@ -71,7 +80,7 @@ export default function Calendar() {
     : [];
 
   return (
-    <div className="club-wrapper">
+    <div className="calendar-page">
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
       <main className="calendar-container">
@@ -152,7 +161,9 @@ export default function Calendar() {
                 selectedEvents.map((ev, i) => (
                   <div key={i} className="event-detail-card">
                     <h4>{ev.title}</h4>
-                    <p>{ev.time}</p>
+                    <p>🕒 {ev.time}</p>
+                    {ev.location && <p>📍 {ev.location}</p>}
+                    {ev.description && <p style={{ marginTop: '5px', fontStyle: 'italic' }}>{ev.description}</p>}
                   </div>
                 ))
               ) : (

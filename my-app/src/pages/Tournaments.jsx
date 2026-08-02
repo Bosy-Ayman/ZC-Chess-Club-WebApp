@@ -1,11 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "./Tournaments.css"; 
 
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 export default function Tournaments() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const [tournaments, setTournaments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/tournaments`)
+      .then(res => res.json())
+      .then(data => {
+        setTournaments(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching tournaments:", err);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const getStatusClass = (status) => {
+    switch (status.toLowerCase()) {
+      case "ongoing":
+        return "proceeding";
+      case "upcoming":
+        return "upcoming";
+      case "completed":
+        return "completed";
+      default:
+        return "";
+    }
+  };
 
   return (
     <div className="app-container">
@@ -40,23 +71,45 @@ export default function Tournaments() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Knockout Tournament</td>
-                      <td>Knockout</td>
-                      <td>
-                        <button className="status-button proceeding">
-                          <span>Ongoing</span>
-                        </button>
-                      </td>
-                      <td>2025-10-01</td>
-                      <td>Unknown</td>
-                      <td>20</td>
-                      <td>
-                        <a href="/tournamentdetailsKnockout" className="view-button">
-                          View
-                        </a>
-                      </td>
-                    </tr>
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#caba91" }}>
+                          Loading tournaments...
+                        </td>
+                      </tr>
+                    ) : tournaments.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#caba91" }}>
+                          No tournaments scheduled yet. Check back soon!
+                        </td>
+                      </tr>
+                    ) : (
+                      tournaments.map((t) => (
+                        <tr key={t._id}>
+                          <td>{t.title}</td>
+                          <td>{t.type}</td>
+                          <td>
+                            <button className={`status-button ${getStatusClass(t.status)}`}>
+                              <span>{t.status}</span>
+                            </button>
+                          </td>
+                          <td>{t.startDate}</td>
+                          <td>{t.endDate || "Unknown"}</td>
+                          <td>{t.players}</td>
+                          <td>
+                            {t.detailsUrl ? (
+                              <a href={t.detailsUrl} target="_blank" rel="noopener noreferrer" className="view-button">
+                                View / Register
+                              </a>
+                            ) : (
+                              <a href={`/tournamentdetails?id=${t._id}`} className="view-button">
+                                View Details
+                              </a>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

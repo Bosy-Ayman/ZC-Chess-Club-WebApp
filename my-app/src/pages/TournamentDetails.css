@@ -1,5 +1,5 @@
 .tournament-wrapper {
-  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+  font-family: Montserrat, Inter, sans-serif;
   background-color: #181611;
   min-height: 100vh;
   overflow-x: hidden;
@@ -10,15 +10,19 @@
 .layout-container {
   flex: 1;
   width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .main-content {
   width: 100%;
-  padding: 24px 20px;
+  padding: 24px 0;
   flex-grow: 1;
+  box-sizing: border-box;
 }
 
 .intro-text h1 {
@@ -124,5 +128,153 @@
 
 .application-table tbody tr:hover {
   background-color: #342c19;
+  color: white;
+}
+
+/* Modal and Staff Controls Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.modal-card {
+  background-color: #221d11;
+  border: 1px solid #f4c653;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(244, 198, 83, 0.15);
+  animation: modalSlideUp 0.3s ease;
+}
+
+.modal-title {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-form label {
+  color: #caba91;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modal-form input,
+.modal-form select {
+  background-color: #181611;
+  border: 1px solid #675832;
+  border-radius: 6px;
+  color: white;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-form input:focus,
+.modal-form select:focus {
+  border-color: #f4c653;
+  outline: none;
+}
+
+.modal-btn-row {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.btn-secondary {
+  background: none;
+  border: 1px solid #675832;
+  color: #caba91;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.btn-primary {
+  background-color: #f4c653;
+  border: 1px solid #f4c653;
+  color: #181611;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #dfb23f;
+  border-color: #dfb23f;
+}
+
+.staff-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.add-btn {
+  background-color: rgba(244, 198, 83, 0.15);
+  border: 1px solid #f4c653;
+  color: #f4c653;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: #f4c653;
+  color: #181611;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #caba91;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
   color: white;
 }
