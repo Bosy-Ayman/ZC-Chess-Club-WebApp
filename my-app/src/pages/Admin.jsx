@@ -117,6 +117,7 @@ export default function AdminDashboard() {
     }
     
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, userRole, location.search]);
 
   const handleLogout = () => {

@@ -23,6 +23,7 @@ export default function Profile() {
       return;
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
   const fetchData = async () => {
