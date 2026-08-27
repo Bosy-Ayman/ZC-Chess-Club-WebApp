@@ -31,7 +31,7 @@ app.use(express.json());
 // Serverless-friendly database connection middleware
 const connectDB = async (req, res, next) => {
   // Bypass database connection check for the diagnostics endpoint itself
-  if (req.path === '/api/db-test') {
+  if (req.path.includes('db-test') || req.url.includes('db-test')) {
     return next();
   }
 
