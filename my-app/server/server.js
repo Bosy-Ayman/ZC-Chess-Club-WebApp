@@ -643,7 +643,7 @@ app.put('/api/tournaments/:id/matches/:matchId', async (req, res) => {
   }
 });
 
-// POST: generate next round Swiss pairings automatically
+// POST: generate next round Swiss pairings automatically (FIDE-compliant)
 app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
   try {
     const tournament = await Tournament.findById(req.params.id);
@@ -654,62 +654,199 @@ app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
       return res.status(400).json({ error: "At least 2 players are required to generate Swiss pairings." });
     }
 
-    // Determine current highest round
     const existingMatches = tournament.matches || [];
 
-    // Check if any existing matches are still Pending
+    // Block if any existing matches are still Pending
     const pendingMatches = existingMatches.filter(m => !m.result || m.result === "Pending");
     if (pendingMatches.length > 0) {
+      const maxR = Math.max(...existingMatches.map(m => m.round || 1));
       return res.status(400).json({ 
-        error: `Cannot generate next round. There are still ${pendingMatches.length} pending match(es) in Round ${Math.max(...existingMatches.map(m => m.round || 1))}. Please record all match results first!` 
+        error: `Cannot generate next round. There are still ${pendingMatches.length} pending match(es) in Round ${maxR}. Please record all match results first!` 
       });
     }
 
     const maxRound = existingMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
     const nextRound = maxRound + 1;
 
-    // Calculate current points for each player
-    const pointsMap = {};
-    players.forEach(p => { pointsMap[p.name] = { name: p.name, rating: p.rating || 1500, points: 0 }; });
+    // ---- Build player stats map (FIDE-style) ----
+    const statsMap = {};
+    players.forEach(p => {
+      statsMap[p.name] = {
+        name: p.name,
+        rating: p.rating || 1500,
+        points: 0,
+        colorsPlayed: [],   // 'w' or 'b' per round
+        opponents: [],      // names of past opponents
+        byeReceived: false  // FIDE: only one bye per player
+      };
+    });
 
+    // Parse all historical match results
     existingMatches.forEach(m => {
-      if (!pointsMap[m.white]) pointsMap[m.white] = { name: m.white, rating: 1500, points: 0 };
-      if (!pointsMap[m.black]) pointsMap[m.black] = { name: m.black, rating: 1500, points: 0 };
+      const isWhiteBye = m.black === "BYE";
+      // Ensure white entry exists
+      if (!statsMap[m.white]) {
+        statsMap[m.white] = { name: m.white, rating: 1500, points: 0, colorsPlayed: [], opponents: [], byeReceived: false };
+      }
+      if (!isWhiteBye && !statsMap[m.black]) {
+        statsMap[m.black] = { name: m.black, rating: 1500, points: 0, colorsPlayed: [], opponents: [], byeReceived: false };
+      }
+
+      if (isWhiteBye) {
+        // BYE match: white gets 1 point, mark as having received a BYE
+        statsMap[m.white].points += 1;
+        statsMap[m.white].byeReceived = true;
+        return; // Don't record color or opponent for BYE
+      }
+
+      // Normal match
+      statsMap[m.white].opponents.push(m.black);
+      statsMap[m.black].opponents.push(m.white);
+      statsMap[m.white].colorsPlayed.push('w');
+      statsMap[m.black].colorsPlayed.push('b');
 
       if (m.result === "1-0" || m.result === "1 - 0") {
-        pointsMap[m.white].points += 1;
+        statsMap[m.white].points += 1;
       } else if (m.result === "0-1" || m.result === "0 - 1") {
-        pointsMap[m.black].points += 1;
+        statsMap[m.black].points += 1;
       } else if (m.result === "1/2-1/2" || m.result === "½ - ½" || m.result === "Draw") {
-        pointsMap[m.white].points += 0.5;
-        pointsMap[m.black].points += 0.5;
+        statsMap[m.white].points += 0.5;
+        statsMap[m.black].points += 0.5;
       }
     });
 
-    // Sort players by points descending, then rating descending
-    const sorted = Object.values(pointsMap).sort((a, b) => {
+    // ---- Helper: determine preferred color for a player ----
+    const preferredColor = (player) => {
+      const w = player.colorsPlayed.filter(c => c === 'w').length;
+      const b = player.colorsPlayed.filter(c => c === 'b').length;
+      // If last two colors are the same, must switch
+      const last2 = player.colorsPlayed.slice(-2);
+      if (last2.length === 2 && last2[0] === last2[1]) {
+        return last2[0] === 'w' ? 'b' : 'w'; // Must switch
+      }
+      if (w > b) return 'b';
+      if (b > w) return 'w';
+      // Equal: prefer alternating from last color
+      const lastColor = player.colorsPlayed[player.colorsPlayed.length - 1];
+      return lastColor === 'w' ? 'b' : 'w';
+    };
+
+    // ---- Helper: check if two players can be paired ----
+    const canPair = (p1, p2) => {
+      if (p1.name === p2.name) return false;
+      if (p1.opponents.includes(p2.name)) return false; // Rematch not allowed
+      return true;
+    };
+
+    // ---- Sort players by points desc, then rating desc ----
+    let available = Object.values(statsMap).sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
       return b.rating - a.rating;
     });
 
-    // Generate Swiss pairings (1 vs 2, 3 vs 4, etc.)
+    // ---- FIDE BYE Rule: give BYE to lowest-ranked eligible player if odd count ----
     const newMatches = [];
-    for (let i = 0; i < sorted.length; i += 2) {
-      if (i + 1 < sorted.length) {
-        newMatches.push({
-          round: nextRound,
-          white: sorted[i].name,
-          black: sorted[i + 1].name,
-          result: "Pending"
-        });
+    let byePlayer = null;
+
+    if (available.length % 2 !== 0) {
+      // Find the lowest-ranked player who has NOT yet received a BYE
+      for (let i = available.length - 1; i >= 0; i--) {
+        if (!available[i].byeReceived) {
+          byePlayer = available[i];
+          available.splice(i, 1);
+          break;
+        }
+      }
+      // If all have had a BYE, give to lowest-ranked regardless
+      if (!byePlayer) {
+        byePlayer = available[available.length - 1];
+        available.pop();
       }
     }
 
-    // Save new round matches to database
+    // ---- Dutch System-inspired pairing: pair within score groups ----
+    // Group players by points
+    const groups = {};
+    available.forEach(p => {
+      const key = p.points;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(p);
+    });
+
+    const scoreGroupsSorted = Object.keys(groups).map(Number).sort((a, b) => b - a);
+    
+    const paired = new Set();
+    const unpaired = [];
+
+    for (const score of scoreGroupsSorted) {
+      const group = groups[score];
+      const toProcess = [...unpaired, ...group];
+      unpaired.length = 0;
+
+      // Try to pair within group (floaters from higher group pair with top of this group)
+      for (let i = 0; i < toProcess.length; i++) {
+        if (paired.has(toProcess[i].name)) continue;
+        let partnered = false;
+        for (let j = i + 1; j < toProcess.length; j++) {
+          if (paired.has(toProcess[j].name)) continue;
+          if (canPair(toProcess[i], toProcess[j])) {
+            // Determine colors
+            const p1Pref = preferredColor(toProcess[i]);
+            const p2Pref = preferredColor(toProcess[j]);
+            
+            let white, black;
+            if (p1Pref === 'w' && p2Pref !== 'w') {
+              white = toProcess[i].name; black = toProcess[j].name;
+            } else if (p2Pref === 'w' && p1Pref !== 'w') {
+              white = toProcess[j].name; black = toProcess[i].name;
+            } else if (p1Pref === 'w') {
+              // Both want white — higher rated gets white if first round, otherwise try to equalize
+              white = toProcess[i].rating >= toProcess[j].rating ? toProcess[i].name : toProcess[j].name;
+              black = white === toProcess[i].name ? toProcess[j].name : toProcess[i].name;
+            } else {
+              white = toProcess[j].name; black = toProcess[i].name;
+            }
+
+            newMatches.push({ round: nextRound, white, black, result: "Pending" });
+            paired.add(toProcess[i].name);
+            paired.add(toProcess[j].name);
+            partnered = true;
+            break;
+          }
+        }
+        if (!partnered) {
+          // Float down to next score group
+          unpaired.push(toProcess[i]);
+        }
+      }
+    }
+
+    // Handle any remaining unpaired players (last resort: ignore rematch restriction)
+    const remainingPlayers = unpaired.filter(p => !paired.has(p.name));
+    for (let i = 0; i + 1 < remainingPlayers.length; i += 2) {
+      const p1 = remainingPlayers[i];
+      const p2 = remainingPlayers[i + 1];
+      const p1Pref = preferredColor(p1);
+      let white = p1Pref === 'w' ? p1.name : p2.name;
+      let black = white === p1.name ? p2.name : p1.name;
+      newMatches.push({ round: nextRound, white, black, result: "Pending" });
+    }
+
+    // ---- Add BYE match (BYE player gets 1 point automatically) ----
+    if (byePlayer) {
+      newMatches.push({
+        round: nextRound,
+        white: byePlayer.name,
+        black: "BYE",
+        result: "1-0" // FIDE: BYE counts as a full-point win
+      });
+    }
+
     tournament.matches.push(...newMatches);
     await tournament.save();
 
-    res.json({ message: `Round ${nextRound} Swiss pairings generated successfully!`, data: tournament });
+    const byeMsg = byePlayer ? ` Player "${byePlayer.name}" receives a BYE (+1 pt).` : '';
+    res.json({ message: `Round ${nextRound} FIDE Swiss pairings generated successfully!${byeMsg}`, data: tournament });
   } catch (error) {
     res.status(500).json({ error: 'Server error generating Swiss pairings', details: error.message });
   }

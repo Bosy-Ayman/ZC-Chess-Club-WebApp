@@ -235,7 +235,7 @@ export default function TournamentDetails() {
     }
   };
 
-  // Calculate Swiss Standings from live database matches
+  // Calculate Swiss Standings from live database matches (FIDE rules)
   const calculateSwissStandings = (players = [], matches = []) => {
     const statsMap = {};
     players.forEach((p) => {
@@ -247,6 +247,7 @@ export default function TournamentDetails() {
         wins: 0,
         draws: 0,
         losses: 0,
+        byes: 0,
         points: 0
       };
     });
@@ -254,8 +255,18 @@ export default function TournamentDetails() {
     matches.forEach((m) => {
       const white = m.white;
       const black = m.black;
-      if (!statsMap[white]) statsMap[white] = { name: white, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, points: 0 };
-      if (!statsMap[black]) statsMap[black] = { name: black, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, points: 0 };
+      const isWhiteBye = black === "BYE";
+
+      if (!statsMap[white]) statsMap[white] = { name: white, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, byes: 0, points: 0 };
+
+      if (isWhiteBye) {
+        // BYE: full point, doesn't count as a played game in W-D-L
+        statsMap[white].byes += 1;
+        statsMap[white].points += 1;
+        return;
+      }
+
+      if (!statsMap[black]) statsMap[black] = { name: black, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, byes: 0, points: 0 };
 
       statsMap[white].played += 1;
       statsMap[black].played += 1;
@@ -430,6 +441,7 @@ export default function TournamentDetails() {
                           <th>Points</th>
                           <th>Record (W-D-L)</th>
                           <th>Played</th>
+                          <th>Byes</th>
                           <th>Rating</th>
                           <th>Major</th>
                           {isStaff && <th>Actions</th>}
@@ -445,6 +457,7 @@ export default function TournamentDetails() {
                             <td style={{ color: "#f3c144", fontWeight: "800", fontSize: "1.05rem" }}>{p.points} pts</td>
                             <td style={{ color: "#bab19c" }}>{p.wins}W - {p.draws}D - {p.losses}L</td>
                              <td>{p.played}</td>
+                             <td>{p.byes > 0 ? <span style={{ color: "#f3c144", fontWeight: "bold" }}>{p.byes} BYE</span> : "—"}</td>
                              <td>{p.rating}</td>
                              <td>{p.major}</td>
                              {isStaff && (
@@ -514,44 +527,42 @@ export default function TournamentDetails() {
                                 <th>Black Player</th>
                               </tr>
                             </thead>
-                            <tbody>
-                              {matchesByRound[rNum].map((m, idx) => (
-                                <tr key={m._id || idx}>
-                                  <td style={{ color: "#888" }}>Board {idx + 1}</td>
-                                  <td style={{ fontWeight: m.result === "1-0" || m.result === "1 - 0" ? "bold" : "normal", color: m.result === "1-0" || m.result === "1 - 0" ? "#f3c144" : "#fff" }}>
-                                    {m.white} {m.result === "1-0" || m.result === "1 - 0" ? "✓" : ""}
-                                  </td>
-                                  <td>
-                                    {isStaff && m._id ? (
-                                      <select
-                                        value={m.result}
-                                        onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
-                                        style={{
-                                          background: "#15120c",
-                                          color: "#f3c144",
-                                          border: "1px solid #f3c144",
-                                          padding: "4px 10px",
-                                          borderRadius: "6px",
-                                          fontWeight: "800",
-                                          fontSize: "0.88rem",
-                                          cursor: "pointer"
-                                        }}
-                                      >
-                                        <option value="1-0">1 - 0 (White Wins)</option>
-                                        <option value="0-1">0 - 1 (Black Wins)</option>
-                                        <option value="1/2-1/2">½ - ½ (Draw)</option>
-                                        <option value="Pending">Pending</option>
-                                      </select>
-                                    ) : (
-                                      <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
-                                    )}
-                                  </td>
-                                  <td style={{ fontWeight: m.result === "0-1" || m.result === "0 - 1" ? "bold" : "normal", color: m.result === "0-1" || m.result === "0 - 1" ? "#f3c144" : "#fff" }}>
-                                    {m.black} {m.result === "0-1" || m.result === "0 - 1" ? "✓" : ""}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
+                             <tbody>
+                               {matchesByRound[rNum].map((m, idx) => {
+                                 const isByeRow = m.black === "BYE";
+                                 return (
+                                   <tr key={m._id || idx} style={{ background: isByeRow ? "rgba(243,193,68,0.05)" : "transparent", opacity: isByeRow ? 0.8 : 1 }}>
+                                     <td style={{ color: "#888" }}>Board {idx + 1}</td>
+                                     <td style={{ fontWeight: (m.result === "1-0" || m.result === "1 - 0") ? "bold" : "normal", color: (m.result === "1-0" || m.result === "1 - 0") ? "#f3c144" : "#fff" }}>
+                                       {m.white} {!isByeRow && (m.result === "1-0" || m.result === "1 - 0") ? "✓" : ""}
+                                     </td>
+                                     <td>
+                                       {isByeRow ? (
+                                         <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.9rem", background: "rgba(243,193,68,0.12)", padding: "2px 8px", borderRadius: "4px" }}>
+                                           BYE (+1 pt)
+                                         </span>
+                                       ) : isStaff && m._id ? (
+                                         <select
+                                           value={m.result}
+                                           onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
+                                           style={{ background: "#15120c", color: "#f3c144", border: "1px solid #f3c144", padding: "4px 10px", borderRadius: "6px", fontWeight: "800", fontSize: "0.88rem", cursor: "pointer" }}
+                                         >
+                                           <option value="1-0">1 - 0 (White Wins)</option>
+                                           <option value="0-1">0 - 1 (Black Wins)</option>
+                                           <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                           <option value="Pending">Pending</option>
+                                         </select>
+                                       ) : (
+                                         <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
+                                       )}
+                                     </td>
+                                     <td style={{ fontWeight: (m.result === "0-1" || m.result === "0 - 1") ? "bold" : "normal", color: (m.result === "0-1" || m.result === "0 - 1") ? "#f3c144" : isByeRow ? "#888" : "#fff" }}>
+                                       {isByeRow ? <em>— BYE —</em> : `${m.black} ${(m.result === "0-1" || m.result === "0 - 1") ? "✓" : ""}`}
+                                     </td>
+                                   </tr>
+                                 );
+                               })}
+                             </tbody>
                           </table>
                         </div>
                       </div>
