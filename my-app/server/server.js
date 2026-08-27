@@ -826,6 +826,51 @@ app.post('/api/tournaments/:id/generate-knockout-round', async (req, res) => {
   }
 });
 
+// DELETE: rollback the last generated round of matches (Swiss or Knockout)
+app.delete('/api/tournaments/:id/rounds/last', async (req, res) => {
+  try {
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+
+    const matches = tournament.matches || [];
+    if (matches.length === 0) {
+      return res.status(400).json({ error: "No rounds to rollback." });
+    }
+
+    // Find highest round number
+    const maxRound = matches.reduce((max, m) => Math.max(max, m.round || 1), 0);
+
+    // Remove all matches belonging to the highest round
+    tournament.matches = matches.filter(m => m.round !== maxRound);
+    await tournament.save();
+
+    res.json({ message: `Successfully rolled back Round ${maxRound}!`, data: tournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error rolling back round', details: error.message });
+  }
+});
+
+// DELETE: remove a player from the tournament
+app.delete('/api/tournaments/:id/players/:playerName', async (req, res) => {
+  try {
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+
+    const playerIndex = tournament.playersList.findIndex(p => p.name === req.params.playerName);
+    if (playerIndex === -1) {
+      return res.status(404).json({ error: "Player not found in tournament list" });
+    }
+
+    tournament.playersList.splice(playerIndex, 1);
+    tournament.players = tournament.playersList.length; // Keep count field in sync
+    
+    await tournament.save();
+    res.json({ message: `Successfully removed player ${req.params.playerName}!`, data: tournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error removing player', details: error.message });
+  }
+});
+
 // PUT: update application status and corresponding user role
 app.put('/api/applications/:id/status', async (req, res) => {
   try {

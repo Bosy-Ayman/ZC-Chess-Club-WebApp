@@ -195,6 +195,46 @@ export default function TournamentDetails() {
     }
   };
 
+  const handleRollbackLastRound = async () => {
+    if (!window.confirm("⚠️ Are you sure you want to rollback the last round? This will permanently delete all pairings and scores for the latest round!")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/rounds/last`, {
+        method: "DELETE"
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server."); }
+      if (!res.ok) throw new Error(data.error || "Failed to rollback round");
+      alert(data.message || "Last round rolled back successfully!");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error rolling back round: " + err.message);
+    }
+  };
+
+  const handleRemovePlayer = async (playerName) => {
+    if (!window.confirm(`⚠️ Are you sure you want to remove player "${playerName}" from this tournament? They will be removed from standing lists and will not be paired in future rounds.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/players/${encodeURIComponent(playerName)}`, {
+        method: "DELETE"
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server."); }
+      if (!res.ok) throw new Error(data.error || "Failed to remove player");
+      alert(data.message || "Player removed successfully!");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error removing player: " + err.message);
+    }
+  };
+
   // Calculate Swiss Standings from live database matches
   const calculateSwissStandings = (players = [], matches = []) => {
     const statsMap = {};
@@ -361,6 +401,17 @@ export default function TournamentDetails() {
                         ⚡ Generate Round {nextRoundNum} Pairings
                       </button>
                     )}
+
+                    {/* Rollback Last Round button (only visible if tournament has matches) */}
+                    {tournament.matches && tournament.matches.length > 0 && (
+                      <button 
+                        className="add-btn" 
+                        onClick={handleRollbackLastRound}
+                        style={{ background: "linear-gradient(135deg, #d9534f, #c9302c)", color: "#fff", fontWeight: "800" }}
+                      >
+                        ↩ Rollback Last Round
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -381,6 +432,7 @@ export default function TournamentDetails() {
                           <th>Played</th>
                           <th>Rating</th>
                           <th>Major</th>
+                          {isStaff && <th>Actions</th>}
                         </tr>
                       </thead>
                       <tbody>
@@ -392,10 +444,30 @@ export default function TournamentDetails() {
                             <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
                             <td style={{ color: "#f3c144", fontWeight: "800", fontSize: "1.05rem" }}>{p.points} pts</td>
                             <td style={{ color: "#bab19c" }}>{p.wins}W - {p.draws}D - {p.losses}L</td>
-                            <td>{p.played}</td>
-                            <td>{p.rating}</td>
-                            <td>{p.major}</td>
-                          </tr>
+                             <td>{p.played}</td>
+                             <td>{p.rating}</td>
+                             <td>{p.major}</td>
+                             {isStaff && (
+                               <td>
+                                 <button
+                                   onClick={() => handleRemovePlayer(p.name)}
+                                   style={{
+                                     background: "rgba(217, 83, 79, 0.15)",
+                                     color: "#d9534f",
+                                     border: "1px solid #d9534f",
+                                     padding: "3px 8px",
+                                     borderRadius: "4px",
+                                     fontSize: "0.75rem",
+                                     fontWeight: "bold",
+                                     cursor: "pointer",
+                                     transition: "all 0.2s"
+                                   }}
+                                 >
+                                   Remove
+                                 </button>
+                               </td>
+                             )}
+                           </tr>
                         ))}
                       </tbody>
                     </table>
@@ -530,15 +602,67 @@ export default function TournamentDetails() {
                   </div>
 
                   {viewMode === "bracket" ? (
-                    <ChallongeBracket 
-                      tournamentId={tournamentId}
-                      tournamentType={tournament.type}
-                      matchesData={tournament.matches} 
-                      playersData={tournament.playersList}
-                      tournamentTitle={`${tournament.title} (${tournament.type || "Knockout Bracket"})`} 
-                      isStaff={isStaff}
-                      onUpdateMatch={handleUpdateMatch}
-                    />
+                    <>
+                      <ChallongeBracket 
+                        tournamentId={tournamentId}
+                        tournamentType={tournament.type}
+                        matchesData={tournament.matches} 
+                        playersData={tournament.playersList}
+                        tournamentTitle={`${tournament.title} (${tournament.type || "Knockout Bracket"})`} 
+                        isStaff={isStaff}
+                        onUpdateMatch={handleUpdateMatch}
+                      />
+                      
+                      {!isSwissFormat && (!tournament.matches || tournament.matches.length === 0) && (
+                        <div style={{ marginTop: "40px" }}>
+                          <h2 className="section-title">👥 Registered Participants ({tournament.playersList?.length || 0})</h2>
+                          {(!tournament.playersList || tournament.playersList.length === 0) ? (
+                            <p style={{ color: "#888", fontStyle: "italic" }}>No participants registered yet.</p>
+                          ) : (
+                            <div className="application-table-wrapper">
+                              <table className="application-table">
+                                <thead>
+                                  <tr>
+                                    <th>Name</th>
+                                    <th>Rating</th>
+                                    <th>Major</th>
+                                    {isStaff && <th>Actions</th>}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {tournament.playersList.map((p, idx) => (
+                                    <tr key={idx}>
+                                      <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
+                                      <td>{p.rating}</td>
+                                      <td>{p.major}</td>
+                                      {isStaff && (
+                                        <td>
+                                          <button
+                                            onClick={() => handleRemovePlayer(p.name)}
+                                            style={{
+                                              background: "rgba(217, 83, 79, 0.15)",
+                                              color: "#d9534f",
+                                              border: "1px solid #d9534f",
+                                              padding: "3px 8px",
+                                              borderRadius: "4px",
+                                              fontSize: "0.75rem",
+                                              fontWeight: "bold",
+                                              cursor: "pointer"
+                                            }}
+                                          >
+                                            Remove
+                                          </button>
+                                        </td>
+                                      )}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
                   ) : (!tournament.matches || tournament.matches.length === 0) ? (
                     <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
                   ) : (
