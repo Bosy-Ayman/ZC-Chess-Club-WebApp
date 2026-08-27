@@ -22,6 +22,7 @@ import ApplicationTable from './pages/ApplicationsTable';
 import Admin from './pages/Admin';
 import History from './pages/History';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 // API Base URL - works for both local and production
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -45,6 +46,7 @@ function App() {
         <Route path="/archive" element={<Archive />} />
         <Route path="/history" element={<History />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
         
         {/* Application Forms */}
         <Route path="/apply/multimedia" element={<MultimediaForm />} />
