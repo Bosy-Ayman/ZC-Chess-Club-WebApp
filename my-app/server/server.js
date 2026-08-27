@@ -72,7 +72,10 @@ const connectDB = async (req, res, next) => {
     if (!MONGO_URI) {
       throw new Error('MONGO_URI is not defined in environment variables');
     }
-    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+    await mongoose.connect(MONGO_URI, { 
+      serverSelectionTimeoutMS: 5000,
+      family: 4 // Force IPv4 resolution to prevent TLS Alert 80 errors on Node 18+ on Vercel
+    });
     console.log('Database reconnected successfully!');
     next();
   } catch (err) {
