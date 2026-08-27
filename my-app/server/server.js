@@ -256,14 +256,24 @@ async function seedDatabase() {
 app.get('/api/db-test', async (req, res) => {
   try {
     const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
-    const currentState = mongoose.connection.readyState;
     
-    // Diagnostic endpoint does not trigger connect itself to avoid connection collisions
+    // Ensure we disconnect first to test fresh connection
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+    
+    const testUri = 'mongodb://poussyayman1_db_user:BzCJwFdQ7TSa2DmR@ac-nzzwvhs-shard-00-00.d7yqddz.mongodb.net:27017,ac-nzzwvhs-shard-00-01.d7yqddz.mongodb.net:27017,ac-nzzwvhs-shard-00-02.d7yqddz.mongodb.net:27017/chess_club?ssl=true&replicaSet=atlas-z4f07t-shard-0&authSource=admin&retryWrites=true&w=majority';
+    
+    console.log('Testing hardcoded non-SRV connection...');
+    await mongoose.connect(testUri, { 
+      serverSelectionTimeoutMS: 5000,
+      family: 4
+    });
     
     res.json({
       status: 'success',
-      connectionState: states[mongoose.connection.readyState],
-      uriMasked: process.env.MONGO_URI ? process.env.MONGO_URI.replace(/:([^@]+)@/, ':****@') : 'undefined'
+      message: 'Successfully connected with hardcoded non-SRV connection string!',
+      connectionState: states[mongoose.connection.readyState]
     });
   } catch (err) {
     res.status(500).json({
