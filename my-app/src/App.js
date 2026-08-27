@@ -21,6 +21,7 @@ import TraineeForm from './pages/TraineeForm';
 import ApplicationTable from './pages/ApplicationsTable';
 import Admin from './pages/Admin';
 import History from './pages/History';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // API Base URL - works for both local and production
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -43,6 +44,7 @@ function App() {
         <Route path="/calendaredit" element={<CalendarEdit />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/history" element={<History />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
         
         {/* Application Forms */}
         <Route path="/apply/multimedia" element={<MultimediaForm />} />
