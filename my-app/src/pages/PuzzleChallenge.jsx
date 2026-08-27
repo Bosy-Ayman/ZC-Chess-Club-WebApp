@@ -140,9 +140,16 @@ export default function PuzzleChallenge() {
 
       if (!move) return false; // illegal move
 
-      const playerLan = move.lan; // e.g. "e2e4", "g1f3"
+      const playerLan = move.lan || (move.from + move.to);
+      const cleanTarget = targetMove.trim().toLowerCase();
+      const cleanSan = move.san.toLowerCase();
+      const cleanSanStripped = cleanSan.replace(/[#+]/g, '');
 
-      if (playerLan === targetMove || move.san === targetMove) {
+      if (
+        playerLan.toLowerCase() === cleanTarget ||
+        cleanSan === cleanTarget ||
+        cleanSanStripped === cleanTarget
+      ) {
         // ✅ Correct move — update board state immutably
         setChessGame(newChess);
         setBoardFen(newChess.fen());

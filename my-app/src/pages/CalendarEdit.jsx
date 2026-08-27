@@ -86,7 +86,8 @@ export default function CalendarEdit() {
     ? events.filter((e) => e.date === selectedDate)
     : [];
 
-  const addEvent = async (title, time, description = "", location = "") => {
+  const addEvent = async (title, time, description, location, type = "Swiss") => {
+    if (!selectedDate) return;
     try {
       const res = await fetch(`${API_BASE}/api/tournaments`, {
         method: "POST",
@@ -97,7 +98,7 @@ export default function CalendarEdit() {
           description,
           location,
           startDate: selectedDate,
-          type: "Swiss",
+          type,
           status: "Upcoming"
         })
       });
@@ -217,6 +218,12 @@ export default function CalendarEdit() {
                 <input type="time" id="event-to" />
                 </div>
 
+                <select id="event-type" style={{ marginBottom: "6px", width: "100%", padding: "8px", background: "#1f1d18", border: "1px solid #36332b", color: "#fff", borderRadius: "6px" }}>
+                  <option value="Swiss">Swiss</option>
+                  <option value="Knockout Single Elimination">Knockout Single Elimination</option>
+                  <option value="Knockout Double Elimination">Knockout Double Elimination</option>
+                </select>
+
                 <input id="event-location" placeholder="Location" />
                 <textarea id="event-desc" placeholder="Description" rows={3} />
 
@@ -225,11 +232,12 @@ export default function CalendarEdit() {
                     const title = document.getElementById("event-title").value;
                     const from = document.getElementById("event-from").value;
                     const to = document.getElementById("event-to").value;
+                    const type = document.getElementById("event-type").value;
                     const location = document.getElementById("event-location").value;
                     const desc = document.getElementById("event-desc").value;
 
                     if (title && from && to) {
-                    addEvent(title, `${from} - ${to}`, desc, location);
+                    addEvent(title, `${from} - ${to}`, desc, location, type);
 
                     // Clear inputs after adding
                     document.getElementById("event-title").value = "";

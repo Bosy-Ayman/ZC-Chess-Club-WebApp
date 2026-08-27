@@ -107,8 +107,23 @@ export default function Profile() {
     );
   };
 
-  if (isLoading) return <div className="loading-screen">Loading Profile...</div>;
-  if (error) return <div className="error-screen">{error}</div>;
+  if (isLoading) return (
+    <div className="profile">
+      <div className="page-loading">
+        <div className="loading-spinner lg"></div>
+        <p>Loading your profile…</p>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="profile">
+      <div className="page-error">
+        <div className="error-icon">⚠️</div>
+        <p>{error}</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="profile">
@@ -120,7 +135,7 @@ export default function Profile() {
         {profile && (
           <section className="profile-top-info" style={{ flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
             <div className="profile-user">
-              <div className="profile-user-img" style={{ backgroundImage: `url("/Icons/user.png")` }}></div>
+              <div className="profile-user-img" style={{ backgroundImage: `url("/Icons/user.jpg")` }}></div>
               <div>
                 <p className="user-name">{profile.name}</p>
                 <p className="user-joined">Role: {(profile.role || 'member').toUpperCase()}</p>

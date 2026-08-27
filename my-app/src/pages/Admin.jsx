@@ -528,11 +528,9 @@ export default function AdminDashboard() {
                       value={form.type}
                       onChange={handleInputChange}
                     >
-                      <option value="Knockout">Knockout</option>
                       <option value="Swiss">Swiss</option>
-                      <option value="Rapid">Rapid</option>
-                      <option value="Blitz">Blitz</option>
-                      <option value="Classic">Classic</option>
+                      <option value="Knockout Single Elimination">Knockout Single Elimination</option>
+                      <option value="Knockout Double Elimination">Knockout Double Elimination</option>
                     </select>
                   </div>
 
@@ -680,12 +678,30 @@ export default function AdminDashboard() {
                           <td>{t.time}</td>
                           <td>{t.location}</td>
                           <td>
-                            <button
-                              className="delete-btn"
-                              onClick={() => handleDeleteTournament(t._id)}
-                            >
-                              Delete
-                            </button>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                              <a
+                                href={`/tournamentdetails?id=${t._id}`}
+                                className="action-btn"
+                                style={{
+                                  background: "rgba(243, 193, 68, 0.15)",
+                                  color: "#f3c144",
+                                  padding: "4px 10px",
+                                  borderRadius: "6px",
+                                  textDecoration: "none",
+                                  fontSize: "0.8rem",
+                                  fontWeight: "700",
+                                  border: "1px solid rgba(243, 193, 68, 0.3)"
+                                }}
+                              >
+                                View & Edit Matches ➔
+                              </a>
+                              <button
+                                className="delete-btn"
+                                onClick={() => handleDeleteTournament(t._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

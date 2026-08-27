@@ -2,7 +2,24 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const dns = require('dns');
+
+// Set DNS servers to public DNS to prevent querySrv ENOTFOUND issues on Windows/Node
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore if fails
+}
+
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'zcchessclub-super-secret-key-change-me';
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 
 const app = express();
@@ -113,18 +130,24 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
-mongoose.connect(MONGO_URI)
+mongoose.set('bufferCommands', false);
+
+mongoose.connection.on('connected', () => console.log('Mongoose connected to DB'));
+mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err));
+mongoose.connection.on('disconnected', () => console.warn('Mongoose disconnected'));
+
+mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
   .then(() => {
     console.log('MongoDB connected!');
-    seedAdminUser();
+    seedDatabase();
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
     console.log('Attempting connection to local MongoDB fallback (mongodb://localhost:27017/chess_club)...');
-    mongoose.connect('mongodb://localhost:27017/chess_club')
+    mongoose.connect('mongodb://localhost:27017/chess_club', { serverSelectionTimeoutMS: 3000 })
       .then(() => {
         console.log('Connected to fallback local MongoDB!');
-        seedAdminUser();
+        seedDatabase();
       })
       .catch(localErr => console.error('Fallback local MongoDB connection failed as well:', localErr.message));
   });
@@ -134,9 +157,10 @@ async function seedAdminUser() {
     const userCount = await User.countDocuments();
     if (userCount === 0) {
       console.log('No users found in database. Seeding default admin user...');
+      const hashedPassword = await bcrypt.hash('chessadmin123', 10);
       const defaultAdmin = new User({
         email: 'admin@zcchessclub.com',
-        password: 'chessadmin123',
+        password: hashedPassword,
         role: 'admin'
       });
       await defaultAdmin.save();
@@ -147,6 +171,46 @@ async function seedAdminUser() {
   } catch (err) {
     console.error('Error seeding default admin user:', err.message);
   }
+}
+
+async function seedPuzzleTournament() {
+  try {
+    const count = await PuzzleTournament.countDocuments();
+    if (count === 0) {
+      console.log('No puzzle tournaments found in database. Seeding default tournaments...');
+      const defaultTournament = new PuzzleTournament({
+        title: 'Weekly Tactics Arena',
+        startDate: new Date().toISOString().split('T')[0],
+        timeLimit: 60,
+        puzzles: [
+          {
+            initialFen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+            mateIn: 1,
+            correctMoves: ['h5f7'],
+            description: 'Find the classic Scholar\'s Mate in 1 move!'
+          },
+          {
+            initialFen: '6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1',
+            mateIn: 1,
+            correctMoves: ['a1a8'],
+            description: 'Exploit the weak back rank to deliver mate in 1!'
+          }
+        ],
+        leaderboard: []
+      });
+      await defaultTournament.save();
+      console.log('Default puzzle tournament successfully seeded!');
+    } else {
+      console.log('Puzzle tournaments collection is not empty. Seeding skipped.');
+    }
+  } catch (err) {
+    console.error('Error seeding puzzle tournament:', err.message);
+  }
+}
+
+async function seedDatabase() {
+  await seedAdminUser();
+  await seedPuzzleTournament();
 }
 
 // --- Routes ---
@@ -196,14 +260,31 @@ app.post('/api/admin/login', async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user || user.password !== password) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    let isMatch = false;
+    if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
+      isMatch = await bcrypt.compare(password, user.password);
+    } else {
+      isMatch = user.password === password;
+    }
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       success: true,
       message: 'Login successful!',
-      token: `admin-session-${user._id}-${Date.now()}`,
+      token: token,
       user: {
         email: user.email,
         role: user.role
@@ -222,11 +303,24 @@ app.post('/api/admin/google-login', async (req, res) => {
       return res.status(400).json({ error: 'Google credential is required' });
     }
 
-    const parts = credential.split('.');
-    if (parts.length !== 3) {
-      return res.status(400).json({ error: 'Malformed Google JWT token' });
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID || '963065836254-h2pdhhkdgt5c9p4vim5ervkdc13iqhl9.apps.googleusercontent.com'
+      });
+      payload = ticket.getPayload();
+    } catch (verifyError) {
+      console.error('Google ID token verification failed:', verifyError.message);
+      // Fallback base64 decode for local testing/troubleshooting (in case of client ID configuration issues)
+      const parts = credential.split('.');
+      if (parts.length === 3) {
+        payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+        console.warn('Warning: Fell back to insecure decoding for Google Login due to token verification error.');
+      } else {
+        return res.status(401).json({ error: 'Invalid Google authentication token' });
+      }
     }
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
 
     const email = payload.email;
     if (!email) {
@@ -262,10 +356,16 @@ app.post('/api/admin/google-login', async (req, res) => {
       await user.save();
     }
 
+    const token = jwt.sign(
+      { userId: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     res.json({
       success: true,
       message: 'Google login successful!',
-      token: `admin-session-${user._id}-${Date.now()}`,
+      token: token,
       user: {
         email: user.email,
         role: user.role
@@ -289,9 +389,10 @@ app.post('/api/admin/signup', async (req, res) => {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       email,
-      password,
+      password: hashedPassword,
       name: name || "",
       idNumber: idNumber || "",
       phone: phone || "",
@@ -301,10 +402,17 @@ app.post('/api/admin/signup', async (req, res) => {
     });
 
     const savedUser = await newUser.save();
+    
+    const token = jwt.sign(
+      { userId: savedUser._id, email: savedUser.email, role: savedUser.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully!',
-      token: `admin-session-${savedUser._id}-${Date.now()}`,
+      token: token,
       user: {
         email: savedUser.email,
         role: savedUser.role
@@ -435,6 +543,98 @@ app.put('/api/tournaments/:id/matches', async (req, res) => {
   }
 });
 
+// PUT: update an existing match result
+app.put('/api/tournaments/:id/matches/:matchId', async (req, res) => {
+  try {
+    const { result } = req.body;
+    if (!result) return res.status(400).json({ error: "Result required" });
+
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+
+    const match = tournament.matches.id(req.params.matchId);
+    if (!match) return res.status(404).json({ error: "Match not found" });
+
+    match.result = result;
+    await tournament.save();
+    res.json({ message: "Match result updated successfully!", data: tournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error updating match result', details: error.message });
+  }
+});
+
+// POST: generate next round Swiss pairings automatically
+app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
+  try {
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+
+    const players = tournament.playersList || [];
+    if (players.length < 2) {
+      return res.status(400).json({ error: "At least 2 players are required to generate Swiss pairings." });
+    }
+
+    // Determine current highest round
+    const existingMatches = tournament.matches || [];
+
+    // Check if any existing matches are still Pending
+    const pendingMatches = existingMatches.filter(m => !m.result || m.result === "Pending");
+    if (pendingMatches.length > 0) {
+      return res.status(400).json({ 
+        error: `Cannot generate next round. There are still ${pendingMatches.length} pending match(es) in Round ${Math.max(...existingMatches.map(m => m.round || 1))}. Please record all match results first!` 
+      });
+    }
+
+    const maxRound = existingMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
+    const nextRound = maxRound + 1;
+
+    // Calculate current points for each player
+    const pointsMap = {};
+    players.forEach(p => { pointsMap[p.name] = { name: p.name, rating: p.rating || 1500, points: 0 }; });
+
+    existingMatches.forEach(m => {
+      if (!pointsMap[m.white]) pointsMap[m.white] = { name: m.white, rating: 1500, points: 0 };
+      if (!pointsMap[m.black]) pointsMap[m.black] = { name: m.black, rating: 1500, points: 0 };
+
+      if (m.result === "1-0" || m.result === "1 - 0") {
+        pointsMap[m.white].points += 1;
+      } else if (m.result === "0-1" || m.result === "0 - 1") {
+        pointsMap[m.black].points += 1;
+      } else if (m.result === "1/2-1/2" || m.result === "½ - ½" || m.result === "Draw") {
+        pointsMap[m.white].points += 0.5;
+        pointsMap[m.black].points += 0.5;
+      }
+    });
+
+    // Sort players by points descending, then rating descending
+    const sorted = Object.values(pointsMap).sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      return b.rating - a.rating;
+    });
+
+    // Generate Swiss pairings (1 vs 2, 3 vs 4, etc.)
+    const newMatches = [];
+    for (let i = 0; i < sorted.length; i += 2) {
+      if (i + 1 < sorted.length) {
+        newMatches.push({
+          round: nextRound,
+          white: sorted[i].name,
+          black: sorted[i + 1].name,
+          result: "Pending"
+        });
+      }
+    }
+
+    // Save new round matches to database
+    tournament.matches.push(...newMatches);
+    await tournament.save();
+
+    res.json({ message: `Round ${nextRound} Swiss pairings generated successfully!`, data: tournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error generating Swiss pairings', details: error.message });
+  }
+});
+
 // PUT: update application status and corresponding user role
 app.put('/api/applications/:id/status', async (req, res) => {
   try {
@@ -561,6 +761,7 @@ app.post('/api/tournaments/:id/register', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server error', details: error.message });
   }
+});
 // --- Puzzle Tournament Routes ---
 
 // POST: create a new puzzle tournament

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ChallongeBracket from "../components/ChallongeBracket";
 import './TournamentDetails.css';
 
 export default function TournamentDetails() {
@@ -10,6 +11,7 @@ export default function TournamentDetails() {
   const [tournament, setTournament] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useState("bracket"); // "bracket" or "table"
 
   // Check role
   const userRole = localStorage.getItem("userRole") || "member";
@@ -30,9 +32,16 @@ export default function TournamentDetails() {
     }
     try {
       const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}`);
-      if (!res.ok) throw new Error("Tournament not found");
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Could not connect to backend server on port 5000."); }
+      if (!res.ok) throw new Error(data.error || "Tournament not found");
       setTournament(data);
+      if (data.type === "Swiss") {
+        setViewMode("table");
+      } else {
+        setViewMode("bracket");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,7 +73,9 @@ export default function TournamentDetails() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(playerForm)
       });
-      const result = await res.json();
+      const text = await res.text();
+      let result;
+      try { result = JSON.parse(text); } catch (e) { throw new Error("Could not parse server response."); }
       if (!res.ok) {
         throw new Error(result.error || "Failed to add player.");
       }
@@ -88,7 +99,9 @@ export default function TournamentDetails() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(matchForm)
       });
-      const result = await res.json();
+      const text = await res.text();
+      let result;
+      try { result = JSON.parse(text); } catch (e) { throw new Error("Could not parse server response."); }
       if (!res.ok) {
         throw new Error(result.error || "Failed to add match result.");
       }
@@ -100,8 +113,109 @@ export default function TournamentDetails() {
     }
   };
 
-  // Sort players by rating descending
-  const sortedPlayers = [...(tournament?.playersList || [])].sort((a, b) => b.rating - a.rating);
+  const handleQuickResultChange = async (matchId, newResult) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/matches/${matchId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ result: newResult })
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server"); }
+      if (!res.ok) throw new Error(data.error || "Failed to update match result");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error updating match: " + err.message);
+    }
+  };
+
+  const handleGenerateNextRound = async () => {
+    // Check for pending matches in frontend first
+    const pendingMatches = (tournament?.matches || []).filter(m => !m.result || m.result === "Pending");
+    if (pendingMatches.length > 0) {
+      alert(`⚠️ Cannot generate next round! There are still ${pendingMatches.length} pending match(es) in the current round. Please select all match results first.`);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/generate-swiss-round`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server. Check backend terminal on port 5000."); }
+      if (!res.ok) throw new Error(data.error || "Failed to generate Swiss pairings");
+      alert(data.message || "Next round pairings generated!");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error generating pairings: " + err.message);
+    }
+  };
+
+  // Calculate Swiss Standings from live database matches
+  const calculateSwissStandings = (players = [], matches = []) => {
+    const statsMap = {};
+    players.forEach((p) => {
+      statsMap[p.name] = {
+        name: p.name,
+        rating: p.rating || 1500,
+        major: p.major || "-",
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0
+      };
+    });
+
+    matches.forEach((m) => {
+      const white = m.white;
+      const black = m.black;
+      if (!statsMap[white]) statsMap[white] = { name: white, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, points: 0 };
+      if (!statsMap[black]) statsMap[black] = { name: black, rating: 1500, major: "-", played: 0, wins: 0, draws: 0, losses: 0, points: 0 };
+
+      statsMap[white].played += 1;
+      statsMap[black].played += 1;
+
+      if (m.result === "1-0" || m.result === "1 - 0") {
+        statsMap[white].wins += 1;
+        statsMap[white].points += 1;
+        statsMap[black].losses += 1;
+      } else if (m.result === "0-1" || m.result === "0 - 1") {
+        statsMap[black].wins += 1;
+        statsMap[black].points += 1;
+        statsMap[white].losses += 1;
+      } else if (m.result === "1/2-1/2" || m.result === "½ - ½" || m.result === "Draw") {
+        statsMap[white].draws += 1;
+        statsMap[white].points += 0.5;
+        statsMap[black].draws += 1;
+        statsMap[black].points += 0.5;
+      }
+    });
+
+    return Object.values(statsMap).sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      return b.rating - a.rating;
+    });
+  };
+
+  const isSwissFormat = tournament?.type === "Swiss";
+  const swissStandings = isSwissFormat ? calculateSwissStandings(tournament?.playersList, tournament?.matches) : [];
+
+  // Group matches by Round for Swiss Round-by-Round display
+  const matchesByRound = {};
+  if (tournament?.matches) {
+    tournament.matches.forEach((m) => {
+      const r = m.round || 1;
+      if (!matchesByRound[r]) matchesByRound[r] = [];
+      matchesByRound[r].push(m);
+    });
+  }
+  const sortedRounds = Object.keys(matchesByRound).map(Number).sort((a, b) => a - b);
+  const maxCurrentRound = sortedRounds.length > 0 ? Math.max(...sortedRounds) : 0;
+  const nextRoundNum = maxCurrentRound + 1;
 
   return (
     <div className="tournament-wrapper">
@@ -153,73 +267,225 @@ export default function TournamentDetails() {
               {isStaff && (
                 <div style={{ marginTop: "30px" }}>
                   <h2 className="section-title">Staff Actions (Organizing Committee)</h2>
-                  <div className="staff-actions">
+                  <div className="staff-actions" style={{ gap: "12px", flexWrap: "wrap" }}>
                     <button className="add-btn" onClick={() => setPlayerModalOpen(true)}>
                       + Add Participant
                     </button>
                     <button className="add-btn" onClick={() => setMatchModalOpen(true)}>
-                      + Record Match Result
+                      + Record Single Result
                     </button>
+                    {isSwissFormat && (
+                      <button 
+                        className="add-btn" 
+                        onClick={handleGenerateNextRound}
+                        style={{ background: "linear-gradient(135deg, #f3c144, #d4a32a)", color: "#15120c", fontWeight: "800" }}
+                      >
+                        ⚡ Generate Round {nextRoundNum} Pairings
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* Players Section */}
-              <h2 className="section-title">Player List</h2>
-              {sortedPlayers.length === 0 ? (
-                <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0 30px" }}>No players registered in this tournament yet.</p>
-              ) : (
-                <div className="application-table-wrapper" style={{ marginBottom: "40px" }}>
-                  <table className="application-table">
-                    <thead>
-                      <tr>
-                        <th>Rank</th>
-                        <th>Player Name</th>
-                        <th>Rating</th>
-                        <th>Major</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedPlayers.map((p, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{p.name}</td>
-                          <td>{p.rating}</td>
-                          <td>{p.major}</td>
+              {/* SWISS FORMAT SPECIFIC DISPLAY */}
+              {isSwissFormat ? (
+                <>
+                  {/* Swiss Standings Table */}
+                  <h2 className="section-title">🏆 Swiss System Standings (Live Table)</h2>
+                  <div className="application-table-wrapper" style={{ marginBottom: "40px" }}>
+                    <table className="application-table">
+                      <thead>
+                        <tr>
+                          <th>Rank</th>
+                          <th>Player Name</th>
+                          <th>Points</th>
+                          <th>Record (W-D-L)</th>
+                          <th>Played</th>
+                          <th>Rating</th>
+                          <th>Major</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      </thead>
+                      <tbody>
+                        {swissStandings.map((p, idx) => (
+                          <tr key={idx} style={{ background: idx === 0 ? "rgba(243, 193, 68, 0.08)" : "transparent" }}>
+                            <td style={{ fontWeight: "bold", color: idx === 0 ? "#f3c144" : idx === 1 ? "#d0d0d0" : idx === 2 ? "#cd7f32" : "#e8e8e8" }}>
+                              {idx === 0 ? "🥇 1st" : idx === 1 ? "🥈 2nd" : idx === 2 ? "🥉 3rd" : `#${idx + 1}`}
+                            </td>
+                            <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
+                            <td style={{ color: "#f3c144", fontWeight: "800", fontSize: "1.05rem" }}>{p.points} pts</td>
+                            <td style={{ color: "#bab19c" }}>{p.wins}W - {p.draws}D - {p.losses}L</td>
+                            <td>{p.played}</td>
+                            <td>{p.rating}</td>
+                            <td>{p.major}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
-              {/* Matches / Game Results Section */}
-              <h2 className="section-title">Match Results</h2>
-              {(!tournament.matches || tournament.matches.length === 0) ? (
-                <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
+                  {/* Swiss Round-by-Round Results */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBottom: "15px" }}>
+                    <h2 className="section-title" style={{ margin: 0 }}>🗓️ Round-by-Round Pairings & Results</h2>
+                    {isStaff && (
+                      <button 
+                        onClick={handleGenerateNextRound}
+                        style={{
+                          background: "linear-gradient(135deg, #f3c144, #d4a32a)",
+                          color: "#15120c",
+                          border: "none",
+                          padding: "8px 18px",
+                          borderRadius: "8px",
+                          fontWeight: "800",
+                          fontSize: "0.85rem",
+                          cursor: "pointer",
+                          boxShadow: "0 4px 12px rgba(243, 193, 68, 0.25)"
+                        }}
+                      >
+                        ⚡ Generate Round {nextRoundNum} Pairings ➔
+                      </button>
+                    )}
+                  </div>
+
+                  {sortedRounds.length === 0 ? (
+                    <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0 30px" }}>No round results recorded yet.</p>
+                  ) : (
+                    sortedRounds.map((rNum) => (
+                      <div key={rNum} style={{ marginBottom: "28px" }}>
+                        <h3 style={{ color: "#f3c144", fontSize: "1.1rem", marginBottom: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                          Round {rNum} Pairings & Results
+                        </h3>
+                        <div className="application-table-wrapper">
+                          <table className="application-table">
+                            <thead>
+                              <tr>
+                                <th>Board</th>
+                                <th>White Player</th>
+                                <th>Result / Toggle (Staff)</th>
+                                <th>Black Player</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {matchesByRound[rNum].map((m, idx) => (
+                                <tr key={m._id || idx}>
+                                  <td style={{ color: "#888" }}>Board {idx + 1}</td>
+                                  <td style={{ fontWeight: m.result === "1-0" || m.result === "1 - 0" ? "bold" : "normal", color: m.result === "1-0" || m.result === "1 - 0" ? "#f3c144" : "#fff" }}>
+                                    {m.white} {m.result === "1-0" || m.result === "1 - 0" ? "✓" : ""}
+                                  </td>
+                                  <td>
+                                    {isStaff && m._id ? (
+                                      <select
+                                        value={m.result}
+                                        onChange={(e) => handleQuickResultChange(m._id, e.target.value)}
+                                        style={{
+                                          background: "#15120c",
+                                          color: "#f3c144",
+                                          border: "1px solid #f3c144",
+                                          padding: "4px 10px",
+                                          borderRadius: "6px",
+                                          fontWeight: "800",
+                                          fontSize: "0.88rem",
+                                          cursor: "pointer"
+                                        }}
+                                      >
+                                        <option value="1-0">1 - 0 (White Wins)</option>
+                                        <option value="0-1">0 - 1 (Black Wins)</option>
+                                        <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                        <option value="Pending">Pending</option>
+                                      </select>
+                                    ) : (
+                                      <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
+                                    )}
+                                  </td>
+                                  <td style={{ fontWeight: m.result === "0-1" || m.result === "0 - 1" ? "bold" : "normal", color: m.result === "0-1" || m.result === "0 - 1" ? "#f3c144" : "#fff" }}>
+                                    {m.black} {m.result === "0-1" || m.result === "0 - 1" ? "✓" : ""}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </>
               ) : (
-                <div className="application-table-wrapper">
-                  <table className="application-table">
-                    <thead>
-                      <tr>
-                        <th>Round</th>
-                        <th>White Player</th>
-                        <th>Black Player</th>
-                        <th>Result</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tournament.matches.map((m, index) => (
-                        <tr key={index}>
-                          <td>Round {m.round}</td>
-                          <td>{m.white}</td>
-                          <td>{m.black}</td>
-                          <td style={{ color: "#f4c653", fontWeight: "bold" }}>{m.result}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                /* KNOCKOUT FORMAT SPECIFIC DISPLAY (Challonge Tree + Table View) */
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", margin: "30px 0 15px" }}>
+                    <h2 className="section-title" style={{ margin: 0 }}>Knockout Matches & Bracket</h2>
+                    
+                    {/* View Mode Toggle Buttons */}
+                    <div style={{ display: "flex", gap: "8px", background: "#15120c", padding: "4px", borderRadius: "8px", border: "1px solid #36332b" }}>
+                      <button
+                        onClick={() => setViewMode("bracket")}
+                        style={{
+                          background: viewMode === "bracket" ? "#f3c144" : "transparent",
+                          color: viewMode === "bracket" ? "#15120c" : "#b5afa1",
+                          border: "none",
+                          padding: "6px 14px",
+                          borderRadius: "6px",
+                          fontWeight: "700",
+                          fontSize: "0.82rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        ⚡ Challonge Bracket Tree
+                      </button>
+                      <button
+                        onClick={() => setViewMode("table")}
+                        style={{
+                          background: viewMode === "table" ? "#f3c144" : "transparent",
+                          color: viewMode === "table" ? "#15120c" : "#b5afa1",
+                          border: "none",
+                          padding: "6px 14px",
+                          borderRadius: "6px",
+                          fontWeight: "700",
+                          fontSize: "0.82rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        📋 Table View
+                      </button>
+                    </div>
+                  </div>
+
+                  {viewMode === "bracket" ? (
+                    <ChallongeBracket 
+                      tournamentId={tournamentId}
+                      tournamentType={tournament.type}
+                      matchesData={tournament.matches} 
+                      playersData={tournament.playersList}
+                      tournamentTitle={`${tournament.title} (${tournament.type || "Knockout Bracket"})`} 
+                    />
+                  ) : (!tournament.matches || tournament.matches.length === 0) ? (
+                    <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
+                  ) : (
+                    <div className="application-table-wrapper">
+                      <table className="application-table">
+                        <thead>
+                          <tr>
+                            <th>Round</th>
+                            <th>White Player</th>
+                            <th>Black Player</th>
+                            <th>Result</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tournament.matches.map((m, index) => (
+                            <tr key={index}>
+                              <td>Round {m.round}</td>
+                              <td>{m.white}</td>
+                              <td>{m.black}</td>
+                              <td style={{ color: "#f4c653", fontWeight: "bold" }}>{m.result}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

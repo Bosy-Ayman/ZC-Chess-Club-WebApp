@@ -1,0 +1,488 @@
+/* ══════════════════════════════════════
+   CHALLONGE INTERACTIVE BRACKET STYLING
+══════════════════════════════════════ */
+.challonge-wrapper {
+  background: #181611;
+  border: 1px solid #36332b;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 30px 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  color: #e8e8e8;
+  font-family: Montserrat, Inter, sans-serif;
+  overflow: hidden;
+}
+
+/* Bracket Header & Navigation */
+.challonge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid #36332b;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+
+.challonge-live-badge {
+  display: inline-block;
+  background: rgba(243, 193, 68, 0.12);
+  color: #f3c144;
+  border: 1px solid rgba(243, 193, 68, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.challonge-tournament-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.challonge-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Bracket Upper / Lower Tab Group */
+.bracket-tab-group {
+  display: flex;
+  background: #12100c;
+  border: 1px solid #36332b;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.bracket-tab-btn {
+  background: transparent;
+  color: #b5afa1;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.bracket-tab-btn:hover {
+  color: #fff;
+}
+
+.bracket-tab-btn.active {
+  background: linear-gradient(135deg, #f3c144, #d4a32a);
+  color: #15120c;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(243, 193, 68, 0.25);
+}
+
+/* Zoom Controls */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #12100c;
+  border: 1px solid #36332b;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.zoom-btn {
+  background: #1f1d18;
+  color: #f3c144;
+  border: 1px solid #36332b;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-btn:hover {
+  background: #f3c144;
+  color: #15120c;
+}
+
+.zoom-btn.reset {
+  width: auto;
+  padding: 0 10px;
+  font-size: 0.75rem;
+}
+
+.zoom-percentage {
+  font-size: 0.8rem;
+  color: #b5afa1;
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Bracket Tree Canvas Area */
+.bracket-canvas-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 20px 10px 40px;
+  min-height: 480px;
+}
+
+.bracket-tree-canvas {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Round Columns */
+.bracket-round-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  flex-shrink: 0;
+}
+
+.round-header-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1f1d18;
+  border: 1px solid #36332b;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.round-header-box.gold {
+  border-color: #f3c144;
+  background: rgba(243, 193, 68, 0.1);
+}
+
+.round-number-tag {
+  background: #f3c144;
+  color: #15120c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.round-number-tag.gold {
+  background: transparent;
+  font-size: 1rem;
+}
+
+.round-name-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.round-name-text.gold {
+  color: #f3c144;
+}
+
+/* Matches List */
+.round-matches-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 36px;
+  height: 100%;
+}
+
+/* Individual Match Card */
+.match-card {
+  background: #1f1d18;
+  border: 1px solid #36332b;
+  border-radius: 10px;
+  padding: 12px 14px;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.clickable-match:hover {
+  transform: translateY(-3px);
+  border-color: #f3c144;
+  box-shadow: 0 6px 24px rgba(243, 193, 68, 0.2);
+}
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.match-code {
+  font-size: 0.72rem;
+  color: #888;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.match-status-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.match-status-badge.completed {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.match-status-badge.live {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+/* Match Player Rows */
+.match-player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.match-player-row.winner {
+  background: rgba(243, 193, 68, 0.12);
+  border-left: 3px solid #f3c144;
+}
+
+.match-player-row.loser {
+  opacity: 0.6;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-seed {
+  color: #f3c144;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.player-name {
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+.player-score {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #f3c144;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.winner-check {
+  color: #2ecc71;
+  font-size: 0.85rem;
+}
+
+.match-vs-divider {
+  height: 1px;
+  background: #36332b;
+  margin: 4px 0;
+}
+
+/* Connector Branch Lines */
+.connector-line-out {
+  position: absolute;
+  right: -25px;
+  top: 50%;
+  width: 25px;
+  height: 2px;
+  background: #f3c144;
+  opacity: 0.5;
+}
+
+/* Champion Box */
+.champion-column {
+  align-self: center;
+}
+
+.champion-display-box {
+  background: linear-gradient(135deg, #282314, #15120c);
+  border: 2px solid #f3c144;
+  border-radius: 14px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(243, 193, 68, 0.25);
+  animation: goldPulse 3s infinite ease-in-out;
+}
+
+.champion-trophy-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.champion-name {
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+.champion-title-tag {
+  display: inline-block;
+  background: #f3c144;
+  color: #15120c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.champion-seed-tag {
+  display: block;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+/* Match Modal Popup */
+.match-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.match-modal-card {
+  background: #1f1d18;
+  border: 1px solid #f3c144;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(243, 193, 68, 0.2);
+}
+
+.match-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #36332b;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.match-modal-header {
+  margin-bottom: 24px;
+}
+
+.match-code-tag {
+  background: rgba(243, 193, 68, 0.15);
+  color: #f3c144;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+
+.match-modal-vs-box {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.modal-player-card {
+  background: #15120c;
+  border: 1px solid #36332b;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.modal-player-card.winner {
+  border-color: #f3c144;
+  background: rgba(243, 193, 68, 0.1);
+}
+
+.modal-seed {
+  font-size: 0.75rem;
+  color: #f3c144;
+  font-weight: 700;
+}
+
+.modal-player-name {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 6px 0 10px;
+}
+
+.modal-score-big {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #f3c144;
+}
+
+.modal-vs-symbol {
+  font-weight: 800;
+  color: #888;
+  font-size: 1rem;
+}
+
+.match-modal-info {
+  border-top: 1px solid #36332b;
+  padding-top: 16px;
+  color: #b5afa1;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(243, 193, 68, 0.25); }
+  50% { box-shadow: 0 15px 45px rgba(243, 193, 68, 0.45); }
+}

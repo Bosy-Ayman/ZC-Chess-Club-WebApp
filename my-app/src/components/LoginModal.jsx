@@ -34,16 +34,29 @@ export default function LoginModal({ onClose }) {
   };
 
   useEffect(() => {
-    // Initialize Google Identity Services if loaded
-    if (window.google && window.google.accounts) {
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleLoginSuccess
-      });
-      window.google.accounts.id.renderButton(
-        document.getElementById("google-modal-signin-btn"),
-        { theme: "filled_blue", size: "large", width: 280, shape: "pill" }
-      );
+    const initializeGoogle = () => {
+      if (window.google && window.google.accounts) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleLoginSuccess
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-modal-signin-btn"),
+          { theme: "filled_blue", size: "large", width: 280, shape: "pill" }
+        );
+      }
+    };
+
+    if (window.google) {
+      initializeGoogle();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) {
+          initializeGoogle();
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

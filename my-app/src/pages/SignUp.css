@@ -11,11 +11,13 @@
   width: 100%;
   max-width: 1200px;
   margin: 40px auto;
-  background-color: #232018;
-  border: 1px solid #393428;
-  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Left Panel: Form */
@@ -25,7 +27,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-right: 1px solid #393428;
+  border-right: 1px solid rgba(57, 52, 40, 0.3);
 }
 
 .signup-card-split {
@@ -34,12 +36,19 @@
   margin: 0 auto;
 }
 
+.signup-card-split.premium-card {
+  padding: 30px;
+  border-radius: 20px;
+  background: rgba(31, 29, 24, 0.4);
+}
+
 .signup-title-split {
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: white;
   margin-bottom: 6px;
-  font-family: Montserrat, Inter, sans-serif;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .signup-subtitle-split {
@@ -72,55 +81,80 @@
 .signup-form-split {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
 
 .signup-form-row {
   display: flex;
-  gap: 15px;
+  gap: 14px;
+}
+
+/* Stack inputs on narrow screens */
+@media (max-width: 560px) {
+  .signup-form-row {
+    flex-direction: column;
+  }
+}
+
+/* Input wrapper with floating label */
+.signup-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.signup-input-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #bab19c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 2px;
 }
 
 .signup-input-split {
-  flex: 1;
-  background-color: #15120c;
-  border: 1px solid #393428;
+  width: 100%;
+  background-color: rgba(21, 18, 12, 0.65);
+  border: 1px solid rgba(57, 52, 40, 0.8);
   color: white;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.95rem;
-  transition: border-color 0.25s ease;
-  min-width: 0; /* Prevents overflow inside flex row */
+  transition: all 0.28s ease;
+  box-sizing: border-box;
 }
 
 .signup-input-split:focus {
   outline: none;
   border-color: #f3c144;
+  background-color: rgba(21, 18, 12, 0.9);
+  box-shadow: 0 0 0 3px rgba(243, 193, 68, 0.15);
+}
+
+.signup-input-split[readonly] {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .signup-button-split {
   width: 100%;
-  background-color: #f3c144;
-  color: #15120c;
-  border: none;
-  padding: 14px;
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.25s ease;
   margin-top: 10px;
 }
 
 .signup-button-split:hover {
-  background-color: #e2b033;
-  transform: translateY(-1px);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 193, 68, 0.45);
 }
 
 .signup-button-split:disabled {
-  background-color: #555;
-  color: #888;
+  background: rgba(57, 52, 40, 0.6);
+  color: #777;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .signup-divider-split {

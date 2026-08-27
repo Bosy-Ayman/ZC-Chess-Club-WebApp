@@ -1,40 +1,29 @@
-:root {
-  --bg-dark: #181611;
-  --bg-light: #181611;
-  --border-color: #362f1d;
-  --text-white: #ffffff;
-  --text-muted: #caba91;
-  --btn-bg: #483e23;
-  --btn-hover: #5c4b27;
-  --table-border: #675832;
-  --table-header-bg: #2a2416;
-  --highlight: #9d8437;
-}
+/* ========================
+   TOURNAMENTS PAGE
+======================== */
 
 /* Layout */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-dark);
+  background: var(--background, #181611);
   font-family: 'Montserrat', 'Inter', sans-serif;
-  color: var(--text-white);
+  color: #fff;
 }
 
 .layout-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--bg-light);
   overflow-x: hidden;
-  min-height: 100vh;
 }
 
 .content-wrapper {
   flex: 1;
   display: flex;
   justify-content: center;
-  padding: 20px 16px;
+  padding: 32px 20px 48px;
 }
 
 .layout-content-container {
@@ -44,13 +33,16 @@
   flex-direction: column;
 }
 
-/* Header Section */
+/* ========================
+   Page Header Section
+======================== */
 .page-header-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid rgba(57, 52, 40, 0.4);
+  margin-bottom: 28px;
 }
 
 @media (min-width: 640px) {
@@ -64,21 +56,211 @@
 .header-text-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .page-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--text-white);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, #f3c144, transparent);
+  border-radius: 2px;
+  margin-top: 6px;
 }
 
 .page-description {
-  font-size: 15px;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: #bab19c;
+  margin: 0;
 }
 
-/* Filter Buttons */
+/* ========================
+   Table Section
+======================== */
+.tournaments-table-section {
+  width: 100%;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(57, 52, 40, 0.5);
+  background: #1a1710;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* ensure horizontal scroll on overflow */
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px; /* prevents columns from collapsing on small screens */
+}
+
+thead {
+  background: #222016;
+  border-bottom: 1px solid rgba(57, 52, 40, 0.6);
+}
+
+th {
+  padding: 14px 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+  color: #bab19c;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #e8e2d6;
+  border-top: 1px solid rgba(57, 52, 40, 0.3);
+  white-space: nowrap;
+}
+
+/* Row hover highlight */
+tbody tr {
+  transition: background-color 0.18s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(243, 193, 68, 0.04);
+}
+
+/* ========================
+   Status Badges
+======================== */
+.status-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: default;
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-button.proceeding {
+  background: rgba(55, 138, 47, 0.15);
+  color: #6de06b;
+  border: 1px solid rgba(55, 138, 47, 0.35);
+}
+
+.status-button.upcoming {
+  background: rgba(32, 92, 147, 0.15);
+  color: #79b8f8;
+  border: 1px solid rgba(32, 92, 147, 0.35);
+}
+
+.status-button.completed {
+  background: rgba(90, 90, 90, 0.15);
+  color: #a0a0a0;
+  border: 1px solid rgba(90, 90, 90, 0.35);
+}
+
+/* Status dot */
+.status-button::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ========================
+   View / Action Button
+======================== */
+.view-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f3c144 0%, #d4a52c 100%);
+  color: #181611;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.2px;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(243, 193, 68, 0.2);
+}
+
+.view-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(243, 193, 68, 0.4);
+  background: linear-gradient(135deg, #ffd05c 0%, #e4b133 100%);
+}
+
+.view-button:active {
+  transform: translateY(0);
+}
+
+/* ========================
+   Empty / Loading States
+======================== */
+.tournaments-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px 20px;
+  color: #bab19c;
+  text-align: center;
+}
+
+.tournaments-empty-state .empty-icon {
+  font-size: 3rem;
+  opacity: 0.6;
+}
+
+.tournaments-empty-state p {
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.tournaments-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 20px;
+  color: #bab19c;
+  font-size: 0.9rem;
+}
+
+/* ========================
+   Filter Buttons (kept for backward compat)
+======================== */
 .filter-buttons-container {
   display: flex;
   flex-wrap: wrap;
@@ -93,93 +275,17 @@
   gap: 6px;
   padding: 8px 18px;
   border-radius: 10px;
-  background: var(--btn-bg);
-  color: var(--text-white);
-  font-size: 15px;
-  font-weight: 500;
-  border: none;
+  background: rgba(57, 52, 40, 0.5);
+  color: #e8e2d6;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 1px solid rgba(57, 52, 40, 0.5);
   cursor: pointer;
-  transition: 0.25s;
+  transition: all 0.22s ease;
 }
 
 .filter-button:hover {
-  background: var(--btn-hover);
+  background: rgba(243, 193, 68, 0.08);
+  border-color: rgba(243, 193, 68, 0.3);
   transform: translateY(-2px);
-}
-
-/* Table Section */
-.table-container {
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid var(--table-border);
-  background: var(--bg-light);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #221d11;
-}
-
-thead {
-  background: var(--table-header-bg);
-}
-
-th,
-td {
-  padding: 14px 16px;
-  font-size: 14px;
-  text-align: left;
-  white-space: nowrap;
-  border-top: 1px solid var(--table-border);
-}
-
-th {
-  color: var(--text-white);
-  font-weight: 600;
-}
-
-td {
-  color: var(--text-white);
-}
-
-.status-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  background: var(--btn-bg);
-  color: var(--text-white);
-}
-
-.status-button.proceeding {
-  background: #378a2f;
-}
-
-.status-button.upcoming {
-  background: #205c93;
-}
-
-.status-button.completed {
-  background: #555555;
-}
-
-
-
-/* View button */
-.view-button {
-  display: inline-block;
-  padding: 8px 14px;
-  background: var(--highlight);
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: 0.25s;
-  font-weight: 600;
-}
-
-.view-button:hover {
-  background: #bda14a;
-  transform: scale(1.05);
 }

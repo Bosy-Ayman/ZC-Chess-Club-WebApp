@@ -7,6 +7,7 @@ export default function About() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
+  // eslint-disable-next-line no-unused-vars
   const teamMembers = [
     {
       name: "Bosy Ayman",
@@ -50,15 +51,13 @@ export default function About() {
       <div className="about-content">
         <div className="about-wrapper">
           <div className="about-header">
-            <div className="about-intro">
-              <p className="title">About Our Chess Club</p>
-              <p className="subtitle">
-                Learn more about our mission, values, and the team behind the Chess Club.
-              </p>
-            </div>
+            <p className="title">About Our Chess Club</p>
+            <p className="subtitle">
+              Learn more about our mission, values, and the team behind the Chess Club.
+            </p>
           </div>
 
-          <section>
+          <div className="about-section-card">
             <h2 className="section-title">Our Mission</h2>
             <p className="section-text">
               Our mission is to promote the game of chess, foster a community of chess enthusiasts,
@@ -66,9 +65,9 @@ export default function About() {
               strive to create a welcoming and inclusive environment where members can learn,
               compete, and connect with fellow chess lovers.
             </p>
-          </section>
+          </div>
 
-          <section>
+          <div className="about-section-card">
             <h2 className="section-title">Our Values</h2>
             <p className="section-text">
               We are committed to excellence, integrity, and sportsmanship. We value continuous
@@ -76,33 +75,16 @@ export default function About() {
               not just a game, but a tool for developing critical thinking, problem-solving skills,
               and strategic planning.
             </p>
-          </section>
+          </div>
 
-          <section>
-            <h2 className="section-title">Meet the Team</h2>
-            <div className="team-grid">
-              {teamMembers.map((member, index) => (
-                <div key={index} className="team-member">
-                  <img
-                    src={member.image || "/Icons/user.png"}
-                    alt={member.name}
-                    className="avatar"
-                  />
-                  <p className="member-name">{member.name}</p>
-                  <p className="member-role">{member.role}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section>
+          <div className="about-section-card">
             <h2 className="section-title">Contact Us</h2>
             <p className="section-text">
               If you have any questions or would like to learn more about our club, please feel
               free to reach out to us at{" "}
               <a href="mailto:zcchessclub@zewailcity.edu.eg">zcchessclub@zewailcity.edu.eg</a>
             </p>
-          </section>
+          </div>
         </div>
       </div>
       <Footer />

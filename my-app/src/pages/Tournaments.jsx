@@ -45,56 +45,54 @@ export default function Tournaments() {
       <div className="layout-container">
         <div className="content-wrapper">
           <div className="layout-content-container">
-            {/* 🧭 Page Header */}
+            {/* Page Header */}
             <div className="page-header-section">
               <div className="header-text-group">
-                <p className="page-title">Upcoming & Ongoing Tournaments</p>
+                <p className="page-title">Tournaments</p>
                 <p className="page-description">
                   Explore and join exciting chess tournaments happening now or soon.
                 </p>
               </div>
             </div>
 
-            {/*  Table Section */}
+            {/* Table Section */}
             <div className="tournaments-table-section">
               <div className="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Tournament Name</th>
-                      <th>Type</th>
-                      <th>Status</th>
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Players</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
+                {isLoading ? (
+                  <div className="tournaments-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Loading tournaments…</p>
+                  </div>
+                ) : tournaments.length === 0 ? (
+                  <div className="tournaments-empty-state">
+                    <div className="empty-icon">♟</div>
+                    <p>No tournaments scheduled yet. Check back soon!</p>
+                  </div>
+                ) : (
+                  <table>
+                    <thead>
                       <tr>
-                        <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#caba91" }}>
-                          Loading tournaments...
-                        </td>
+                        <th>Tournament Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Players</th>
+                        <th>Action</th>
                       </tr>
-                    ) : tournaments.length === 0 ? (
-                      <tr>
-                        <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#caba91" }}>
-                          No tournaments scheduled yet. Check back soon!
-                        </td>
-                      </tr>
-                    ) : (
-                      tournaments.map((t) => (
+                    </thead>
+                    <tbody>
+                      {tournaments.map((t) => (
                         <tr key={t._id}>
                           <td>{t.title}</td>
                           <td>{t.type}</td>
                           <td>
-                            <button className={`status-button ${getStatusClass(t.status)}`}>
-                              <span>{t.status}</span>
-                            </button>
+                            <span className={`status-button ${getStatusClass(t.status)}`}>
+                              {t.status}
+                            </span>
                           </td>
                           <td>{t.startDate}</td>
-                          <td>{t.endDate || "Unknown"}</td>
+                          <td>{t.endDate || "—"}</td>
                           <td>{t.players}</td>
                           <td>
                             {t.detailsUrl ? (
@@ -108,10 +106,10 @@ export default function Tournaments() {
                             )}
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>

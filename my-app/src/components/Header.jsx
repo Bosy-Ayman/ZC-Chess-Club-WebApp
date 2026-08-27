@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import "./Header.css";
 import LoginModal from "./LoginModal";
+
+const NAV_ITEMS = [
+  { to: "/", label: "Home", icon: "♟", end: true },
+  { to: "/tournaments", label: "Tournaments", icon: "🏆" },
+  { to: "/puzzlechallenge", label: "Puzzles", icon: "🧩" },
+  { to: "/history", label: "History", icon: "📜" },
+  { to: "/calendar", label: "Calendar", icon: "📅" },
+  { to: "/about", label: "About", icon: "ℹ️" },
+  { to: "/clubroles", label: "Join Us", icon: "✨" },
+];
 
 const Header = ({ sidebarOpen, toggleSidebar }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -12,6 +22,8 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
   const [userDrawerOpen, setUserDrawerOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
+  const location = useLocation();
+
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -36,14 +48,12 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
     }
   ]);
 
-  // Update on window resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Outside click listener to auto-close notifications dropdown
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (!e.target.closest(".notification-wrapper")) {
@@ -61,11 +71,9 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
     setUserRole(localStorage.getItem("userRole"));
     setUserEmail(localStorage.getItem("adminEmail") || "");
     
-    // Check if ?login=true is in the URL to open the login modal
     const params = new URLSearchParams(window.location.search);
     if (params.get("login") === "true") {
       setShowLoginModal(true);
-      // clean up URL to avoid opening on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -84,6 +92,16 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
     window.location.reload();
   };
 
+  const closeUserDrawer = () => setUserDrawerOpen(false);
+
+  // Derive initials for avatar from email
+  const getInitials = (email) => {
+    const name = email.split("@")[0];
+    const parts = name.split(/[._-]/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
     <>
       <header className="header">
@@ -96,13 +114,13 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
           </a>
         </div>
 
-        {/* LOGGED IN USER INTERFACE (Top navbar controls) */}
+        {/* LOGGED IN USER INTERFACE */}
         {isLoggedIn ? (
           <div className="logged-in-menu">
-            {/* Notifications Dropdown */}
+            {/* Notifications */}
             <div className="notification-wrapper">
-              <button 
-                className="notification-bell-btn" 
+              <button
+                className="notification-bell-btn"
                 onClick={() => setShowNotifications(!showNotifications)}
                 title="Notifications"
               >
@@ -116,7 +134,7 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
                     <h3>Notifications</h3>
                     {unreadCount > 0 && (
                       <button className="mark-read-btn" onClick={handleMarkAllRead}>
-                        Mark all as read
+                        Mark all read
                       </button>
                     )}
                   </div>
@@ -137,7 +155,7 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
               )}
             </div>
 
-            {/* Profile Drawer Menu Toggle */}
+            {/* User menu button */}
             <button className="user-menu-btn" onClick={() => setUserDrawerOpen(true)}>
               <span className="user-menu-avatar">👤</span>
               <span className="user-menu-text">{userEmail.split('@')[0]}</span>
@@ -145,18 +163,21 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
             </button>
           </div>
         ) : (
-          /* GUEST VISITOR INTERFACE (Top navbar links + Hamburger) */
+          /* GUEST VISITOR INTERFACE */
           <>
             {!isMobile && (
               <>
                 <nav className="nav-links">
-                  <Link to="/">Home</Link>
-                  <Link to="/tournaments">Tournaments</Link>
-                  <Link to="/puzzlechallenge">Puzzles</Link>
-                  <Link to="/history">History</Link>
-                  <Link to="/calendar">Calendar</Link>
-                  <Link to="/about">About</Link>
-                  <Link to="/clubroles">Join Us</Link>
+                  {NAV_ITEMS.map(({ to, label, end }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      end={end}
+                      className={({ isActive }) => isActive ? "nav-active" : ""}
+                    >
+                      {label}
+                    </NavLink>
+                  ))}
                 </nav>
 
                 <div className="auth-buttons">
@@ -169,102 +190,180 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
             )}
 
             {isMobile && (
-              <div className="hamburger" onClick={toggleSidebar}>
-                ☰
-              </div>
+              <button
+                className="hamburger"
+                onClick={toggleSidebar}
+                aria-label="Open menu"
+                aria-expanded={sidebarOpen}
+              >
+                <span className={`hamburger-line ${sidebarOpen ? "open" : ""}`} />
+                <span className={`hamburger-line ${sidebarOpen ? "open" : ""}`} />
+                <span className={`hamburger-line ${sidebarOpen ? "open" : ""}`} />
+              </button>
             )}
           </>
         )}
       </header>
 
-      {/* Guest Mobile Sidebar Drawer */}
+      {/* ==============================
+          GUEST MOBILE SIDEBAR
+      ============================== */}
       {!isLoggedIn && isMobile && sidebarOpen && (
-        <div className="mobile-sidebar">
-          <Link to="/">Home</Link>
-          <Link to="/tournaments">Tournaments</Link>
-          <Link to="/history">History</Link>
-          <Link to="/calendar">Calendar</Link>
-          <Link to="/about">About Us</Link>
-          <Link to="/clubroles">Join Us</Link>
-          
-          <div style={{ padding: "0 10px", marginTop: "15px", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <Link to="/signup" style={{ width: "100%" }}>
-              <button className="signup-btn" style={{ width: "100%" }}>Sign Up</button>
-            </Link>
-            <button className="login-btn" onClick={() => { setShowLoginModal(true); toggleSidebar(); }} style={{ width: "100%", marginTop: "10px" }}>Log In</button>
-          </div>
-        </div>
+        <>
+          <div className="mobile-sidebar-overlay" onClick={toggleSidebar} />
+          <aside className="mobile-sidebar">
+            {/* Sidebar Header */}
+            <div className="mobile-sidebar-head">
+              <div className="mobile-sidebar-brand">
+                <img src="\Icons\chess-clublogo.png" alt="logo" className="mobile-sidebar-logo" />
+                <span>ZC Chess Club</span>
+              </div>
+              <button className="mobile-sidebar-close" onClick={toggleSidebar} aria-label="Close menu">
+                ✕
+              </button>
+            </div>
+
+            {/* Nav Links */}
+            <nav className="mobile-sidebar-nav">
+              {NAV_ITEMS.map(({ to, label, icon, end }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  onClick={toggleSidebar}
+                  className={({ isActive }) =>
+                    `mobile-sidebar-link ${isActive ? "mobile-sidebar-link--active" : ""}`
+                  }
+                >
+                  <span className="mobile-sidebar-link-icon">{icon}</span>
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Auth Buttons */}
+            <div className="mobile-sidebar-auth">
+              <Link to="/signup" onClick={toggleSidebar} className="mobile-auth-signup">
+                Sign Up
+              </Link>
+              <button
+                className="mobile-auth-login"
+                onClick={() => { setShowLoginModal(true); toggleSidebar(); }}
+              >
+                Log In
+              </button>
+            </div>
+          </aside>
+        </>
       )}
 
-      {/* User Sidebar Drawer (For Logged In Users) */}
+      {/* ==============================
+          LOGGED-IN USER DRAWER (right)
+      ============================== */}
       {isLoggedIn && userDrawerOpen && (
         <>
-          <div className="drawer-overlay" onClick={() => setUserDrawerOpen(false)}></div>
-          <div className="user-drawer">
-            <button className="close-drawer-btn" onClick={() => setUserDrawerOpen(false)}>
-              &times;
+          <div className="drawer-overlay" onClick={closeUserDrawer} />
+          <aside className="user-drawer">
+            {/* Close Button */}
+            <button className="close-drawer-btn" onClick={closeUserDrawer} aria-label="Close menu">
+              ✕
             </button>
-            
+
+            {/* User Header */}
             <div className="drawer-header">
-              <div className="drawer-avatar">👤</div>
+              <div className="drawer-avatar-initials">
+                {userEmail ? getInitials(userEmail) : "?"}
+              </div>
               <div className="drawer-user-info">
                 <span className="drawer-user-email">{userEmail}</span>
                 {userRole && <span className="drawer-role-tag">{userRole}</span>}
               </div>
             </div>
 
+            {/* Navigation Links */}
             <nav className="drawer-links">
-              <Link to="/" onClick={() => setUserDrawerOpen(false)}>🏠 Home</Link>
-              <Link to="/profile" onClick={() => setUserDrawerOpen(false)}>👤 Profile</Link>
-              
-              {/* Main Pages */}
-              <Link to="/tournaments" onClick={() => setUserDrawerOpen(false)}>🏆 Tournaments</Link>
-              <Link to="/puzzlechallenge" onClick={() => setUserDrawerOpen(false)}>🧩 Puzzles</Link>
-              <Link to="/calendar" onClick={() => setUserDrawerOpen(false)}>📅 Calendar</Link>
-              <Link to="/history" onClick={() => setUserDrawerOpen(false)}>📜 History</Link>
-              <Link to="/about" onClick={() => setUserDrawerOpen(false)}>ℹ️ About Us</Link>
+              <div className="drawer-section-label">Navigation</div>
 
-              {/* Sub-links for role capabilities (subs for additional entries) */}
+              <Link to="/" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">🏠</span> Home
+              </Link>
+              <Link to="/profile" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/profile" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">👤</span> My Profile
+              </Link>
+              <Link to="/tournaments" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/tournaments" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">🏆</span> Tournaments
+              </Link>
+              <Link to="/puzzlechallenge" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/puzzlechallenge" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">🧩</span> Puzzles
+              </Link>
+              <Link to="/calendar" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/calendar" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">📅</span> Calendar
+              </Link>
+              <Link to="/history" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/history" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">📜</span> History
+              </Link>
+              <Link to="/about" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/about" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">ℹ️</span> About Us
+              </Link>
+
+              {/* Management section for admins/hr/oc */}
               {(userRole === 'admin' || userRole === 'hr' || userRole === 'oc') && (
                 <>
-                  <div className="drawer-submenu-title">Management</div>
-                  <Link to="/admin" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>📊 Dashboard Home</Link>
+                  <div className="drawer-section-label" style={{ marginTop: "12px" }}>Management</div>
+                  <Link to="/admin" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">📊</span> Dashboard
+                  </Link>
                 </>
               )}
 
               {userRole === 'admin' && (
                 <>
-                  <Link to="/admin?tab=add-tournament" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>➕ Add Tournament</Link>
-                  <Link to="/admin?tab=tournaments-list" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>⚙️ Manage Tournaments</Link>
-                  <Link to="/admin?tab=applications" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>♟️ View Applications</Link>
-                  <Link to="/admin?tab=manage-users" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>👥 Manage Users</Link>
+                  <Link to="/admin?tab=add-tournament" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">➕</span> Add Tournament
+                  </Link>
+                  <Link to="/admin?tab=tournaments-list" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">⚙️</span> Manage Tournaments
+                  </Link>
+                  <Link to="/admin?tab=applications" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">📋</span> Applications
+                  </Link>
+                  <Link to="/admin?tab=manage-users" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">👥</span> Manage Users
+                  </Link>
                 </>
               )}
 
               {userRole === 'hr' && (
-                <>
-                  <Link to="/admin?tab=applications" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>♟️ View Applications</Link>
-                </>
+                <Link to="/admin?tab=applications" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                  <span className="drawer-link-icon">📋</span> Applications
+                </Link>
               )}
 
               {userRole === 'oc' && (
                 <>
-                  <Link to="/admin?tab=add-tournament" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>➕ Add Tournament</Link>
-                  <Link to="/admin?tab=tournaments-list" className="drawer-sublink" onClick={() => setUserDrawerOpen(false)}>⚙️ Manage Tournaments</Link>
+                  <Link to="/admin?tab=add-tournament" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">➕</span> Add Tournament
+                  </Link>
+                  <Link to="/admin?tab=tournaments-list" className="drawer-link drawer-link--sub" onClick={closeUserDrawer}>
+                    <span className="drawer-link-icon">⚙️</span> Manage Tournaments
+                  </Link>
                 </>
               )}
 
               {(!userRole || userRole === 'member') && (
-                <Link to="/clubroles" onClick={() => setUserDrawerOpen(false)}>♟️ Join Us / Apply</Link>
+                <Link to="/clubroles" onClick={closeUserDrawer} className="drawer-link">
+                  <span className="drawer-link-icon">✨</span> Join Us / Apply
+                </Link>
               )}
             </nav>
 
+            {/* Footer: Logout */}
             <div className="drawer-footer">
               <button className="logout-btn-drawer" onClick={handleHeaderLogout}>
-                🚪 Log Out
+                <span>🚪</span> Log Out
               </button>
             </div>
-          </div>
+          </aside>
         </>
       )}
 

@@ -1,4 +1,6 @@
-/* ===== HEADER — Minimalist Dark Theme (Top Only) ===== */
+/* ============================================================
+   HEADER — ZC Chess Club
+============================================================ */
 .header {
   display: flex;
   align-items: center;
@@ -12,16 +14,18 @@
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   font-family: var(--font-body);
-  transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
-/* Logo block */
+/* ========================
+   Logo
+======================== */
 .logo-title {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -53,7 +57,9 @@
   text-transform: uppercase;
 }
 
-/* Nav Links - Desktop Horizontal */
+/* ========================
+   Desktop Nav Links
+======================== */
 .nav-links {
   display: flex;
   gap: 28px;
@@ -69,25 +75,46 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: color 0.2s ease;
+  position: relative;
+  padding-bottom: 2px;
 }
 
 .nav-links a:hover {
   color: var(--accent);
 }
 
-/* Auth Buttons - Desktop Guest */
+/* Active nav link — gold dot indicator */
+.nav-links a.nav-active {
+  color: var(--accent);
+}
+
+.nav-links a.nav-active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+/* ========================
+   Desktop Auth Buttons
+======================== */
 .auth-buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 }
 
 .signup-btn,
 .login-btn {
-  height: 38px;
+  height: 36px;
   font-family: var(--font-display);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   border-radius: 8px;
@@ -117,29 +144,62 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Mobile Hamburger Menu */
+/* ========================
+   Hamburger (3 animated lines)
+======================== */
 .hamburger {
   display: none;
-  color: var(--muted-foreground);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  font-size: 1.5rem;
-  line-height: 1;
   padding: 4px;
-  transition: color 0.2s ease;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
 }
 
 .hamburger:hover {
-  color: var(--foreground);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Logged-In Menu Grouping */
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--muted-foreground);
+  border-radius: 2px;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+/* Animate to X when open */
+.hamburger-line.open:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+  background-color: var(--accent);
+}
+.hamburger-line.open:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger-line.open:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+  background-color: var(--accent);
+}
+
+/* ========================
+   Logged-In Menu Grouping
+======================== */
 .logged-in-menu {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-/* User Menu Toggle Button */
 .user-menu-btn {
   display: flex;
   align-items: center;
@@ -156,7 +216,7 @@
 
 .user-menu-btn:hover {
   border-color: var(--border-hover);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(243, 193, 68, 0.05);
 }
 
 .user-menu-avatar {
@@ -182,7 +242,9 @@
   border-radius: 4px;
 }
 
-/* Notification Bell */
+/* ========================
+   Notification Bell
+======================== */
 .notification-wrapper {
   position: relative;
   display: flex;
@@ -198,7 +260,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--foreground);
   cursor: pointer;
   position: relative;
@@ -231,7 +293,9 @@
   box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
 }
 
-/* Notifications Dropdown */
+/* ========================
+   Notifications Dropdown
+======================== */
 .notifications-dropdown {
   position: absolute;
   top: 48px;
@@ -239,8 +303,8 @@
   width: 320px;
   background: var(--background-alt);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
   z-index: 1001;
   padding: 16px;
   box-sizing: border-box;
@@ -250,15 +314,8 @@
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .notifications-header {
@@ -272,7 +329,7 @@
 
 .notifications-header h3 {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
   margin: 0;
   color: var(--foreground);
@@ -284,7 +341,7 @@
   background: none;
   border: none;
   color: var(--accent);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 600;
   cursor: pointer;
   font-family: var(--font-display);
@@ -300,7 +357,7 @@
 .notifications-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   max-height: 240px;
   overflow-y: auto;
 }
@@ -320,7 +377,7 @@
 
 .notification-item.read {
   background-color: transparent;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .notification-item:hover {
@@ -328,9 +385,10 @@
 }
 
 .notification-icon {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: 2px;
 }
 
 .notification-content {
@@ -341,7 +399,7 @@
 
 .notification-text {
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--foreground);
   margin: 0;
   text-align: left;
@@ -352,69 +410,429 @@
   color: var(--muted-foreground);
 }
 
-/* User Drawer (Slides from Right) */
-.drawer-overlay {
+/* ============================================================
+   OVERLAYS (shared)
+============================================================ */
+.drawer-overlay,
+.mobile-sidebar-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 6, 9, 0.7);
-  z-index: 1999;
+  background: rgba(6, 6, 9, 0.72);
+  z-index: 1099;
   backdrop-filter: blur(4px);
-  animation: fadeInModal 0.2s ease;
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.2s ease;
 }
 
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   GUEST MOBILE SIDEBAR (slides from left)
+============================================================ */
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: linear-gradient(160deg, #1a1710 0%, #15120c 100%);
+  border-right: 1px solid rgba(243, 193, 68, 0.1);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  z-index: 1100;
+  box-sizing: border-box;
+  animation: slideInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Sidebar Header row */
+.mobile-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid rgba(243, 193, 68, 0.1);
+  flex-shrink: 0;
+}
+
+.mobile-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mobile-sidebar-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.mobile-sidebar-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mobile-sidebar-close:hover {
+  background: rgba(243, 193, 68, 0.1);
+  border-color: rgba(243, 193, 68, 0.25);
+  color: var(--accent);
+}
+
+/* Sidebar Nav */
+.mobile-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.mobile-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: all 0.18s ease;
+}
+
+.mobile-sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--foreground);
+}
+
+.mobile-sidebar-link--active {
+  background-color: rgba(243, 193, 68, 0.1) !important;
+  color: var(--accent) !important;
+  border: 1px solid rgba(243, 193, 68, 0.18);
+}
+
+.mobile-sidebar-link-icon {
+  font-size: 1.1rem;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Sidebar Auth Buttons */
+.mobile-sidebar-auth {
+  padding: 16px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid rgba(243, 193, 68, 0.08);
+  flex-shrink: 0;
+}
+
+.mobile-auth-signup {
+  display: block;
+  text-align: center;
+  background: linear-gradient(135deg, #f3c144, #d4a52c);
+  color: #181611;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  padding: 13px;
+  border-radius: 10px;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(243, 193, 68, 0.25);
+}
+
+.mobile-auth-signup:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(243, 193, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.mobile-auth-login {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-auth-login:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(243, 193, 68, 0.25);
+}
+
+/* ============================================================
+   LOGGED-IN USER DRAWER (slides from right)
+============================================================ */
 .user-drawer {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 280px;
-  background: var(--background-alt);
-  border-left: 1px solid var(--border);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-  z-index: 2000;
+  width: 300px;
+  background: linear-gradient(160deg, #1a1710 0%, #15120c 100%);
+  border-left: 1px solid rgba(243, 193, 68, 0.1);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+  z-index: 1100;
   display: flex;
   flex-direction: column;
-  padding: 32px 24px;
   box-sizing: border-box;
-  animation: slideLeftDrawer 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: slideInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
-@keyframes slideLeftDrawer {
-  from {
-    transform: translateX(100%);
-  }
-
-  to {
-    transform: translateX(0);
-  }
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 
+/* Close button */
 .close-drawer-btn {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
-  border: none;
-  font-size: 1.8rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--muted-foreground);
+  font-size: 0.9rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1;
 }
 
 .close-drawer-btn:hover {
-  color: var(--foreground);
+  background: rgba(243, 193, 68, 0.1);
+  border-color: rgba(243, 193, 68, 0.3);
+  color: var(--accent);
 }
 
+/* User header area */
 .drawer-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 20px;
-  margin-top: 12px;
-  margin-bottom: 24px;
+  gap: 14px;
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid rgba(243, 193, 68, 0.1);
+  flex-shrink: 0;
 }
 
+/* Initials avatar */
+.drawer-avatar-initials {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(243,193,68,0.2), rgba(243,193,68,0.08));
+  border: 1px solid rgba(243, 193, 68, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent);
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.drawer-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.drawer-user-email {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-role-tag {
+  display: inline-flex;
+  background-color: var(--accent-muted);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+  border: 1px solid rgba(243, 193, 68, 0.2);
+}
+
+/* Nav Links area */
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  gap: 2px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.drawer-section-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(243, 193, 68, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 12px 4px;
+}
+
+/* Individual link */
+.drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: all 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.drawer-link:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--foreground);
+}
+
+.drawer-link--active {
+  background-color: rgba(243, 193, 68, 0.08) !important;
+  color: var(--accent) !important;
+  border-color: rgba(243, 193, 68, 0.16) !important;
+}
+
+/* Sub-links (indented management links) */
+.drawer-link--sub {
+  padding-left: 28px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  border-left: 2px solid rgba(243, 193, 68, 0.15);
+  border-radius: 0 10px 10px 0;
+  margin-left: 10px;
+}
+
+.drawer-link--sub:hover {
+  border-left-color: var(--accent);
+  background-color: rgba(243, 193, 68, 0.04) !important;
+}
+
+.drawer-link-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Drawer footer */
+.drawer-footer {
+  border-top: 1px solid rgba(243, 193, 68, 0.08);
+  padding: 16px 16px 24px;
+  flex-shrink: 0;
+}
+
+.logout-btn-drawer {
+  width: 100%;
+  background: rgba(231, 76, 60, 0.05);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  color: #e87c7c;
+  padding: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logout-btn-drawer:hover {
+  background-color: rgba(231, 76, 60, 0.12);
+  border-color: rgba(231, 76, 60, 0.45);
+  color: #ff9090;
+}
+
+.logout-btn-drawer:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile
+============================================================ */
+@media (max-width: 767px) {
+  .nav-links,
+  .auth-buttons {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+/* ============================================================
+   LEGACY / keep for backward compat
+============================================================ */
 .drawer-avatar {
   font-size: 2.2rem;
   width: 48px;
@@ -425,192 +843,4 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.drawer-user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  overflow: hidden;
-  text-align: left;
-}
-
-.drawer-user-email {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--foreground);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.drawer-role-tag {
-  background-color: var(--accent-muted);
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 4px;
-  align-self: flex-start;
-}
-
-.drawer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-grow: 1;
-}
-
-.drawer-links a {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--muted-foreground);
-  text-decoration: none;
-  padding: 12px 14px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 200ms ease-out;
-}
-
-.drawer-links a:hover {
-  color: var(--foreground);
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
-.drawer-footer {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-}
-
-.logout-btn-drawer {
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-color: rgba(231, 76, 60, 0.3);
-  color: #e74c3c;
-  padding: 11px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  font-family: var(--font-display);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 200ms ease-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.logout-btn-drawer:hover {
-  background-color: rgba(231, 76, 60, 0.1);
-  border-color: #e74c3c;
-}
-
-.logout-btn-drawer:active {
-  transform: scale(0.98);
-}
-
-/* Guest Mobile Sidebar Drawer (Slides from Left) */
-.mobile-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 260px;
-  background-color: var(--background-alt);
-  border-right: 1px solid var(--border);
-  padding: 24px;
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 1002;
-  box-sizing: border-box;
-  animation: slideRightMobile 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes slideRightMobile {
-  from {
-    transform: translateX(-100%);
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
-.mobile-sidebar a {
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--muted-foreground);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  padding: 12px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  text-align: center;
-  transition: color 0.2s ease;
-}
-
-.mobile-sidebar a:last-of-type {
-  border-bottom: none;
-}
-
-.mobile-sidebar a:hover {
-  color: var(--foreground);
-}
-
-.mobile-sidebar button {
-  font-family: var(--font-display);
-  text-align: center;
-  margin-top: 10px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-/* Responsive Media Queries */
-@media (max-width: 767px) {
-
-  .nav-links,
-  .auth-buttons {
-    display: none;
-  }
-
-  .hamburger {
-    display: block;
-  }
-}
-
-/* Sidebar Drawer Submenu & Sublinks */
-.drawer-submenu-title {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 14px 14px 4px;
-  margin: 0;
-  opacity: 0.85;
-}
-
-.drawer-links .drawer-sublink {
-  padding-left: 28px !important;
-  font-size: 0.84rem !important;
-  opacity: 0.9;
-  border-left: 1.5px solid rgba(243, 193, 68, 0.2);
-  border-radius: 0 8px 8px 0;
-  margin-left: 14px;
-}
-
-.drawer-links .drawer-sublink:hover {
-  border-left-color: var(--accent);
-  background-color: rgba(243, 193, 68, 0.04) !important;
 }
