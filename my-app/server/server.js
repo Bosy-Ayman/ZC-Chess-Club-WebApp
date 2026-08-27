@@ -28,6 +28,60 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Serverless-friendly database connection middleware
+const connectDB = async (req, res, next) => {
+  const state = mongoose.connection.readyState;
+  
+  // 1 = connected
+  if (state === 1) {
+    return next();
+  }
+  
+  // 2 = connecting. Wait for it to finish.
+  if (state === 2) {
+    console.log('Database is currently connecting... awaiting connection');
+    try {
+      await new Promise((resolve, reject) => {
+        const onConnected = () => {
+          mongoose.connection.off('error', onError);
+          resolve();
+        };
+        const onError = (err) => {
+          mongoose.connection.off('connected', onConnected);
+          reject(err);
+        };
+        mongoose.connection.once('connected', onConnected);
+        mongoose.connection.once('error', onError);
+        // Timeout guard
+        setTimeout(() => {
+          mongoose.connection.off('connected', onConnected);
+          mongoose.connection.off('error', onError);
+          reject(new Error('Mongoose connection timed out (middleware wait)'));
+        }, 5000);
+      });
+      return next();
+    } catch (err) {
+      return res.status(500).json({ error: 'Database is connecting but failed', details: err.message });
+    }
+  }
+
+  // 0 = disconnected. Connect explicitly.
+  try {
+    console.log('Database disconnected. Reconnecting...');
+    const MONGO_URI = process.env.MONGO_URI;
+    if (!MONGO_URI) {
+      throw new Error('MONGO_URI is not defined in environment variables');
+    }
+    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+    console.log('Database reconnected successfully!');
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Database connection failed (middleware connect)', details: err.message });
+  }
+};
+
+app.use(connectDB);
+
 // --- MongoDB Schema & Model ---
 const ApplicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
