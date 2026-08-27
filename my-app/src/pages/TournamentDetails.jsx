@@ -488,24 +488,46 @@ export default function TournamentDetails() {
 
                   {/* Swiss Round-by-Round Results */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBottom: "15px" }}>
-                    <h2 className="section-title" style={{ margin: 0 }}>🗓️ Round-by-Round Pairings & Results</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+                      <h2 className="section-title" style={{ margin: 0 }}>🗓️ Round-by-Round Pairings & Results</h2>
+                      {tournament?.rounds > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                          <span style={{ fontSize: "0.78rem", color: "#888" }}>
+                            Round{" "}
+                            <strong style={{ color: "#f3c144" }}>{sortedRounds.length}</strong>
+                            {" "}of{" "}
+                            <strong style={{ color: "#f3c144" }}>{tournament.rounds}</strong>
+                            {" "}played
+                          </span>
+                          <div style={{ width: "120px", height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${Math.min((sortedRounds.length / tournament.rounds) * 100, 100)}%`, background: "linear-gradient(90deg, #f3c144, #d4a32a)", borderRadius: "2px", transition: "width 0.4s ease" }} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     {isStaff && (
-                      <button 
-                        onClick={handleGenerateNextRound}
-                        style={{
-                          background: "linear-gradient(135deg, #f3c144, #d4a32a)",
-                          color: "#15120c",
-                          border: "none",
-                          padding: "8px 18px",
-                          borderRadius: "8px",
-                          fontWeight: "800",
-                          fontSize: "0.85rem",
-                          cursor: "pointer",
-                          boxShadow: "0 4px 12px rgba(243, 193, 68, 0.25)"
-                        }}
-                      >
-                        ⚡ Generate Round {nextRoundNum} Pairings ➔
-                      </button>
+                      tournament?.rounds > 0 && sortedRounds.length >= tournament.rounds ? (
+                        <span style={{ background: "rgba(77,189,116,0.15)", color: "#4dbd74", border: "1px solid #4dbd74", padding: "6px 14px", borderRadius: "8px", fontWeight: "700", fontSize: "0.82rem" }}>
+                          ✅ All {tournament.rounds} Rounds Complete
+                        </span>
+                      ) : (
+                        <button 
+                          onClick={handleGenerateNextRound}
+                          style={{
+                            background: "linear-gradient(135deg, #f3c144, #d4a32a)",
+                            color: "#15120c",
+                            border: "none",
+                            padding: "8px 18px",
+                            borderRadius: "8px",
+                            fontWeight: "800",
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            boxShadow: "0 4px 12px rgba(243, 193, 68, 0.25)"
+                          }}
+                        >
+                          ⚡ Generate Round {nextRoundNum} Pairings ➔
+                        </button>
+                      )
                     )}
                   </div>
 

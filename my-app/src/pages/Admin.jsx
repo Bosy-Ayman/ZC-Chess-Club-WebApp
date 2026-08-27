@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   // Form state for new tournament
   const [form, setForm] = useState({
     title: "",
-    type: "Knockout",
+    type: "Swiss",
     status: "Upcoming",
     startDate: "",
     endDate: "",
@@ -55,7 +55,8 @@ export default function AdminDashboard() {
     location: "Zewail Chess Club",
     description: "",
     players: 0,
-    detailsUrl: ""
+    detailsUrl: "",
+    rounds: 5  // Swiss only — FIDE: N rounds needs ≥ N+1 players
   });
 
   // Fetch tournaments and applications
@@ -336,7 +337,7 @@ export default function AdminDashboard() {
       // Reset form (except defaults)
       setForm({
         title: "",
-        type: "Knockout",
+        type: "Swiss",
         status: "Upcoming",
         startDate: "",
         endDate: "",
@@ -344,7 +345,8 @@ export default function AdminDashboard() {
         location: "Zewail Chess Club",
         description: "",
         players: 0,
-        detailsUrl: ""
+        detailsUrl: "",
+        rounds: 5
       });
       fetchData(); // Refresh list
     } catch (err) {
@@ -548,6 +550,38 @@ export default function AdminDashboard() {
                     </select>
                   </div>
                 </div>
+
+                {/* Swiss-only: Number of Rounds */}
+                {form.type === "Swiss" && (
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="rounds">
+                        Number of Rounds *
+                        <span style={{ fontWeight: "400", color: "#f3c144", marginLeft: "8px", fontSize: "0.82rem" }}>
+                          (Swiss only)
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        id="rounds"
+                        name="rounds"
+                        value={form.rounds}
+                        onChange={handleInputChange}
+                        min="1"
+                        max="13"
+                        required
+                      />
+                      <small style={{ color: "#888", fontSize: "0.78rem", marginTop: "5px", display: "block" }}>
+                        📋 FIDE min. players needed:{" "}
+                        <strong style={{ color: "#f3c144" }}>{Number(form.rounds) + 1}</strong>
+                        {" "}· Ideal (no rematches):{" "}
+                        <strong style={{ color: "#f3c144" }}>{Math.pow(2, Number(form.rounds))}</strong>
+                      </small>
+                    </div>
+                    <div className="form-group" /> {/* spacer */}
+                  </div>
+                )}
+
 
                 <div className="form-row">
                   <div className="form-group">

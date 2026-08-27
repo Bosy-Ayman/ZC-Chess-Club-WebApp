@@ -135,6 +135,7 @@ const TournamentSchema = new mongoose.Schema({
     black: { type: String, required: true },
     result: { type: String, required: true }
   }],
+  rounds: { type: Number, default: 0 }, // Total planned rounds
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -668,6 +669,13 @@ app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
     const maxRound = existingMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
     const nextRound = maxRound + 1;
 
+    // ---- Enforce planned rounds cap (Swiss only) ----
+    if (tournament.rounds && tournament.rounds > 0 && nextRound > tournament.rounds) {
+      return res.status(400).json({
+        error: `Tournament is complete! All ${tournament.rounds} planned rounds have been played.`
+      });
+    }
+
     // ---- Build player stats map (FIDE-style) ----
     const statsMap = {};
     players.forEach(p => {
@@ -1057,7 +1065,7 @@ app.put('/api/applications/:id/status', async (req, res) => {
 // POST: create a new tournament
 app.post('/api/tournaments', async (req, res) => {
   try {
-    const { title, type, status, startDate, endDate, time, location, description, players, detailsUrl } = req.body;
+    const { title, type, status, startDate, endDate, time, location, description, players, detailsUrl, rounds } = req.body;
     
     const newTournament = new Tournament({
       title,
@@ -1069,7 +1077,8 @@ app.post('/api/tournaments', async (req, res) => {
       location: location || 'Zewail Chess Club',
       description: description || '',
       players: players || 0,
-      detailsUrl: detailsUrl || ''
+      detailsUrl: detailsUrl || '',
+      rounds: rounds ? Number(rounds) : 0
     });
 
     const savedTournament = await newTournament.save();
