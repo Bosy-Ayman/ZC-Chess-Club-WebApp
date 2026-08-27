@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Award, Bell, Images, Sparkles, ChevronDown, Pin, ExternalLink, Calendar } from "lucide-react";
@@ -7,6 +7,22 @@ import "./HomePage.css";
 const HomePage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const heroSlides = [
+    "/Images/image4.jpg",
+    "/Images/image1.jpg",
+    "/Images/image2.jpg",
+    "/Images/image3.jpg",
+  ];
+
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroSlides.length]);
 
   const announcements = [
     {
@@ -66,14 +82,16 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <section className="hero-section" id="hero">
-        <video
-          className="hero-video"
-          src="/background_video.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
+        {/* Image slideshow replaces video — SEO friendly, no thumbnail required */}
+        <div className="hero-slideshow" aria-hidden="true">
+          {heroSlides.map((src, i) => (
+            <div
+              key={src}
+              className={`hero-slide${i === heroIndex ? " active" : ""}`}
+              style={{ backgroundImage: `url('${src}')` }}
+            />
+          ))}
+        </div>
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <div className="hero-badge">
