@@ -618,11 +618,13 @@ app.put('/api/tournaments/:id/matches', async (req, res) => {
   }
 });
 
-// PUT: update an existing match result
+// PUT: update an existing match result or pairing details
 app.put('/api/tournaments/:id/matches/:matchId', async (req, res) => {
   try {
-    const { result } = req.body;
-    if (!result) return res.status(400).json({ error: "Result required" });
+    const { result, white, black } = req.body;
+    if (result === undefined && white === undefined && black === undefined) {
+      return res.status(400).json({ error: "At least one update field (result, white, or black) is required" });
+    }
 
     const tournament = await Tournament.findById(req.params.id);
     if (!tournament) return res.status(404).json({ error: "Tournament not found" });
@@ -630,11 +632,14 @@ app.put('/api/tournaments/:id/matches/:matchId', async (req, res) => {
     const match = tournament.matches.id(req.params.matchId);
     if (!match) return res.status(404).json({ error: "Match not found" });
 
-    match.result = result;
+    if (result !== undefined) match.result = result;
+    if (white !== undefined) match.white = white;
+    if (black !== undefined) match.black = black;
+
     await tournament.save();
-    res.json({ message: "Match result updated successfully!", data: tournament });
+    res.json({ message: "Match updated successfully!", data: tournament });
   } catch (error) {
-    res.status(500).json({ error: 'Server error updating match result', details: error.message });
+    res.status(500).json({ error: 'Server error updating match', details: error.message });
   }
 });
 
@@ -707,6 +712,117 @@ app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
     res.json({ message: `Round ${nextRound} Swiss pairings generated successfully!`, data: tournament });
   } catch (error) {
     res.status(500).json({ error: 'Server error generating Swiss pairings', details: error.message });
+  }
+});
+
+// POST: generate initial or subsequent Knockout round pairings automatically
+app.post('/api/tournaments/:id/generate-knockout-round', async (req, res) => {
+  try {
+    const { shuffle } = req.body;
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+
+    const existingMatches = tournament.matches || [];
+    
+    // CASE 1: Initialize Round 1 Bracket
+    if (existingMatches.length === 0) {
+      const players = tournament.playersList || [];
+      if (players.length < 2) {
+        return res.status(400).json({ error: "At least 2 players are required to generate a bracket." });
+      }
+
+      let list = [...players];
+      if (shuffle) {
+        // Fisher-Yates Shuffle
+        for (let i = list.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [list[i], list[j]] = [list[j], list[i]];
+        }
+      } else {
+        // Seeded by Rating
+        list.sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
+      }
+
+      const newMatches = [];
+      const n = list.length;
+      const half = Math.floor(n / 2);
+      for (let i = 0; i < half; i++) {
+        newMatches.push({
+          round: 1,
+          white: list[i].name,
+          black: list[n - 1 - i].name,
+          result: "Pending"
+        });
+      }
+
+      // Odd player gets a bye
+      if (n % 2 !== 0) {
+        newMatches.push({
+          round: 1,
+          white: list[half].name,
+          black: "BYE",
+          result: "1-0" // Automatic win for White
+        });
+      }
+
+      tournament.matches = newMatches;
+      await tournament.save();
+      return res.json({ message: "Knockout Round 1 bracket generated successfully!", data: tournament });
+    }
+
+    // CASE 2: Advance to Next Round (Round 2, 3, etc.)
+    // Check if any existing matches are still Pending
+    const pendingMatches = existingMatches.filter(m => !m.result || m.result === "Pending");
+    if (pendingMatches.length > 0) {
+      return res.status(400).json({ 
+        error: `Cannot generate next round. There are still ${pendingMatches.length} pending match(es) in the current round.` 
+      });
+    }
+
+    // Find the current highest round
+    const maxRound = existingMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
+    const lastRoundMatches = existingMatches.filter(m => m.round === maxRound);
+
+    if (lastRoundMatches.length === 1) {
+      return res.status(400).json({ error: "The tournament is already completed! The Grand Finals match is finished." });
+    }
+
+    const nextRound = maxRound + 1;
+    const winners = lastRoundMatches.map(m => {
+      if (m.result === "1-0" || m.result === "1 - 0") return m.white;
+      if (m.result === "0-1" || m.result === "0 - 1") return m.black;
+      return m.white; // Fallback
+    });
+
+    const newMatches = [];
+    const wCount = winners.length;
+    const halfW = Math.floor(wCount / 2);
+
+    for (let i = 0; i < halfW; i++) {
+      newMatches.push({
+        round: nextRound,
+        white: winners[i * 2],
+        black: winners[i * 2 + 1],
+        result: "Pending"
+      });
+    }
+
+    // Odd number of winners gets a bye
+    if (wCount % 2 !== 0) {
+      newMatches.push({
+        round: nextRound,
+        white: winners[wCount - 1],
+        black: "BYE",
+        result: "1-0"
+      });
+    }
+
+    tournament.matches.push(...newMatches);
+    await tournament.save();
+
+    res.json({ message: `Round ${nextRound} matchups generated successfully!`, data: tournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error generating next Knockout round', details: error.message });
   }
 });
 

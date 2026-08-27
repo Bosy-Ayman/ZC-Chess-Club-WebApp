@@ -117,11 +117,13 @@ export default function ChallongeBracket({
   playersData, 
   tournamentTitle = "Knockout Championship Bracket",
   isStaff = false,
-  onResultChange
+  onUpdateMatch
 }) {
   const [activeTab, setActiveTab] = useState("upper"); // "upper" or "lower"
   const [zoomLevel, setZoomLevel] = useState(1);
   const [selectedMatchModal, setSelectedMatchModal] = useState(null);
+  const [tempWhite, setTempWhite] = useState("");
+  const [tempBlack, setTempBlack] = useState("");
 
   const [dbMatches, setDbMatches] = useState(matchesData || []);
   const [dbPlayers, setDbPlayers] = useState(playersData || []);
@@ -246,7 +248,11 @@ export default function ChallongeBracket({
                     <div
                       key={match.id}
                       className="match-card glass-panel-card clickable-match"
-                      onClick={() => setSelectedMatchModal(match)}
+                      onClick={() => {
+                        setSelectedMatchModal(match);
+                        setTempWhite(match.p1.name);
+                        setTempBlack(match.p2.name);
+                      }}
                     >
                       <div className="match-card-header">
                         <span className="match-code">{match.matchCode}</span>
@@ -325,7 +331,19 @@ export default function ChallongeBracket({
             <div className="match-modal-vs-box">
               <div className={`modal-player-card ${selectedMatchModal.p1.isWinner ? "winner" : ""}`}>
                 <span className="modal-seed">Seed #{selectedMatchModal.p1.seed}</span>
-                <h4 className="modal-player-name">{selectedMatchModal.p1.name}</h4>
+                {isStaff && (rawMatch ? (!rawMatch.result || rawMatch.result === "Pending") : true) ? (
+                  <select
+                    value={tempWhite}
+                    onChange={(e) => setTempWhite(e.target.value)}
+                    style={{ background: "#15120c", color: "#fff", border: "1px solid #36332b", padding: "6px", borderRadius: "6px", width: "100%", marginTop: "8px", fontWeight: "600", fontSize: "0.85rem", outline: "none" }}
+                  >
+                    {dbPlayers.map(p => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <h4 className="modal-player-name">{selectedMatchModal.p1.name}</h4>
+                )}
                 <span className="modal-score-big">{selectedMatchModal.p1.score}</span>
               </div>
 
@@ -333,28 +351,64 @@ export default function ChallongeBracket({
 
               <div className={`modal-player-card ${selectedMatchModal.p2.isWinner ? "winner" : ""}`}>
                 <span className="modal-seed">Seed #{selectedMatchModal.p2.seed}</span>
-                <h4 className="modal-player-name">{selectedMatchModal.p2.name}</h4>
+                {isStaff && (rawMatch ? (!rawMatch.result || rawMatch.result === "Pending") : true) ? (
+                  <select
+                    value={tempBlack}
+                    onChange={(e) => setTempBlack(e.target.value)}
+                    style={{ background: "#15120c", color: "#fff", border: "1px solid #36332b", padding: "6px", borderRadius: "6px", width: "100%", marginTop: "8px", fontWeight: "600", fontSize: "0.85rem", outline: "none" }}
+                  >
+                    <option value="BYE">BYE</option>
+                    {dbPlayers.map(p => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <h4 className="modal-player-name">{selectedMatchModal.p2.name}</h4>
+                )}
                 <span className="modal-score-big">{selectedMatchModal.p2.score}</span>
               </div>
             </div>
+
+            {isStaff && (rawMatch ? (!rawMatch.result || rawMatch.result === "Pending") : true) && (tempWhite !== selectedMatchModal.p1.name || tempBlack !== selectedMatchModal.p2.name) && (
+              <button
+                onClick={async () => {
+                  try {
+                    await onUpdateMatch(selectedMatchModal.id, { white: tempWhite, black: tempBlack });
+                    setSelectedMatchModal(null);
+                  } catch (err) {
+                    alert("Error: " + err.message);
+                  }
+                }}
+                style={{
+                  background: "linear-gradient(135deg, #f3c144, #d4a32a)",
+                  color: "#15120c",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  fontWeight: "800",
+                  width: "100%",
+                  marginTop: "15px",
+                  cursor: "pointer"
+                }}
+              >
+                💾 Save Matchup Pairing
+              </button>
+            )}
 
             <div className="match-modal-info">
               <p>Status: <strong>{selectedMatchModal.status}</strong></p>
               <p>Source: <strong>MongoDB Atlas Cluster Database</strong></p>
             </div>
 
-            {isStaff && onResultChange && (
+            {isStaff && onUpdateMatch && (
               <div className="match-modal-actions" style={{ marginTop: "20px", borderTop: "1px solid #36332b", paddingTop: "15px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ color: "#bab19c", fontSize: "0.88rem", fontWeight: "600" }}>Record Score:</span>
                 <select
-                  value={(() => {
-                    const rawMatch = dbMatches.find(m => m._id === selectedMatchModal.id);
-                    return rawMatch ? rawMatch.result : "Pending";
-                  })()}
+                  value={rawMatch ? rawMatch.result : "Pending"}
                   onChange={async (e) => {
                     const newResult = e.target.value;
                     try {
-                      await onResultChange(selectedMatchModal.id, newResult);
+                      await onUpdateMatch(selectedMatchModal.id, { result: newResult });
                       setSelectedMatchModal(null);
                     } catch (err) {
                       alert("Error: " + err.message);

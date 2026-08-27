@@ -113,17 +113,17 @@ export default function TournamentDetails() {
     }
   };
 
-  const handleQuickResultChange = async (matchId, newResult) => {
+  const handleUpdateMatch = async (matchId, updateData) => {
     try {
       const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/matches/${matchId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ result: newResult })
+        body: JSON.stringify(updateData)
       });
       const text = await res.text();
       let data;
       try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server"); }
-      if (!res.ok) throw new Error(data.error || "Failed to update match result");
+      if (!res.ok) throw new Error(data.error || "Failed to update match");
       fetchTournamentDetails();
     } catch (err) {
       alert("Error updating match: " + err.message);
@@ -151,6 +151,47 @@ export default function TournamentDetails() {
       fetchTournamentDetails();
     } catch (err) {
       alert("Error generating pairings: " + err.message);
+    }
+  };
+
+  const handleGenerateKnockoutBracket = async (shuffle = false) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/generate-knockout-round`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shuffle })
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server."); }
+      if (!res.ok) throw new Error(data.error || "Failed to generate bracket");
+      alert(data.message || "Knockout bracket generated successfully!");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error generating bracket: " + err.message);
+    }
+  };
+
+  const handleGenerateNextKnockoutRound = async () => {
+    const pendingMatches = (tournament?.matches || []).filter(m => !m.result || m.result === "Pending");
+    if (pendingMatches.length > 0) {
+      alert(`⚠️ Cannot generate next round! There are still ${pendingMatches.length} pending match(es) in the current round. Please score all matches first.`);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/generate-knockout-round`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { throw new Error("Invalid response from server."); }
+      if (!res.ok) throw new Error(data.error || "Failed to generate next round");
+      alert(data.message || "Next round matchups generated successfully!");
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error generating next round: " + err.message);
     }
   };
 
@@ -271,9 +312,46 @@ export default function TournamentDetails() {
                     <button className="add-btn" onClick={() => setPlayerModalOpen(true)}>
                       + Add Participant
                     </button>
-                    <button className="add-btn" onClick={() => setMatchModalOpen(true)}>
-                      + Record Single Result
-                    </button>
+                    
+                    {/* Add Match Pairing only makes sense for Knockout if no bracket is generated yet */}
+                    {!isSwissFormat && (!tournament.matches || tournament.matches.length === 0) && (
+                      <button className="add-btn" onClick={() => setMatchModalOpen(true)}>
+                        + Add Manual Matchup
+                      </button>
+                    )}
+
+                    {/* Bracket Generation buttons for Knockout */}
+                    {!isSwissFormat && (!tournament.matches || tournament.matches.length === 0) && (
+                      <button 
+                        className="add-btn" 
+                        onClick={() => handleGenerateKnockoutBracket(false)}
+                        style={{ background: "linear-gradient(135deg, #f3c144, #d4a32a)", color: "#15120c", fontWeight: "800" }}
+                      >
+                        ⚡ Generate Seeded Bracket
+                      </button>
+                    )}
+                    {!isSwissFormat && (!tournament.matches || tournament.matches.length === 0) && (
+                      <button 
+                        className="add-btn" 
+                        onClick={() => handleGenerateKnockoutBracket(true)}
+                        style={{ background: "linear-gradient(135deg, #bab19c, #8c8575)", color: "#15120c", fontWeight: "800" }}
+                      >
+                        🎲 Generate Random Bracket
+                      </button>
+                    )}
+
+                    {/* Advance to next round for Knockout */}
+                    {!isSwissFormat && tournament.matches && tournament.matches.length > 0 && (
+                      <button 
+                        className="add-btn" 
+                        onClick={handleGenerateNextKnockoutRound}
+                        style={{ background: "linear-gradient(135deg, #f3c144, #d4a32a)", color: "#15120c", fontWeight: "800" }}
+                      >
+                        ⚡ Generate Next Round Pairings ➔
+                      </button>
+                    )}
+
+                    {/* Swiss pairings generation */}
                     {isSwissFormat && (
                       <button 
                         className="add-btn" 
@@ -375,7 +453,7 @@ export default function TournamentDetails() {
                                     {isStaff && m._id ? (
                                       <select
                                         value={m.result}
-                                        onChange={(e) => handleQuickResultChange(m._id, e.target.value)}
+                                        onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
                                         style={{
                                           background: "#15120c",
                                           color: "#f3c144",
@@ -459,7 +537,7 @@ export default function TournamentDetails() {
                       playersData={tournament.playersList}
                       tournamentTitle={`${tournament.title} (${tournament.type || "Knockout Bracket"})`} 
                       isStaff={isStaff}
-                      onResultChange={handleQuickResultChange}
+                      onUpdateMatch={handleUpdateMatch}
                     />
                   ) : (!tournament.matches || tournament.matches.length === 0) ? (
                     <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
@@ -488,7 +566,7 @@ export default function TournamentDetails() {
                                 {isStaff && m._id ? (
                                   <select
                                     value={m.result}
-                                    onChange={(e) => handleQuickResultChange(m._id, e.target.value)}
+                                    onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
                                     style={{
                                       background: "#15120c",
                                       color: "#f3c144",
@@ -597,24 +675,33 @@ export default function TournamentDetails() {
                 />
               </div>
               <div>
-                <label>White Player Name *</label>
-                <input 
-                  type="text" 
-                  value={matchForm.white} 
-                  onChange={(e) => setMatchForm({ ...matchForm, white: e.target.value })} 
-                  placeholder="White"
-                  required 
-                />
+                <label>White Player *</label>
+                <select
+                  value={matchForm.white}
+                  onChange={(e) => setMatchForm({ ...matchForm, white: e.target.value })}
+                  style={{ background: "#15120c", color: "#fff", border: "1px solid #36332b", padding: "8px", borderRadius: "8px", width: "100%", marginTop: "5px" }}
+                  required
+                >
+                  <option value="">-- Select White Player --</option>
+                  {(tournament.playersList || []).map(p => (
+                    <option key={p.name} value={p.name}>{p.name} ({p.rating || 1500})</option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label>Black Player Name *</label>
-                <input 
-                  type="text" 
-                  value={matchForm.black} 
-                  onChange={(e) => setMatchForm({ ...matchForm, black: e.target.value })} 
-                  placeholder="Black"
-                  required 
-                />
+                <label>Black Player *</label>
+                <select
+                  value={matchForm.black}
+                  onChange={(e) => setMatchForm({ ...matchForm, black: e.target.value })}
+                  style={{ background: "#15120c", color: "#fff", border: "1px solid #36332b", padding: "8px", borderRadius: "8px", width: "100%", marginTop: "5px" }}
+                  required
+                >
+                  <option value="">-- Select Black Player --</option>
+                  <option value="BYE">BYE (Free Win)</option>
+                  {(tournament.playersList || []).map(p => (
+                    <option key={p.name} value={p.name}>{p.name} ({p.rating || 1500})</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label>Result *</label>
