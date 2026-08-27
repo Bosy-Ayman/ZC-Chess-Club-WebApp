@@ -151,6 +151,7 @@ const UserSchema = new mongoose.Schema({
   major: { type: String, default: "" },
   batch: { type: String, default: "" },
   role: { type: String, default: 'member' },
+  profileImage: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -419,7 +420,8 @@ app.post('/api/admin/google-login', async (req, res) => {
         phone: phone || "",
         major: major || "",
         batch: batch || "",
-        role: email === 'admin@zcchessclub.com' ? 'admin' : 'member'
+        role: email === 'admin@zcchessclub.com' ? 'admin' : 'member',
+        profileImage: payload.picture || ""
       });
       await user.save();
     } else {
@@ -429,6 +431,9 @@ app.post('/api/admin/google-login', async (req, res) => {
       if (phone) user.phone = phone;
       if (major) user.major = major;
       if (batch) user.batch = batch;
+      if (payload.picture && !user.profileImage) {
+        user.profileImage = payload.picture;
+      }
       await user.save();
     }
 
@@ -519,10 +524,30 @@ app.get('/api/profile', async (req, res) => {
       phone: user.phone || "",
       major: user.major || "",
       batch: user.batch || "",
-      role: user.role || "member"
+      role: user.role || "member",
+      profileImage: user.profileImage || ""
     });
   } catch (error) {
     res.status(500).json({ error: 'Server error fetching user profile', details: error.message });
+  }
+});
+
+// PUT: Update user profile image (base64 or URL)
+app.put('/api/profile/image', express.json({limit: '5mb'}), async (req, res) => {
+  try {
+    const { email, profileImage } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    
+    const user = await User.findOneAndUpdate(
+      { email },
+      { profileImage },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    res.json({ message: 'Profile image updated successfully', profileImage: user.profileImage });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update profile image', details: error.message });
   }
 });
 

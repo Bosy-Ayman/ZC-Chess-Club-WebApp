@@ -58,6 +58,38 @@ export default function Profile() {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be smaller than 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Image = reader.result;
+      try {
+        const res = await fetch(`${API_BASE}/api/profile/image`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, profileImage: base64Image })
+        });
+        
+        if (res.ok) {
+          setProfile(prev => ({ ...prev, profileImage: base64Image }));
+        } else {
+          const data = await res.json();
+          alert(data.error || "Failed to update profile image");
+        }
+      } catch (err) {
+        alert("Error updating profile image: " + err.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleRegister = async (tournamentId) => {
     if (!profile) return;
     try {
@@ -135,7 +167,22 @@ export default function Profile() {
         {profile && (
           <section className="profile-top-info" style={{ flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
             <div className="profile-user">
-              <div className="profile-user-img" style={{ backgroundImage: `url("/Icons/user.jpg")` }}></div>
+              <div style={{ position: "relative" }}>
+                <label htmlFor="profileImageUpload" className="profile-image-upload-label">
+                  <div className="profile-user-img" style={{ backgroundImage: `url("${profile.profileImage || '/Icons/user.jpg'}")` }}>
+                    <div className="profile-img-overlay">
+                      <span>📷</span>
+                    </div>
+                  </div>
+                </label>
+                <input 
+                  type="file" 
+                  id="profileImageUpload" 
+                  accept="image/*" 
+                  style={{ display: "none" }} 
+                  onChange={handleImageUpload}
+                />
+              </div>
               <div>
                 <p className="user-name">{profile.name}</p>
                 <p className="user-joined">Role: {(profile.role || 'member').toUpperCase()}</p>
