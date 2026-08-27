@@ -130,7 +130,7 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
-mongoose.set('bufferCommands', false);
+// Removed bufferCommands: false to allow Mongoose to wait for DB connection in serverless
 
 mongoose.connection.on('connected', () => console.log('Mongoose connected to DB'));
 mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err));
