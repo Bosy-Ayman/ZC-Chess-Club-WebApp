@@ -4,13 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const dns = require('dns');
 
-// Set DNS servers to public DNS to prevent querySrv ENOTFOUND issues on Windows/Node
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (e) {
-  // Ignore if fails
-}
-
+// DNS override removed because it breaks Serverless functions on AWS Lambda (Vercel)
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const bcrypt = require('bcryptjs');
