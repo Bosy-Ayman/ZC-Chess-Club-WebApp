@@ -458,6 +458,8 @@ export default function TournamentDetails() {
                       matchesData={tournament.matches} 
                       playersData={tournament.playersList}
                       tournamentTitle={`${tournament.title} (${tournament.type || "Knockout Bracket"})`} 
+                      isStaff={isStaff}
+                      onResultChange={handleQuickResultChange}
                     />
                   ) : (!tournament.matches || tournament.matches.length === 0) ? (
                     <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
@@ -476,9 +478,37 @@ export default function TournamentDetails() {
                           {tournament.matches.map((m, index) => (
                             <tr key={index}>
                               <td>Round {m.round}</td>
-                              <td>{m.white}</td>
-                              <td>{m.black}</td>
-                              <td style={{ color: "#f4c653", fontWeight: "bold" }}>{m.result}</td>
+                              <td style={{ fontWeight: m.result === "1-0" || m.result === "1 - 0" ? "bold" : "normal", color: m.result === "1-0" || m.result === "1 - 0" ? "#f3c144" : "#fff" }}>
+                                {m.white} {m.result === "1-0" || m.result === "1 - 0" ? "✓" : ""}
+                              </td>
+                              <td style={{ fontWeight: m.result === "0-1" || m.result === "0 - 1" ? "bold" : "normal", color: m.result === "0-1" || m.result === "0 - 1" ? "#f3c144" : "#fff" }}>
+                                {m.black} {m.result === "0-1" || m.result === "0 - 1" ? "✓" : ""}
+                              </td>
+                              <td>
+                                {isStaff && m._id ? (
+                                  <select
+                                    value={m.result}
+                                    onChange={(e) => handleQuickResultChange(m._id, e.target.value)}
+                                    style={{
+                                      background: "#15120c",
+                                      color: "#f3c144",
+                                      border: "1px solid #f3c144",
+                                      padding: "4px 10px",
+                                      borderRadius: "6px",
+                                      fontWeight: "800",
+                                      fontSize: "0.88rem",
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <option value="1-0">1 - 0 (White Wins)</option>
+                                    <option value="0-1">0 - 1 (Black Wins)</option>
+                                    <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                    <option value="Pending">Pending</option>
+                                  </select>
+                                ) : (
+                                  <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
+                                )}
+                              </td>
                             </tr>
                           ))}
                         </tbody>

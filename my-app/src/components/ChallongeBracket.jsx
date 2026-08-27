@@ -115,7 +115,9 @@ export default function ChallongeBracket({
   tournamentType,
   matchesData, 
   playersData, 
-  tournamentTitle = "Knockout Championship Bracket" 
+  tournamentTitle = "Knockout Championship Bracket",
+  isStaff = false,
+  onResultChange
 }) {
   const [activeTab, setActiveTab] = useState("upper"); // "upper" or "lower"
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -340,6 +342,42 @@ export default function ChallongeBracket({
               <p>Status: <strong>{selectedMatchModal.status}</strong></p>
               <p>Source: <strong>MongoDB Atlas Cluster Database</strong></p>
             </div>
+
+            {isStaff && onResultChange && (
+              <div className="match-modal-actions" style={{ marginTop: "20px", borderTop: "1px solid #36332b", paddingTop: "15px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ color: "#bab19c", fontSize: "0.88rem", fontWeight: "600" }}>Record Score:</span>
+                <select
+                  value={(() => {
+                    const rawMatch = dbMatches.find(m => m._id === selectedMatchModal.id);
+                    return rawMatch ? rawMatch.result : "Pending";
+                  })()}
+                  onChange={async (e) => {
+                    const newResult = e.target.value;
+                    try {
+                      await onResultChange(selectedMatchModal.id, newResult);
+                      setSelectedMatchModal(null);
+                    } catch (err) {
+                      alert("Error: " + err.message);
+                    }
+                  }}
+                  style={{
+                    background: "#15120c",
+                    color: "#f3c144",
+                    border: "1px solid #f3c144",
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    fontWeight: "800",
+                    fontSize: "0.85rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="1-0">1 - 0 (White Wins)</option>
+                  <option value="0-1">0 - 1 (Black Wins)</option>
+                  <option value="1/2-1/2">½ - ½ (Draw)</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
       )}
