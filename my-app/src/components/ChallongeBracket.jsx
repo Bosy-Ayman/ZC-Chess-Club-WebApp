@@ -132,6 +132,10 @@ export default function ChallongeBracket({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const rawMatch = selectedMatchModal 
+    ? dbMatches.find(m => m._id === selectedMatchModal.id) 
+    : null;
+
   // Fetch matches directly from MongoDB API if tournamentId is provided
   useEffect(() => {
     if (tournamentId) {
