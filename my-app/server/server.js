@@ -209,6 +209,32 @@ async function seedDatabase() {
 
 // --- Routes ---
 
+// GET: DB diagnostic test
+app.get('/api/db-test', async (req, res) => {
+  try {
+    const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const currentState = mongoose.connection.readyState;
+    
+    // If not connected, let's try to connect explicitly and await it
+    if (currentState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 4000 });
+    }
+    
+    res.json({
+      status: 'success',
+      connectionState: states[mongoose.connection.readyState],
+      uriMasked: process.env.MONGO_URI ? process.env.MONGO_URI.replace(/:([^@]+)@/, ':****@') : 'undefined'
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: err.message,
+      connectionState: mongoose.connection.readyState,
+      stack: err.stack
+    });
+  }
+});
+
 // POST: submit new application
 app.post('/api/applications', async (req, res) => {
   try {
