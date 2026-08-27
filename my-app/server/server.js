@@ -184,21 +184,7 @@ mongoose.connection.on('connected', () => console.log('Mongoose connected to DB'
 mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err));
 mongoose.connection.on('disconnected', () => console.warn('Mongoose disconnected'));
 
-mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
-  .then(() => {
-    console.log('MongoDB connected!');
-    seedDatabase();
-  })
-  .catch(err => {
-    console.error('MongoDB connection error:', err.message);
-    console.log('Attempting connection to local MongoDB fallback (mongodb://localhost:27017/chess_club)...');
-    mongoose.connect('mongodb://localhost:27017/chess_club', { serverSelectionTimeoutMS: 3000 })
-      .then(() => {
-        console.log('Connected to fallback local MongoDB!');
-        seedDatabase();
-      })
-      .catch(localErr => console.error('Fallback local MongoDB connection failed as well:', localErr.message));
-  });
+// Top-level connection disabled. Mongoose connection is now handled on-demand by the connectDB middleware.
 
 async function seedAdminUser() {
   try {
@@ -269,10 +255,7 @@ app.get('/api/db-test', async (req, res) => {
     const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
     const currentState = mongoose.connection.readyState;
     
-    // If not connected, let's try to connect explicitly and await it
-    if (currentState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 4000 });
-    }
+    // Diagnostic endpoint does not trigger connect itself to avoid connection collisions
     
     res.json({
       status: 'success',
