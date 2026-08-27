@@ -20,7 +20,7 @@ export default function LoginModal({ onClose }) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Google authentication failed.");
+        throw new Error(`DEBUG INFO: ${data.details || data.error || "Google authentication failed."}`);
       }
 
       localStorage.setItem("adminToken", data.token);
