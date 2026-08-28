@@ -107,6 +107,25 @@ export default function Profile() {
     }
   };
 
+  const handleLeaveTournament = async (tournamentId) => {
+    if (!profile) return;
+    if (!window.confirm("Are you sure you want to leave this tournament?")) return;
+    
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: profile.email, name: profile.name }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to leave tournament");
+      alert("Successfully left the tournament!");
+      fetchData(); // Refresh lists
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const renderMatches = (tournament) => {
     if (!profile) return null;
     const myMatches = tournament.matches?.filter(
@@ -235,6 +254,15 @@ export default function Profile() {
                       <span className="t-info-text"><strong>Location:</strong> {t.location}</span>
                     </div>
                     {isPlayer && renderMatches(t)}
+                    {t.status === "Upcoming" && (
+                      <button 
+                        onClick={() => handleLeaveTournament(t._id)}
+                        className="btn-primary"
+                        style={{ marginTop: "12px", background: "rgba(220, 53, 69, 0.15)", color: "#ff6b6b", border: "1px solid #ff6b6b" }}
+                      >
+                        Leave Tournament
+                      </button>
+                    )}
                   </div>
                 );
               })}

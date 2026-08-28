@@ -1162,9 +1162,51 @@ app.post('/api/tournaments/:id/register', async (req, res) => {
       return res.status(400).json({ error: 'Already registered for this tournament' });
     }
 
-    tournament.registrations.push({ email, name, status: 'Pending' });
+    // Auto-approve and add to players list immediately
+    tournament.registrations.push({ email, name, status: 'Approved' });
+    
+    // Check if user is already in playersList (just in case)
+    if (!tournament.playersList.some(p => p.name === name)) {
+      // Find user major if possible
+      const user = await User.findOne({ email });
+      tournament.playersList.push({ 
+        name, 
+        rating: 1500, // Default rating 
+        major: user?.major || 'N/A' 
+      });
+      tournament.players = tournament.playersList.length;
+    }
+
     const saved = await tournament.save();
-    res.json({ message: 'Successfully registered', data: saved });
+    res.json({ message: 'Successfully joined tournament!', data: saved });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+});
+
+// POST: leave a tournament
+app.post('/api/tournaments/:id/leave', async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    if (!email || !name) return res.status(400).json({ error: 'Email and name required' });
+
+    const tournament = await Tournament.findById(req.params.id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+
+    if (tournament.status !== 'Upcoming') {
+      return res.status(400).json({ error: 'Cannot leave an ongoing or completed tournament.' });
+    }
+
+    // Remove from registrations
+    tournament.registrations = tournament.registrations.filter(reg => reg.email !== email);
+    
+    // Remove from players list
+    const initialCount = tournament.playersList.length;
+    tournament.playersList = tournament.playersList.filter(p => p.name !== name);
+    tournament.players = tournament.playersList.length;
+
+    const saved = await tournament.save();
+    res.json({ message: 'Successfully left tournament!', data: saved });
   } catch (error) {
     res.status(500).json({ error: 'Server error', details: error.message });
   }
