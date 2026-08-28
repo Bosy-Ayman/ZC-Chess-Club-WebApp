@@ -580,7 +580,13 @@ app.delete('/api/users/:id', async (req, res) => {
 app.get('/api/tournaments', async (req, res) => {
   try {
     const tournaments = await Tournament.find().sort({ startDate: 1 });
-    res.json(tournaments);
+    // Dynamically compute player count to ensure it's always accurate
+    const dynamicTournaments = tournaments.map(t => {
+      const obj = t.toObject();
+      obj.players = obj.playersList ? obj.playersList.length : 0;
+      return obj;
+    });
+    res.json(dynamicTournaments);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch tournaments', details: error.message });
   }
@@ -593,7 +599,9 @@ app.get('/api/tournaments/:id', async (req, res) => {
     if (!tournament) {
       return res.status(404).json({ error: "Tournament not found" });
     }
-    res.json(tournament);
+    const obj = tournament.toObject();
+    obj.players = obj.playersList ? obj.playersList.length : 0;
+    res.json(obj);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch tournament details', details: error.message });
   }
