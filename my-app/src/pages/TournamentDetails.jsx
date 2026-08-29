@@ -316,8 +316,9 @@ export default function TournamentDetails() {
       <div className="layout-container">
         <div className="main-content">
           {isLoading ? (
-            <div style={{ color: "#caba91", textAlign: "center", padding: "50px", fontSize: "1.2rem" }}>
-              Loading tournament details...
+            <div className="details-loading-container">
+              <div className="spinner-ring"></div>
+              <span>Loading tournament details...</span>
             </div>
           ) : error || !tournament ? (
             <div style={{ color: "#e74c3c", textAlign: "center", padding: "50px", fontSize: "1.2rem" }}>

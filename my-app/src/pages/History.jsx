@@ -612,7 +612,10 @@ export default function EventHistory() {
             </div>
 
             {isLoading ? (
-              <div style={{ textAlign: "center", marginTop: "50px", color: "#f3c144" }}>Loading history...</div>
+              <div className="history-loading-container">
+                <div className="spinner-ring"></div>
+                <span>Loading Club History...</span>
+              </div>
             ) : years.length === 0 ? (
               <div style={{ textAlign: "center", marginTop: "50px", color: "#b5afa1" }}>
                 No events found in this category.

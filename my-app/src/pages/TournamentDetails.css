@@ -278,3 +278,32 @@
 .close-btn:hover {
   color: white;
 }
+
+/* loading spinner styles */
+.details-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 300px;
+  color: #caba91;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+}
+
+.details-loading-container .spinner-ring {
+  width: 44px;
+  height: 44px;
+  border: 3.5px solid rgba(194, 186, 145, 0.1);
+  border-radius: 50%;
+  border-top-color: #caba91;
+  animation: spinDetails 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+  box-shadow: 0 0 15px rgba(194, 186, 145, 0.05);
+}
+
+@keyframes spinDetails {
+  to {
+    transform: rotate(360deg);
+  }
+}
