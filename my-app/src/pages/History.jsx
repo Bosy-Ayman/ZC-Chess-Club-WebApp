@@ -108,8 +108,8 @@ export default function EventHistory() {
         { name: "Thomas Emad", role: "President", image: "/Images/highboard/23-24/ThomasEmad.png" },
         { name: "Youssef Zanny", role: "Vice President", image: "/Icons/unknown.png" },
         { name: "Elaf Ahmed", role: "Head of HR", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
-        { name: "Amira Elhussainy", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Amira Elhussainy", role: "Head of Training", image: "/Images/highboard/23-24/AmiraElhussainy.jpg" },
+        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", image: "/Images/highboard/23-24/MohamedEzz.jpg" },
       ]
     },
      {
@@ -210,7 +210,7 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2026-04-22",
       location: "Zewail City Student Center",
-      image: "/Images/Tournaments/2024-2025/CarrerFair.jpg",
+      image: "/Images/Tournaments/2024-2025/CareerFair.jpg",
       description: "Interactive chess booth, speed puzzle solving, and open exhibition matches hosted during the annual Zewail City Career Fair.",
       playersList: [
         { name: "🎯 Speed Puzzle Booth" },
