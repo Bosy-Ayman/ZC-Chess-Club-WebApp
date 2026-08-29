@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { to: "/history", label: "History", icon: "📜" },
   { to: "/calendar", label: "Calendar", icon: "📅" },
   { to: "/about", label: "About", icon: "ℹ️" },
-  { to: "/clubroles", label: "Join Us", icon: "✨" },
+  { to: "/clubroles", label: "Club Roles", icon: "✨" },
 ];
 
 const Header = ({ sidebarOpen, toggleSidebar }) => {
@@ -350,11 +350,9 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
                 </>
               )}
 
-              {(!userRole || userRole === 'member') && (
-                <Link to="/clubroles" onClick={closeUserDrawer} className="drawer-link">
-                  <span className="drawer-link-icon">✨</span> Join Us / Apply
-                </Link>
-              )}
+              <Link to="/clubroles" onClick={closeUserDrawer} className={`drawer-link ${location.pathname === "/clubroles" ? "drawer-link--active" : ""}`}>
+                <span className="drawer-link-icon">✨</span> Club Roles
+              </Link>
             </nav>
 
             {/* Footer: Logout */}

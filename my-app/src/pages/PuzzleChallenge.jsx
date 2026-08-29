@@ -126,6 +126,17 @@ export default function PuzzleChallenge() {
     // Block input while opponent is replying, puzzle is advancing, or game is finished
     if (isFinished || boardLocked.current) return false;
 
+    // Check if the move is legal in the current position first
+    const legalMoves = chessGame.moves({ verbose: true });
+    const isLegal = legalMoves.some(
+      (m) => m.from === sourceSquare && m.to === targetSquare
+    );
+
+    if (!isLegal) {
+      // Snap back silently for illegal moves (no penalty)
+      return false;
+    }
+
     try {
       const targetMove = correctMovesList[currentMoveIdx];
       if (!targetMove) return false;
@@ -200,6 +211,7 @@ export default function PuzzleChallenge() {
         return false;
       }
     } catch (err) {
+      console.error("onPieceDrop threw exception:", err);
       handleWrongMove();
       return false;
     }
@@ -255,64 +267,134 @@ export default function PuzzleChallenge() {
     }
   };
 
+  // Compute user statistics from tournaments leaderboard data
+  const userStats = {
+    totalScore: 0,
+    arenasPlayed: 0,
+    highestScore: 0,
+    solvedTotal: 0
+  };
+
+  tournaments.forEach(t => {
+    if (t.leaderboard) {
+      const userEntry = t.leaderboard.find(entry => entry.email === userEmail);
+      if (userEntry) {
+        userStats.totalScore += userEntry.score;
+        userStats.arenasPlayed += 1;
+        userStats.highestScore = Math.max(userStats.highestScore, userEntry.score);
+        userStats.solvedTotal += userEntry.solvedCount || 0;
+      }
+    }
+  });
+
+  const activePlayState = isPlaying && !isFinished;
+
   return (
-    <div className="puzzle-challenge-root">
-      <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className={`puzzle-challenge-root ${activePlayState ? "playing" : ""}`}>
+      {!activePlayState && <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
 
-      <main className="puzzle-layout-container">
+      <main className={`puzzle-layout-container ${activePlayState ? "playing" : ""}`}>
         {isLoading ? (
-          <div className="loading-spinner">Loading puzzle tournaments...</div>
+          <div className="loading-spinner">
+            <div className="spinner-ring"></div>
+            <span>Loading Chess Tactics Arena...</span>
+          </div>
         ) : !isPlaying ? (
-          /* SECTION 1: TOURNAMENT LISTING SCREEN */
+          /* SECTION 1: TOURNAMENT LISTING SCREEN (DASHBOARD REDESIGN) */
           <div className="puzzle-selection-view">
-            <h1 className="puzzle-header-title">Chess Tactics Arena</h1>
-            <p className="puzzle-description">
-              Participate in active club puzzle challenges. Solve custom mate-in-1, mate-in-2, or mate-in-3 puzzles. You get 3 trials per puzzle. Earn speed bonus points!
-            </p>
+            <div className="puzzle-hero-section">
+              <h1 className="puzzle-header-title">Chess Tactics Arena</h1>
+              <p className="puzzle-description">
+                Participate in active club puzzle challenges. Solve custom mate-in-1, mate-in-2, or mate-in-3 puzzles. You get 3 trials per puzzle. Earn speed bonus points!
+              </p>
+            </div>
 
-            <div className="tournaments-grid">
-              {tournaments.length === 0 ? (
-                <div className="no-tournaments-card">
-                  <h3>No Puzzle Tournaments Available</h3>
-                  <p>Check back later for upcoming club chess tactics challenges.</p>
-                </div>
-              ) : (
-                tournaments.map((t) => (
-                  <div key={t._id} className="tournament-card">
-                    <div className="card-top">
-                      <span className="card-badge">LIVE ARENA</span>
-                      <h3>{t.title}</h3>
-                    </div>
-                    <div className="card-info">
-                      <div className="info-item">📅 Date: {t.startDate}</div>
-                      <div className="info-item">⏱️ Time Limit: {t.timeLimit}s / puzzle</div>
-                      <div className="info-item">🧩 Puzzles: {t.puzzles ? t.puzzles.length : 0}</div>
-                    </div>
-                    
-                    {/* Leaderboard Summary preview */}
-                    <div className="card-leaderboard-preview">
-                      <h4>Leaderboard Standings</h4>
-                      {t.leaderboard && t.leaderboard.length > 0 ? (
-                        t.leaderboard.slice(0, 3).map((entry, idx) => (
-                          <div key={idx} className="leaderboard-preview-row">
-                            <span>{idx + 1}. {entry.name}</span>
-                            <strong>{entry.score} pts</strong>
-                          </div>
-                        ))
-                      ) : (
-                        <p style={{ fontStyle: "italic", fontSize: "0.8rem", color: "#888", margin: "5px 0" }}>Be the first to participate!</p>
-                      )}
-                    </div>
-
-                    <button 
-                      className="enter-btn" 
-                      onClick={() => startTournamentChallenge(t)}
-                    >
-                      Join Challenge
-                    </button>
+            <div className="selection-layout">
+              {/* Left Column: Player Stats HUD */}
+              <div className="profile-stats-panel">
+                <div className="profile-header-card">
+                  <div className="user-avatar-badge">
+                    {userName ? userName[0].toUpperCase() : "U"}
                   </div>
-                ))
-              )}
+                  <div className="user-meta">
+                    <h3>{userName || "Club Member"}</h3>
+                    <span className="role-tag">Tactician</span>
+                  </div>
+                </div>
+
+                <div className="stats-indicator-grid">
+                  <div className="stat-indicator-box">
+                    <span className="stat-label">Total Score</span>
+                    <span className="stat-value">{userStats.totalScore} pts</span>
+                  </div>
+                  <div className="stat-indicator-box">
+                    <span className="stat-label">Arenas Played</span>
+                    <span className="stat-value">{userStats.arenasPlayed}</span>
+                  </div>
+                  <div className="stat-indicator-box">
+                    <span className="stat-label">Highest Score</span>
+                    <span className="stat-value">{userStats.highestScore} pts</span>
+                  </div>
+                  <div className="stat-indicator-box">
+                    <span className="stat-label">Puzzles Cleared</span>
+                    <span className="stat-value">{userStats.solvedTotal}</span>
+                  </div>
+                </div>
+
+                <div className="profile-tip-card">
+                  <h4>💡 Pro Tip</h4>
+                  <p>Solve puzzles quickly to earn speed bonus points! Each remaining second on the timer adds 1.5x points to your score.</p>
+                </div>
+              </div>
+
+              {/* Right Column: Arenas Grid */}
+              <div className="arenas-grid-panel">
+                <h3 className="section-title">Active Arenas</h3>
+                <div className="tournaments-grid">
+                  {tournaments.length === 0 ? (
+                    <div className="no-tournaments-card">
+                      <h3>No Puzzle Tournaments Available</h3>
+                      <p>Check back later for upcoming club chess tactics challenges.</p>
+                    </div>
+                  ) : (
+                    tournaments.map((t) => (
+                      <div key={t._id} className="tournament-card">
+                        <div className="card-top">
+                          <span className="card-badge">LIVE ARENA</span>
+                          <h3>{t.title}</h3>
+                        </div>
+                        <div className="card-info">
+                          <div className="info-item">📅 Date: {t.startDate}</div>
+                          <div className="info-item">⏱️ Time Limit: {t.timeLimit}s / puzzle</div>
+                          <div className="info-item">🧩 Puzzles: {t.puzzles ? t.puzzles.length : 0}</div>
+                        </div>
+                        
+                        {/* Leaderboard Summary preview */}
+                        <div className="card-leaderboard-preview">
+                          <h4>Leaderboard Standings</h4>
+                          {t.leaderboard && t.leaderboard.length > 0 ? (
+                            t.leaderboard.slice(0, 3).map((entry, idx) => (
+                              <div key={idx} className="leaderboard-preview-row">
+                                <span>{idx + 1}. {entry.name}</span>
+                                <strong>{entry.score} pts</strong>
+                              </div>
+                            ))
+                          ) : (
+                            <p style={{ fontStyle: "italic", fontSize: "0.8rem", color: "#888", margin: "5px 0" }}>Be the first to participate!</p>
+                          )}
+                        </div>
+
+                        <button 
+                          className="enter-btn" 
+                          onClick={() => startTournamentChallenge(t)}
+                        >
+                          Join Challenge
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         ) : isFinished ? (
@@ -366,32 +448,42 @@ export default function PuzzleChallenge() {
             </button>
           </div>
         ) : (
-          /* SECTION 3: INTERACTIVE GAME BOARD SOLVER */
+          /* SECTION 3: INTERACTIVE GAME BOARD SOLVER (FULL-SCREEN OPTIMIZED HUD) */
           <div className="puzzle-gameplay-container">
             <div className="game-status-bar">
               <button className="quit-btn" onClick={() => { if (window.confirm("Quit challenge? Your current progress will be lost.")) setIsPlaying(false); }}>
                 Quit Arena
               </button>
               <div className="puzzle-header-title">
-                {activeTournament.title} - Puzzle {currentPuzzleIdx + 1} of {activeTournament.puzzles.length}
+                {activeTournament.title}
               </div>
-              <div className="timer-badge">
+              <div className={`timer-badge ${timeRemaining <= 15 ? 'timer-pulse' : ''}`}>
                 ⏱️ {timeRemaining}s
               </div>
             </div>
 
             <div className="gameplay-grid">
-              {/* Gameplay Left: Chessboard */}
+              {/* Gameplay Left: Chessboard Panel */}
               <div className="gameplay-board-panel">
                 <div className="game-feedback-banner" data-type={feedbackType}>
                   {gameFeedback || "Make your move to begin solving..."}
+                </div>
+
+                <div className="puzzle-progress-bar-container">
+                  <span className="progress-text">Progress: {currentPuzzleIdx} / {activeTournament.puzzles.length} Cleared</span>
+                  <div className="progress-bar-track">
+                    <div 
+                      className="progress-bar-fill" 
+                      style={{ width: `${(currentPuzzleIdx / activeTournament.puzzles.length) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
                 
                 <div className="game-board-wrapper">
                   <Chessboard
                     position={boardFen}
                     onPieceDrop={onPieceDrop}
-                    boardWidth={400}
+                    boardWidth={380}
                     arePiecesDraggable={true}
                   />
                 </div>
@@ -407,7 +499,7 @@ export default function PuzzleChallenge() {
                   </div>
                   <div className="stat-row">
                     <span>Hint:</span>
-                    <span style={{ fontSize: "0.85rem", color: "#caba91" }}>
+                    <span style={{ fontSize: "0.85rem", color: "#caba91", maxWidth: "160px", textAlign: "right" }}>
                       {activeTournament.puzzles[currentPuzzleIdx].description || "Calculate best moves"}
                     </span>
                   </div>
@@ -415,7 +507,9 @@ export default function PuzzleChallenge() {
                     <span>Remaining Trials:</span>
                     <span className="hearts-indicator">
                       {Array.from({ length: 3 }).map((_, idx) => (
-                        <span key={idx} className={idx < trials ? "heart filled" : "heart empty"}>❤️</span>
+                        <span key={idx} className={`heart ${idx < trials ? "filled" : "empty"}`}>
+                          {idx < trials ? "❤️" : "🖤"}
+                        </span>
                       ))}
                     </span>
                   </div>
@@ -425,7 +519,7 @@ export default function PuzzleChallenge() {
                   </div>
                 </div>
 
-                <div className="stats-card" style={{ marginTop: "20px", flex: 1, overflowY: "auto" }}>
+                <div className="stats-card mini-leaderboard-card">
                   <h4>Live Leaderboard</h4>
                   <div className="mini-leaderboard">
                     {activeTournament.leaderboard && activeTournament.leaderboard.length > 0 ? (
@@ -436,7 +530,7 @@ export default function PuzzleChallenge() {
                         </div>
                       ))
                     ) : (
-                      <p style={{ fontStyle: "italic", fontSize: "0.8rem", color: "#888" }}>No scores yet.</p>
+                      <p style={{ fontStyle: "italic", fontSize: "0.8rem", color: "#888", textAlign: "center", margin: "10px 0" }}>No scores yet.</p>
                     )}
                   </div>
                 </div>
@@ -445,7 +539,7 @@ export default function PuzzleChallenge() {
           </div>
         )}
       </main>
-      <Footer />
+      {!activePlayState && <Footer />}
     </div>
   );
 }

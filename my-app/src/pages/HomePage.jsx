@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Award, Bell, Images, Sparkles, ChevronDown, Pin, ExternalLink, Calendar } from "lucide-react";
+import { Award, Bell, Images, Sparkles, ChevronDown, Pin, ExternalLink, Calendar, MapPin } from "lucide-react";
 import "./HomePage.css";
 
 const HomePage = () => {
@@ -9,10 +9,10 @@ const HomePage = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const heroSlides = [
-    "/Images/image4.jpg",
-    "/Images/image1.jpg",
-    "/Images/image2.jpg",
-    "/Images/image3.jpg",
+    "/Images/Tournaments/2024-2025/image4.jpg",
+    "/Images/Tournaments/2024-2025/image1.jpg",
+    "/Images/Tournaments/2024-2025/image2.jpg",
+    "/Images/Tournaments/2024-2025/image3.jpg",
   ];
 
   const [heroIndex, setHeroIndex] = useState(0);
@@ -34,7 +34,7 @@ const HomePage = () => {
       description:
         "Our biggest chess event of the semester is being prepared. Stay tuned for the official schedule, registration link, and prize pool announcement.",
       date: "Week 9, 2026",
-      image: "/Images/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/Tournament1.png",
       link: "/tournaments",
       linkLabel: "View Tournaments",
     },
@@ -70,10 +70,10 @@ const HomePage = () => {
   const otherAnnouncements = announcements.filter((a) => !a.pinned);
 
   const galleryImages = [
-    "/Images/image1.jpg",
-    "/Images/image4.jpg",
-    "/Images/image2.jpg",
-    "/Images/image3.jpg",
+    "/Images/Tournaments/2024-2025/image1.jpg",
+    "/Images/Tournaments/2024-2025/image4.jpg",
+    "/Images/Tournaments/2024-2025/image2.jpg",
+    "/Images/Tournaments/2024-2025/image3.jpg",
   ];
 
   return (
@@ -271,6 +271,31 @@ const HomePage = () => {
               ></div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* Location Section */}
+      <section className="location-section" id="location">
+        <h2>
+          <MapPin size={22} />
+          Find Us
+        </h2>
+        <p className="location-description">
+          We're based at Zewail City of Science and Technology. Visit us to play, learn, and grow your chess skills!
+        </p>
+        <div className="location-map-wrapper">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13829.260647009416!2d31.057944756637557!3d29.941612099605063!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145851c4e4764643%3A0xc68aa33599a96301!2sZewail%20City%20of%20Science%20and%20Technology!5e0!3m2!1sen!2seg!4v1787918469421!5m2!1sen!2seg"
+            width="100%"
+            height="400"
+            style={{ border: 0, borderRadius: "16px" }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            title="Zewail City Location"
+          />
         </div>
       </section>
 

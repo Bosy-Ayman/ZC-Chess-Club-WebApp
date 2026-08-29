@@ -647,17 +647,6 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="detailsUrl">Registration / Info Link</label>
-                  <input
-                    type="url"
-                    id="detailsUrl"
-                    name="detailsUrl"
-                    value={form.detailsUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/register"
-                  />
-                </div>
 
                 <div className="form-group">
                   <label htmlFor="description">Description</label>

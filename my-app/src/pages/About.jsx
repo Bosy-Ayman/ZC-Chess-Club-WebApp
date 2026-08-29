@@ -22,26 +22,26 @@ export default function About() {
     {
       name: "Aml Ali",
       role: "Head of Human Resources",
-      image: "/Images/Aml.png", 
+      image: "/Images/highboard/24-25/Aml.png", 
     },
     {
       name: "Momen Mahmoud",
       role: "Head of Training",
-      image: "/Images/momen.png", 
+      image: "/Images/highboard/24-25/momen.png", 
     },
     {
       name: "Rana Ahmed",
       role: "Head of Multimedia",
-      image: "/Images/rana.jpg", 
+      image: "/Images/highboard/24-25/rana.jpg", 
     },
     {
       name: "Alaa Ibrahim",
       role: "Head of Organization",
-      image: "/Images/unknown.png", 
+      image: "/Images/highboard/24-25/alaa.png", 
     },{
       name: "Adham Elawady",
       role: "Head of Public Relation",
-      image: "/Images/adham.png", 
+      image: "/Images/highboard/24-25/adham.png", 
     },
   ];
 

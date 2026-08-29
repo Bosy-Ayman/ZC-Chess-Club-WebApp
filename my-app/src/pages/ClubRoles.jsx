@@ -36,35 +36,35 @@ export default function ClubRoles() {
       department: "Human Resources",
       title: "HR Member",
       desc: "Manage club members, handle inquiries, and ensure smooth communication within the club.",
-      image: "/Images/HR.jpg",
+      image: "/Images/Positions/HR.jpg",
       path: "/apply/hr", // 👈 ADD PATH
     },
     {
       department: "Tournament Organizer",
       title: "OC Member",
       desc: "Plan and execute chess tournaments, ensuring fair play and a positive experience for all participants.",
-      image: "/Images/arbiter.jpeg",
+      image: "/Images/Positions/arbiter.jpeg",
       path: "/apply/oc-member", // 👈 ADD PATH
     },
     {
       department: "Multimedia",
       title: "Media Member",
       desc: "Capture, design, and produce creative content that represents the club’s activities and achievements.",
-      image: "/Images/media.jpeg",
+      image: "/Images/Positions/media.jpeg",
       path: "/apply/multimedia", // 👈 ADD PATH (Matches previous setup)
     },
     {
       department: "Trainer",
       title: "Trainer Member",
       desc: "Train new players, prepare materials for club sessions, and guide members to improve their chess skills.",
-      image: "/Images/trainer.jpg",
+      image: "/Images/Positions/trainer.jpg",
       path: "/apply/trainer", // 👈 ADD PATH
     },
     {
       department: "Trainee",
       title: "Trainee Member",
       desc: "New members who are learning the basics of chess and developing their skills through training sessions.",
-      image: "/Images/trainee2.jpg",
+      image: "/Images/Positions/trainee2.jpg",
       path: "/apply/trainee", // 👈 ADD PATH
     },
   ];

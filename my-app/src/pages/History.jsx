@@ -105,11 +105,11 @@ export default function EventHistory() {
       year: "2023/2024",
       isCurrent: false,
       members: [
-        { name: "Thomas Emad", role: "President", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
-        { name: "Elaf Ahmed", role: "Head of HR", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Thomas Emad", role: "President", image: "/Images/highboard/23-24/ThomasEmad.png" },
+        { name: "Youssef Zanny", role: "Vice President", image: "/Icons/unknown.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
+        { name: "Amira Elhussainy", role: "Head of Training", image: "/Icons/unknown.png" },
+        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", image: "/Icons/unknown.png" },
       ]
     },
      {
@@ -117,18 +117,18 @@ export default function EventHistory() {
       isCurrent: false,
       members: [
         { name: "Mohamed Ebrahim", role: "President", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
-        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Ahmed Fateen", role: "Vice President", image: "/Images/highboard/22-23/AhmedFateen.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", image: "/Images/highboard/22-23/ElafAhmed.jpg" },
+        { name: "Aly Faragallah", role: "Head of Marketing", image: "/Icons/unknown.png" },
+        { name: "Sama Yousef", role: "Head of Organization", image: "/Icons/unknown.png" },
       ]
     },
     {
       year: "2021/2022",
       isCurrent: false,
       members: [
-        { name: "Unknown", role: "President", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
+        { name: "Mohamad Ebrahim", role: "President", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
+        { name: "Ahmed Fateen", role: "Vice President", image: "/Images/highboard/22-23/AhmedFateen.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
@@ -138,8 +138,47 @@ export default function EventHistory() {
       year: "2020/2021",
       isCurrent: false,
       members: [
+        { name: "Mohamed Adel", role: "President", image: "/Images/highboard/20-21/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", image: "/Images/highboard/20-21/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", image: "/Icons/unknown.png" },
+
+        { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+      ]
+    },
+     {
+      year: "2019/2020",
+      isCurrent: false,
+      members: [
+        { name: "Mohamed Adel", role: "President", image: "/Images/highboard/19-20/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", image: "/Images/highboard/19-20/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", image: "/Icons/unknown.png" },
+
+        { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+      ]
+    }, {
+      year: "2018/2019",
+      isCurrent: false,
+      members: [
         { name: "Unknown", role: "President", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
+
+        { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+      ]
+    }, {
+      year: "2017/2018",
+      isCurrent: false,
+      members: [
+        { name: "unknown", role: "President", image: "/Icons/unknown.png" },
+        { name: "unknown", role: "Vice President", image: "/Icons/unknown.png" },
+        { name: "unknown", role: "Vice President", image: "/Icons/unknown.png" },
+
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
@@ -171,11 +210,30 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2026-04-22",
       location: "Zewail City Student Center",
-      image: "/Images/image1.jpg",
+      image: "/Images/Tournaments/2024-2025/career_fair.jpg",
       description: "Interactive chess booth, speed puzzle solving, and open exhibition matches hosted during the annual Zewail City Career Fair.",
       playersList: [
         { name: "🎯 Speed Puzzle Booth" },
         { name: "👥 Student Activity Exhibition" }
+      ]
+    },
+     {
+      _id: "AAST university championship",
+      title: "AAST university championship",
+      type: "Swiss System (5 Rounds)",
+      category: "tournament",
+      startDate: "2026-5-14",
+      location: "AAST University",
+      image: "/Images/Tournaments/2025-2026/AAST.jpg",
+      description: "5-round Swiss tournament organized by AAST chess club for october uni sector - 9 members represented ZC",
+      playersList: [
+        { name: "🥇 1st Place girls: Bosy Ayman" },
+        { name: "🥈 4th Place boys: Abdelrahman Mohamed" },
+        { name: "🥉 5th Place boys: Raphael Robier" },
+        { name: "🥉 6th Place boys: Omar Ezz" },
+        { name: "🥉 7th Place boys: Omar Hafez" },
+        { name: "🥉 8th Place boys: Ahmed Elkodariy" },
+
       ]
     },
     {
@@ -185,7 +243,7 @@ export default function EventHistory() {
       category: "training",
       startDate: "2026-04-10",
       location: "Student Center, Zewail City",
-      image: "/Images/image2.jpg",
+      image: "/Images/Tournaments/2024-2025/image2.jpg",
       description: "Interactive speed tactics challenge where participants competed to solve tactical positions in record time.",
       playersList: [
         { name: "🏆 Winner: Omar Hafez (Day 1 & 2)" },
@@ -202,33 +260,61 @@ export default function EventHistory() {
       image: "/Winners/Winner2.png",
       description: "Annual Ramadan rapid tournament bringing together UST students in a spirited nighttime competition.",
       playersList: [
+        { name: "🥇 Champion: Omar Ezz" },
+        { name: "🥈 Runner-up: Omar Hafez" },
+        { name: "🥉 3rd Place: Abdelwahab Hamdi" }
+      ]
+    }, {
+      _id: "2026-esport",
+      title: "Esport Chess Tournament 2026",
+      type: "Esport tournament",
+      category: "tournament",
+      startDate: "2026-02-15",
+      location: "Zewail City Academic Hall",
+      image: "/Images/Tournaments/2024-2025/Esport.jpg",
+      description: "Esport blitz Chess tournament organized by the club on campus",
+      playersList: [
         { name: "🥇 Champion: Abdelrahman Mohamed" },
         { name: "🥈 Runner-up: Mazen Ahmed" },
-        { name: "🥉 3rd Place: Abdelrahman Manee3" }
+        { name: "🥉 3rd Place: Omar Hafez" }
+      ]
+    }, {
+      _id: "2025-teams",
+      title: "Teams Championship",
+      type: "Teams tournament",
+      category: "tournament",
+      startDate: "2025-11-08",
+      location: "Zewail City Academic Hall",
+      image: "/Images/Tournaments/2024-2025/image1.jpg",
+      description: "Teams Championship",
+      playersList: [
+        { name: "🥇 Champion: Knights : Ahmed Elkodariy, Omar Hafez, Omar Ezz" },
+        { name: "🥈 Runner-up: Gambling : Abdelrahman Mohamed, Abdelrahman Mane3, Mohamed Eslam" },
+        { name: "🥉 3rd Place: Epsilon : Noureldin Newer, Amr Khaled, Youssef Yasser " }
       ]
     },
     {
-      _id: "hist-2026-masterclass",
-      title: "ZC Chess Masterclasses & Strategy Sessions",
-      type: "Masterclass & Workshops",
-      category: "training",
-      startDate: "2026-02-15",
+      _id: "Knockout Tournament - Fall 2025",
+      title: "Knockout Tournament",
+      type: "Knockout tournament",
+      category: "tournament",
+      startDate: "2025-10-04",
       location: "Zewail City Academic Hall",
-      image: "/Images/trainer.jpg",
-      description: "Specialized training workshops, endgame technique sessions, and grandmaster game analysis led by senior club trainers.",
+      image: "/Images/Tournaments/2024-2025/image1.jpg",
+      description: "Knockout Tournament",
       playersList: [
-        { name: "🎓 Endgame Strategy" },
-        { name: "♟️ Opening Principles Workshop" }
+        { name: "🥇 Champion: Ahmed Elkodariy" },
+        { name: "🥈 Runner-up: Abdelrahman Mohamed" },
       ]
     },
     {
       _id: "hist-2025-nile",
-      title: "Nile University Chess Tournament",
+      title: "Nile University championship",
       type: "Inter-University Championship",
       category: "tournament",
       startDate: "2025-05-06",
       location: "Nile University",
-      image: "/Images/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/Tournament1.png",
       description: "6 members represented Zewail City at the Nile University Chess Tournament, bringing home an amazing achievement — 🥇 1st place in the girls' category! Highlights of a busy and successful season for our club.",
       playersList: [
         { name: "🥇 1st Place (Girls' Category)" },
@@ -243,7 +329,7 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-04-10",
       location: "Zewail City Campus",
-      image: "/Images/image4.jpg",
+      image: "/Images/Tournaments/2024-2025/image4.jpg",
       description: "King’s Quest II tournament featuring 32 participants competing in a Swiss format across multi-round high-level matches.",
       playersList: [
         { name: "👥 32 Participants" },
@@ -257,7 +343,7 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-03-15",
       location: "Zewail City Campus",
-      image: "/Images/image3.jpg",
+      image: "/Images/Tournaments/2024-2025/image3.jpg",
       description: "King’s Quest I tournament featuring 24 participants competing in a Swiss format for top campus rankings.",
       playersList: [
         { name: "👥 24 Participants" },
@@ -279,33 +365,14 @@ export default function EventHistory() {
       ]
     },
     {
-      _id: "hist-2025-weekly",
-      title: "Weekly Online Friday & Saturday Series",
-      type: "Online Series",
-      category: "online",
-      startDate: "2025-01-25",
-      location: "Online Arena",
-      image: "/Images/training.png",
-      description: "Hosted weekly online tournaments every Friday and Saturday to keep the community active, engaged, and playing regularly.",
-      playersList: [
-        { name: "🗓️ Friday & Saturday Tournaments" },
-        { name: "🌐 Community Online Arena" }
-      ]
-    },
-    {
-      _id: "hist-2025-training",
-      title: "Training Sessions & Puzzle Practices",
-      type: "Workshops & Training",
-      category: "training",
-      startDate: "2025-01-10",
-      location: "Zewail City Campus",
-      image: "/Images/training2.jpeg",
-      description: "Hosted interactive training sessions, shared weekly puzzles to keep the community engaged, and conducted puzzle-solving practices to prepare for inter-university competitions.",
-      playersList: [
-        { name: "🎓 Interactive Training Sessions" },
-        { name: "🧩 Weekly Puzzles & Practices" },
-        { name: "🔥 Competition Preparation" }
-      ]
+      _id: "hist-2019-Women",
+      title: "Women Tournament",
+      type: "Tournament",
+      category: "tournament",
+      startDate: "2019-11-15",
+      location: "Zewail City Auditorium",
+      image: "/Images/Tournaments/2024-2025/image1.jpg",
+      description: "Women Tournament",
     },
     {
       _id: "hist-2019-1",
@@ -314,7 +381,7 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2019-11-15",
       location: "Zewail City Auditorium",
-      image: "/Images/arbiter.jpg",
+      image: "/Images/Tournaments/2018-2019/shahenda.jpg",
       description: "Historic simultaneous exhibition match hosting African Champions GM Adham Fawzy and WGM Shahinda Wafa playing against 20 Zewail City students simultaneously.",
       playersList: [
         { name: "GM Adham Fawzy" },
@@ -329,7 +396,7 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2018-04-12",
       location: "Zewail City Campus",
-      image: "/Images/arbiter2.jpeg",
+      image: "/Images/Positions/arbiter2.jpeg",
       description: "First landmark grand exhibition where International Master Adham Fawzy took on 16 ZC Chess Club players simultaneously.",
       playersList: [
         { name: "IM Adham Fawzy" },
@@ -355,7 +422,7 @@ export default function EventHistory() {
       title: "Nile University Inter-University Championship",
       date: "May 2025",
       location: "Nile University",
-      image: "/Images/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/Tournament1.png",
       winners: [
         { place: "🥇 1st", name: "ZC Girls' Chess Team", badge: "1st Place Trophy" },
         { place: "🏆 Award", name: "6 ZC Representatives", badge: "Inter-University" }
@@ -376,7 +443,7 @@ export default function EventHistory() {
       title: "ZC Chess Puzzle Challenge 2026",
       date: "April 2026",
       location: "Zewail City Student Center",
-      image: "/Images/image2.jpg",
+      image: "/Images/Tournaments/2024-2025/image2.jpg",
       winners: [
         { place: "🏆 1st", name: "Omar Hafez", badge: "Tactics Champion" }
       ]
@@ -385,7 +452,7 @@ export default function EventHistory() {
       title: "King's Quest II Swiss Championship",
       date: "April 2025",
       location: "Zewail City Campus",
-      image: "/Images/image4.jpg",
+      image: "/Images/Tournaments/2024-2025/image4.jpg",
       winners: [
         { place: "🥇 1st", name: "King's Quest II Champion", badge: "32 Players Swiss" }
       ]
