@@ -9,10 +9,12 @@ const HomePage = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const heroSlides = [
-    "/Images/Tournaments/2024-2025/image4.jpg",
-    "/Images/Tournaments/2024-2025/image1.jpg",
-    "/Images/Tournaments/2024-2025/image2.jpg",
-    "/Images/Tournaments/2024-2025/image3.jpg",
+    "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
+    "/Images/Tournaments/2024-2025/KingQuest2.jpg",
+    "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
+    "/Images/Tournaments/2024-2025/NileUni.jpg",
+    "/Images/Tournaments/2025-2026/AASTUni.jpg",
+
   ];
 
   const [heroIndex, setHeroIndex] = useState(0);
@@ -34,7 +36,7 @@ const HomePage = () => {
       description:
         "Our biggest chess event of the semester is being prepared. Stay tuned for the official schedule, registration link, and prize pool announcement.",
       date: "Week 9, 2026",
-      image: "/Images/Tournaments/2024-2025/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/KingQuest1_3.png",
       link: "/tournaments",
       linkLabel: "View Tournaments",
     },
