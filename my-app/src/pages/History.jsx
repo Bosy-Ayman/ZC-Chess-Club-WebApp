@@ -190,12 +190,12 @@ export default function EventHistory() {
   const defaultHistoricalEvents = [
     {
       _id: "hist-2026-spring",
-      title: "ZC Spring Championship 2026",
+      title: "King's Quest IV Championship 2026",
       type: "Swiss System (5 Rounds)",
       category: "tournament",
       startDate: "2026-05-15",
       location: "Zewail City Campus",
-      image: "/Winners/Winner1.png",
+      image: "/Images/Tournaments/2025-2026/KingQuest4.jpg",
       description: "5-round intense Swiss tournament featuring the top players of Zewail City competing for the 2026 season championship.",
       playersList: [
         { name: "🥇 1st Place: Abdelrahman Mohamed" },
@@ -210,7 +210,7 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2026-04-22",
       location: "Zewail City Student Center",
-      image: "/Images/Tournaments/2024-2025/career_fair.jpg",
+      image: "/Images/Tournaments/2024-2025/CarrerFair.jpg",
       description: "Interactive chess booth, speed puzzle solving, and open exhibition matches hosted during the annual Zewail City Career Fair.",
       playersList: [
         { name: "🎯 Speed Puzzle Booth" },
@@ -222,9 +222,9 @@ export default function EventHistory() {
       title: "AAST university championship",
       type: "Swiss System (5 Rounds)",
       category: "tournament",
-      startDate: "2026-5-14",
+      startDate: "2026-05-14",
       location: "AAST University",
-      image: "/Images/Tournaments/2025-2026/AAST.jpg",
+      image: "/Images/Tournaments/2025-2026/AASTUni.jpg",
       description: "5-round Swiss tournament organized by AAST chess club for october uni sector - 9 members represented ZC",
       playersList: [
         { name: "🥇 1st Place girls: Bosy Ayman" },
@@ -232,8 +232,7 @@ export default function EventHistory() {
         { name: "🥉 5th Place boys: Raphael Robier" },
         { name: "🥉 6th Place boys: Omar Ezz" },
         { name: "🥉 7th Place boys: Omar Hafez" },
-        { name: "🥉 8th Place boys: Ahmed Elkodariy" },
-
+        { name: "🥉 8th Place boys: Ahmed Elkodariy" }
       ]
     },
     {
@@ -243,7 +242,7 @@ export default function EventHistory() {
       category: "training",
       startDate: "2026-04-10",
       location: "Student Center, Zewail City",
-      image: "/Images/Tournaments/2024-2025/image2.jpg",
+      image: "/Images/Tournaments/2025-2026/PuzzleChallenge.jpg",
       description: "Interactive speed tactics challenge where participants competed to solve tactical positions in record time.",
       playersList: [
         { name: "🏆 Winner: Omar Hafez (Day 1 & 2)" },
@@ -252,26 +251,65 @@ export default function EventHistory() {
     },
     {
       _id: "hist-2026-ramadan",
-      title: "ZC Ramadan Chess Championship 2026",
+      title: "Ramadan Knockout Tournament",
       type: "Rapid Tournament",
       category: "tournament",
       startDate: "2026-03-25",
       location: "Zewail City Campus",
-      image: "/Winners/Winner2.png",
+      image: "/Images/Tournaments/2025-2026/Ramadanknockout26.jpg",
       description: "Annual Ramadan rapid tournament bringing together UST students in a spirited nighttime competition.",
       playersList: [
         { name: "🥇 Champion: Omar Ezz" },
         { name: "🥈 Runner-up: Omar Hafez" },
         { name: "🥉 3rd Place: Abdelwahab Hamdi" }
       ]
-    }, {
+    },
+    {
+      _id: "hist-2020-2021",
+      title: "Knockout Tournament",
+      type: "Rapid Tournament",
+      category: "tournament",
+      startDate: "2021-03-25",
+      location: "Zewail City Campus",
+      image: "/Images/Tournaments/2020-2021/Knockout21.jpg",
+      description: "2020/2021 Rapid Knockout Tournament",
+      playersList: [
+        { name: "🥇 Champion: Mohamed Adel" }
+      ]
+    },
+    {
+      _id: "hist-2022-2023",
+      title: "Knockout Tournament",
+      type: "Blitz Tournament",
+      category: "tournament",
+      startDate: "2022-05-05",
+      location: "Zewail City Campus",
+      image: "/Images/Tournaments/2021-2022/Knockout22.jpg",
+      description: "sponsored by redbull",
+      playersList: [
+        { name: "🥇 Champion: Unknown" }
+      ]
+    },{
+      _id: "hist-2023-2024",
+      title: "Knockout Tournament",
+      type: "Blitz Tournament",
+      category: "tournament",
+      startDate: "2024-04-20",
+      location: "Zewail City Campus",
+      image: "/Images/Tournaments/2023-2024/Knockout24.jpg",
+      description: "Unknown",
+      playersList: [
+        { name: "🥇 Champion: Unknown" }
+      ]
+    },
+    {
       _id: "2026-esport",
       title: "Esport Chess Tournament 2026",
       type: "Esport tournament",
       category: "tournament",
       startDate: "2026-02-15",
       location: "Zewail City Academic Hall",
-      image: "/Images/Tournaments/2024-2025/Esport.jpg",
+      image: "/Images/Tournaments/2025-2026/Esports.jpg",
       description: "Esport blitz Chess tournament organized by the club on campus",
       playersList: [
         { name: "🥇 Champion: Abdelrahman Mohamed" },
@@ -284,8 +322,8 @@ export default function EventHistory() {
       type: "Teams tournament",
       category: "tournament",
       startDate: "2025-11-08",
-      location: "Zewail City Academic Hall",
-      image: "/Images/Tournaments/2024-2025/image1.jpg",
+      location: "Academic Building",
+      image: "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
       description: "Teams Championship",
       playersList: [
         { name: "🥇 Champion: Knights : Ahmed Elkodariy, Omar Hafez, Omar Ezz" },
@@ -300,7 +338,7 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-10-04",
       location: "Zewail City Academic Hall",
-      image: "/Images/Tournaments/2024-2025/image1.jpg",
+      image: "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
       description: "Knockout Tournament",
       playersList: [
         { name: "🥇 Champion: Ahmed Elkodariy" },
@@ -314,10 +352,10 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-05-06",
       location: "Nile University",
-      image: "/Images/Tournaments/2024-2025/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/NileUni.jpg",
       description: "6 members represented Zewail City at the Nile University Chess Tournament, bringing home an amazing achievement — 🥇 1st place in the girls' category! Highlights of a busy and successful season for our club.",
       playersList: [
-        { name: "🥇 1st Place (Girls' Category)" },
+        { name: "🥇 1st Place (Girls' Category): Bosy Ayman" },
         { name: "🏆 6 ZC Representatives" },
         { name: "🏛️ Inter-University" }
       ]
@@ -329,11 +367,29 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-04-10",
       location: "Zewail City Campus",
-      image: "/Images/Tournaments/2024-2025/image4.jpg",
+      image: "/Images/Tournaments/2024-2025/KingQuest2.jpg",
       description: "King’s Quest II tournament featuring 32 participants competing in a Swiss format across multi-round high-level matches.",
       playersList: [
         { name: "👥 32 Participants" },
-        { name: "♟️ Swiss Format" }
+        { name: "♟️ Swiss Format" },
+        { name: "🥇 Champion: Mohamed Ezz" },
+        { name: "🥈 Runner-up: Mazen Allam" },
+        { name: "🥉 3rd Place: Kareem Mahmoud" }
+      ]
+    },
+    {
+      _id: "hist-2025-ramadan",
+      title: "Ramadan Chess Championship 25",
+      type: "Knockout Tournament",
+      category: "tournament",
+      startDate: "2025-03-25",
+      location: "Zewail City Campus",
+      image: "/Images/Tournaments/2024-2025/RamadanKnockout25.jpg",
+      description: "Annual Ramadan Chess Championship featuring top campus players competing in high-stakes matches.",
+      playersList: [
+        { name: "🥇 Champion: Abdelrahman Mohamed" },
+        { name: "🥈 Runner-up: Mazen Allam" },
+        { name: "🥉 3rd Place: Abdelrahman Manee3" }
       ]
     },
     {
@@ -343,36 +399,29 @@ export default function EventHistory() {
       category: "tournament",
       startDate: "2025-03-15",
       location: "Zewail City Campus",
-      image: "/Images/Tournaments/2024-2025/image3.jpg",
+      image: "/Images/Tournaments/2024-2025/KingQuest1_3.png",
       description: "King’s Quest I tournament featuring 24 participants competing in a Swiss format for top campus rankings.",
       playersList: [
         { name: "👥 24 Participants" },
-        { name: "♟️ Swiss Format" }
+        { name: "♟️ Swiss Format" },
+        { name: "🥇 Champion: Mohamed Ezz" },
+        { name: "🥈 Runner-up: Mazen Allam" },
+        { name: "🥉 3rd Place: Noureldin Mohamed" }
       ]
     },
+
     {
-      _id: "hist-2025-elim",
-      title: "ZC Major Elimination Championship",
-      type: "Knockout & Lower Bracket",
-      category: "tournament",
-      startDate: "2025-02-20",
-      location: "Zewail City Campus",
-      image: "/Winners/Winner3.png",
-      description: "A large elimination-style tournament featuring 38 players, complete with a competitive lower bracket for double-elimination intensity.",
-      playersList: [
-        { name: "👥 38 Players" },
-        { name: "⚡ Main & Lower Brackets" }
-      ]
-    },
-    {
-      _id: "hist-2019-Women",
+      _id: "hist-2021-Women",
       title: "Women Tournament",
       type: "Tournament",
       category: "tournament",
-      startDate: "2019-11-15",
-      location: "Zewail City Auditorium",
-      image: "/Images/Tournaments/2024-2025/image1.jpg",
-      description: "Women Tournament",
+      startDate: "2021-07-20",
+      location: "Zewail City Service Building",
+      image: "/Images/Tournaments/2020-2021/WomanTournament.jpg",
+      description: "Women Championship",
+      playersList: [
+        { name: "🥇 Champion: Unknown" }
+      ]
     },
     {
       _id: "hist-2019-1",
@@ -396,7 +445,7 @@ export default function EventHistory() {
       category: "exhibition",
       startDate: "2018-04-12",
       location: "Zewail City Campus",
-      image: "/Images/Positions/arbiter2.jpeg",
+      image: "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
       description: "First landmark grand exhibition where International Master Adham Fawzy took on 16 ZC Chess Club players simultaneously.",
       playersList: [
         { name: "IM Adham Fawzy" },
@@ -408,7 +457,7 @@ export default function EventHistory() {
   // Hall of Fame Champions List
   const hallOfFameChampions = [
     {
-      title: "ZC Spring Championship 2026",
+      title: "King's Quest IV Championship 2026",
       date: "May 2026",
       location: "Zewail City Campus",
       image: "/Winners/Winner1.png",
@@ -419,23 +468,23 @@ export default function EventHistory() {
       ]
     },
     {
-      title: "Nile University Inter-University Championship",
+      title: "Nile University Championship",
       date: "May 2025",
       location: "Nile University",
-      image: "/Images/Tournaments/2024-2025/Tournament1.png",
+      image: "/Images/Tournaments/2024-2025/NileUni.jpg",
       winners: [
         { place: "🥇 1st", name: "ZC Girls' Chess Team", badge: "1st Place Trophy" },
         { place: "🏆 Award", name: "6 ZC Representatives", badge: "Inter-University" }
       ]
     },
     {
-      title: "ZC Ramadan Chess Championship",
+      title: "Ramadan Chess Championship 25",
       date: "March 2025",
       location: "Zewail City Campus",
-      image: "/Winners/Winner2.png",
+      image: "/Images/Tournaments/2024-2025/RamadanKnockout25.jpg",
       winners: [
         { place: "🥇 1st", name: "Abdelrahman Mohamed", badge: "Ramadan Winner" },
-        { place: "🥈 2nd", name: "Mazen Ahmed", badge: "Runner-Up" },
+        { place: "🥈 2nd", name: "Mazen Allam", badge: "Runner-Up" },
         { place: "🥉 3rd", name: "Abdelrahman Manee3", badge: "3rd Place" }
       ]
     },
@@ -443,7 +492,7 @@ export default function EventHistory() {
       title: "ZC Chess Puzzle Challenge 2026",
       date: "April 2026",
       location: "Zewail City Student Center",
-      image: "/Images/Tournaments/2024-2025/image2.jpg",
+      image: "/Images/Tournaments/2025-2026/PuzzleChallenge.jpg",
       winners: [
         { place: "🏆 1st", name: "Omar Hafez", badge: "Tactics Champion" }
       ]
@@ -452,9 +501,11 @@ export default function EventHistory() {
       title: "King's Quest II Swiss Championship",
       date: "April 2025",
       location: "Zewail City Campus",
-      image: "/Images/Tournaments/2024-2025/image4.jpg",
+      image: "/Images/Tournaments/2024-2025/KingQuest2.jpg",
       winners: [
-        { place: "🥇 1st", name: "King's Quest II Champion", badge: "32 Players Swiss" }
+        { place: "🥇 1st", name: "Mohamed Ezz", badge: "32 Players Swiss" },
+        { place: "🥈 2nd", name: "Mazen Allam" },
+        { place: "🥉 3rd", name: "Kareem Mahmoud" }
       ]
     },
     {
@@ -508,7 +559,11 @@ export default function EventHistory() {
   // Group the fetched events by year
   const groupedEvents = {};
   filteredEventsList.forEach(event => {
-    const year = new Date(event.startDate).getFullYear() || "Unknown Year";
+    const d = new Date(event.startDate);
+    const parsedYear = d && !isNaN(d.getFullYear()) ? d.getFullYear() : null;
+    const fallbackYear = event.startDate ? String(event.startDate).substring(0, 4) : "Unknown Year";
+    const year = parsedYear || (isNaN(Number(fallbackYear)) ? "Unknown Year" : fallbackYear);
+    
     if (!groupedEvents[year]) {
       groupedEvents[year] = [];
     }
@@ -857,7 +912,7 @@ export default function EventHistory() {
 
                 <div className="modal-footer-actions">
                   <a 
-                    href="https://www.instagram.com/zc.chessclub/" 
+                    href={selectedEventModal.link || selectedEventModal.instagramUrl || selectedEventModal.url || "https://www.instagram.com/zc.chessclub/"} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="modal-instagram-btn"

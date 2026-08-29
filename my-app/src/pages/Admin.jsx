@@ -153,26 +153,57 @@ export default function AdminDashboard() {
   const handleSquareClick = (square) => {
     if (!setupMode) return;
     
-    // Create new Chess instance to trigger state refresh
-    const newChess = new Chess(chessInstance.fen());
-    if (selectedPiece === "clear") {
-      newChess.remove(square);
-    } else if (selectedPiece) {
-      newChess.put({ type: selectedPiece.type, color: selectedPiece.color }, square);
+    try {
+      let newChess;
+      try {
+        newChess = new Chess(chessInstance ? chessInstance.fen() : undefined);
+      } catch (e) {
+        // If FEN validation fails due to temporary missing king during custom piece setup,
+        // create a fresh board and copy existing piece placements
+        newChess = new Chess();
+        newChess.clear();
+        if (chessInstance && typeof chessInstance.board === "function") {
+          const currentBoard = chessInstance.board();
+          for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+              const piece = currentBoard[r][c];
+              if (piece) {
+                const sq = String.fromCharCode(97 + c) + (8 - r);
+                newChess.put({ type: piece.type, color: piece.color }, sq);
+              }
+            }
+          }
+        }
+      }
+
+      if (selectedPiece === "clear") {
+        newChess.remove(square);
+      } else if (selectedPiece) {
+        newChess.put({ type: selectedPiece.type, color: selectedPiece.color }, square);
+      }
+      
+      setChessInstance(newChess);
+      setActivePuzzleFen(newChess.fen());
+    } catch (err) {
+      console.warn("Square click edit handled safely:", err);
     }
-    
-    setChessInstance(newChess);
-    setActivePuzzleFen(newChess.fen());
   };
 
   const handleToggleTurn = () => {
     try {
-      const fenParts = chessInstance.fen().split(" ");
-      fenParts[1] = fenParts[1] === "w" ? "b" : "w";
-      const newFen = fenParts.join(" ");
-      const newChess = new Chess(newFen);
-      setChessInstance(newChess);
-      setActivePuzzleFen(newFen);
+      const currentFen = activePuzzleFen || (chessInstance ? chessInstance.fen() : "");
+      const fenParts = currentFen.split(" ");
+      if (fenParts.length >= 2) {
+        fenParts[1] = fenParts[1] === "w" ? "b" : "w";
+        const newFen = fenParts.join(" ");
+        try {
+          const newChess = new Chess(newFen);
+          setChessInstance(newChess);
+        } catch (e) {
+          // Keep new FEN string in active setup state if chess.js strict validation fails
+        }
+        setActivePuzzleFen(newFen);
+      }
     } catch (err) {
       alert("Invalid board state to change turn!");
     }

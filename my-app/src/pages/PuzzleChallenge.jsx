@@ -34,6 +34,39 @@ export default function PuzzleChallenge() {
 
   const timerRef = useRef(null);
   const boardLocked = useRef(false); // blocks input while opponent replies or puzzle advances
+  
+  // Synchronous refs for accurate score tracking across async states
+  const scoreRef = useRef(0);
+  const solvedCountRef = useRef(0);
+
+  // Dynamic Board Width calculation to prevent piece drag offset
+  const boardContainerRef = useRef(null);
+  const [boardWidth, setBoardWidth] = useState(380);
+
+  useEffect(() => {
+    const updateBoardWidth = () => {
+      if (boardContainerRef.current) {
+        const clientW = boardContainerRef.current.clientWidth;
+        if (clientW > 0) {
+          setBoardWidth(clientW);
+        }
+      }
+    };
+
+    updateBoardWidth();
+    window.addEventListener("resize", updateBoardWidth);
+
+    let observer;
+    if (typeof ResizeObserver !== "undefined" && boardContainerRef.current) {
+      observer = new ResizeObserver(() => updateBoardWidth());
+      observer.observe(boardContainerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateBoardWidth);
+      if (observer) observer.disconnect();
+    };
+  }, [isPlaying]);
 
   // User session cache
   const isLoggedIn = !!localStorage.getItem("adminToken");
@@ -98,6 +131,8 @@ export default function PuzzleChallenge() {
       return;
     }
     
+    scoreRef.current = 0;
+    solvedCountRef.current = 0;
     setActiveTournament(tournament);
     setIsPlaying(true);
     setCurrentPuzzleIdx(0);
@@ -109,11 +144,17 @@ export default function PuzzleChallenge() {
 
   // Load a single puzzle
   const loadPuzzle = (puzzle, timeLimit) => {
-    const freshChess = new Chess(puzzle.initialFen);
+    let freshChess;
+    try {
+      freshChess = new Chess(puzzle.initialFen);
+    } catch (err) {
+      console.warn("Invalid puzzle FEN, using default position:", err);
+      freshChess = new Chess();
+    }
     boardLocked.current = false;
     setChessGame(freshChess);
     setBoardFen(freshChess.fen());
-    setCorrectMovesList(puzzle.correctMoves);
+    setCorrectMovesList(puzzle.correctMoves || []);
     setCurrentMoveIdx(0);
     setTrials(3);
     setTimeRemaining(timeLimit || 60);
@@ -197,8 +238,13 @@ export default function PuzzleChallenge() {
 
           const baseScore = 100;
           const timeBonus = Math.floor(timeRemaining * 1.5);
-          setScore((prev) => prev + baseScore + timeBonus);
-          setSolvedCount((prev) => prev + 1);
+          const earnedPoints = baseScore + timeBonus;
+
+          scoreRef.current += earnedPoints;
+          solvedCountRef.current += 1;
+
+          setScore(scoreRef.current);
+          setSolvedCount(solvedCountRef.current);
           clearInterval(timerRef.current);
 
           setTimeout(() => advanceNextPuzzle(true), 1500);
@@ -250,18 +296,27 @@ export default function PuzzleChallenge() {
     setIsFinished(true);
     clearInterval(timerRef.current);
     
+    const finalScore = scoreRef.current;
+    const finalSolved = solvedCountRef.current;
+
     // Submit score to database
     try {
-      await fetch(`${API_BASE}/api/puzzle-tournaments/${activeTournament._id}/submit-score`, {
+      const res = await fetch(`${API_BASE}/api/puzzle-tournaments/${activeTournament._id}/submit-score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: userName,
           email: userEmail,
-          score: score,
-          solvedCount: solvedCount
+          score: finalScore,
+          solvedCount: finalSolved
         })
       });
+      const data = await res.json();
+      if (res.ok && data.data) {
+        // Update active tournament leaderboard state with backend saved data immediately!
+        setActiveTournament(data.data);
+        fetchTournaments();
+      }
     } catch (err) {
       console.error("Failed to submit score:", err);
     }
@@ -289,17 +344,27 @@ export default function PuzzleChallenge() {
 
   const activePlayState = isPlaying && !isFinished;
 
+  if (isLoading) {
+    return (
+      <div className="puzzle-challenge-root">
+        <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <main className="puzzle-layout-container loading-centered">
+          <div className="puzzle-loading-card">
+            <div className="spinner-ring"></div>
+            <span>Loading Arenas...</span>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className={`puzzle-challenge-root ${activePlayState ? "playing" : ""}`}>
       {!activePlayState && <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
 
       <main className={`puzzle-layout-container ${activePlayState ? "playing" : ""}`}>
-        {isLoading ? (
-          <div className="loading-spinner">
-            <div className="spinner-ring"></div>
-            <span>Loading Chess Tactics Arena...</span>
-          </div>
-        ) : !isPlaying ? (
+        {!isPlaying ? (
           /* SECTION 1: TOURNAMENT LISTING SCREEN (DASHBOARD REDESIGN) */
           <div className="puzzle-selection-view">
             <div className="puzzle-hero-section">
@@ -350,14 +415,14 @@ export default function PuzzleChallenge() {
               {/* Right Column: Arenas Grid */}
               <div className="arenas-grid-panel">
                 <h3 className="section-title">Active Arenas</h3>
-                <div className="tournaments-grid">
-                  {tournaments.length === 0 ? (
-                    <div className="no-tournaments-card">
-                      <h3>No Puzzle Tournaments Available</h3>
-                      <p>Check back later for upcoming club chess tactics challenges.</p>
-                    </div>
-                  ) : (
-                    tournaments.map((t) => (
+                {tournaments.length === 0 ? (
+                  <div className="no-tournaments-card">
+                    <h3>No Puzzle Tournaments Available</h3>
+                    <p>Check back later for upcoming club chess tactics challenges.</p>
+                  </div>
+                ) : (
+                  <div className="tournaments-grid">
+                    {tournaments.map((t) => (
                       <div key={t._id} className="tournament-card">
                         <div className="card-top">
                           <span className="card-badge">LIVE ARENA</span>
@@ -375,8 +440,11 @@ export default function PuzzleChallenge() {
                           {t.leaderboard && t.leaderboard.length > 0 ? (
                             t.leaderboard.slice(0, 3).map((entry, idx) => (
                               <div key={idx} className="leaderboard-preview-row">
-                                <span>{idx + 1}. {entry.name}</span>
-                                <strong>{entry.score} pts</strong>
+                                <div className="preview-player-info">
+                                  <span className="preview-rank">{idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`}</span>
+                                  <span className="preview-name">{entry.name}</span>
+                                </div>
+                                <strong className="preview-score">{entry.score} pts</strong>
                               </div>
                             ))
                           ) : (
@@ -391,9 +459,9 @@ export default function PuzzleChallenge() {
                           Join Challenge
                         </button>
                       </div>
-                    ))
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -413,34 +481,43 @@ export default function PuzzleChallenge() {
               </div>
             </div>
             
-            <div className="leaderboard-full-wrapper" style={{ marginTop: "30px" }}>
+            <div className="leaderboard-full-wrapper">
               <h3>Leaderboard Rankings</h3>
-              <table className="leaderboard-table">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Solved</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeTournament.leaderboard && activeTournament.leaderboard.length > 0 ? (
-                    activeTournament.leaderboard.map((entry, idx) => (
-                      <tr key={idx} className={entry.email === userEmail ? "highlight-user-row" : ""}>
-                        <td>{idx + 1}</td>
-                        <td>{entry.name}</td>
-                        <td>{entry.solvedCount}</td>
-                        <td>{entry.score}</td>
-                      </tr>
-                    ))
-                  ) : (
+              <div className="leaderboard-table-container">
+                <table className="leaderboard-table">
+                  <thead>
                     <tr>
-                      <td colSpan="4">No scores submitted yet.</td>
+                      <th className="col-rank">Rank</th>
+                      <th className="col-player">Player</th>
+                      <th className="col-solved">Solved</th>
+                      <th className="col-score">Score</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {activeTournament.leaderboard && activeTournament.leaderboard.length > 0 ? (
+                      activeTournament.leaderboard.map((entry, idx) => (
+                        <tr key={idx} className={entry.email === userEmail ? "highlight-user-row" : ""}>
+                          <td className="col-rank">
+                            <span className={`rank-badge rank-${idx + 1}`}>
+                              {idx === 0 ? "🥇 #1" : idx === 1 ? "🥈 #2" : idx === 2 ? "🥉 #3" : `#${idx + 1}`}
+                            </span>
+                          </td>
+                          <td className="col-player">
+                            <span className="player-name">{entry.name}</span>
+                            {entry.email === userEmail && <span className="you-pill">YOU</span>}
+                          </td>
+                          <td className="col-solved">{entry.solvedCount}</td>
+                          <td className="col-score">{entry.score} pts</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" style={{ textAlign: "center", color: "#888", padding: "20px" }}>No scores submitted yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <button className="back-list-btn" onClick={() => { setIsPlaying(false); fetchTournaments(); }}>
@@ -479,11 +556,11 @@ export default function PuzzleChallenge() {
                   </div>
                 </div>
                 
-                <div className="game-board-wrapper">
+                <div className="game-board-wrapper" ref={boardContainerRef}>
                   <Chessboard
                     position={boardFen}
                     onPieceDrop={onPieceDrop}
-                    boardWidth={380}
+                    boardWidth={boardWidth}
                     arePiecesDraggable={true}
                   />
                 </div>
@@ -525,8 +602,14 @@ export default function PuzzleChallenge() {
                     {activeTournament.leaderboard && activeTournament.leaderboard.length > 0 ? (
                       activeTournament.leaderboard.map((entry, idx) => (
                         <div key={idx} className={`mini-leaderboard-row ${entry.email === userEmail ? 'highlight' : ''}`}>
-                          <span>{idx + 1}. {entry.name}</span>
-                          <strong>{entry.score} pts</strong>
+                          <div className="mini-player-info">
+                            <span className="mini-rank">{idx + 1}.</span>
+                            <span className="mini-name">{entry.name}</span>
+                          </div>
+                          <div className="mini-stats">
+                            <span className="mini-solved">{entry.solvedCount} 🧩</span>
+                            <strong className="mini-score">{entry.score} pts</strong>
+                          </div>
                         </div>
                       ))
                     ) : (
