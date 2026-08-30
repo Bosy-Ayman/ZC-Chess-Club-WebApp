@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "./History.css";
@@ -6,7 +6,7 @@ import "./History.css";
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 // A helper component for scroll-reveal animations using Intersection Observer
-const ScrollReveal = ({ children }) => {
+const ScrollReveal = ({ children, className = "" }) => {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = React.useRef();
 
@@ -20,7 +20,7 @@ const ScrollReveal = ({ children }) => {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
 
     const currentRef = domRef.current;
@@ -36,7 +36,7 @@ const ScrollReveal = ({ children }) => {
   }, []);
 
   return (
-    <div ref={domRef} className={`scroll-reveal ${isVisible ? "is-visible" : ""}`}>
+    <div ref={domRef} className={`scroll-reveal ${isVisible ? "is-visible" : ""} ${className}`}>
       {children}
     </div>
   );
@@ -48,17 +48,61 @@ export default function EventHistory() {
 
   const [pastEvents, setPastEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("events"); // "events", "highboard", or "halloffame"
+  const [activeTab, setActiveTab] = useState("events"); // "events", "halloffame", or "highboard"
   const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "tournament", "exhibition", "training", "online"
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedEventModal, setSelectedEventModal] = useState(null);
+  const [highboardYearFilter, setHighboardYearFilter] = useState("all");
 
   // Check URL query params for active tab (e.g. ?tab=halloffame)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("tab") === "halloffame") {
-      setActiveTab("halloffame");
+    const tabParam = params.get("tab");
+    if (tabParam && ["events", "halloffame", "highboard"].includes(tabParam)) {
+      setActiveTab(tabParam);
     }
   }, []);
+
+  // Avatar mapping pointing directly to photos in /Winners/ and highboard directories
+  const avatarMap = {
+    // Winners folder mappings
+    "Abdelrahman Mohamed": "/Winners/AbdelrahmanMohamed.png",
+    "Abdelrahman Mane3": "/Winners/AbdelrahmanMane3.png",
+    "Abdelrahman Manee3": "/Winners/AbdelrahmanMane3.png",
+    "Abdelwahab Hamdi": "/Winners/AbdelwahabHamdi.jpg",
+    "Ahmed Adel": "/Winners/AhmedAdel.png",
+    "Ahmed Elkodariy": "/Winners/AhmedElkodariy.PNG",
+    "Bosy Ayman": "/Winners/BosyAyman.png",
+    "Haneen Yasser": "/Winners/HaneenYasser.png",
+    "Mazen Allam": "/Winners/MazenAllam.png",
+    "Mazen Ahmed": "/Winners/MazenAllam.png",
+    "Mohamed Eslam": "/Winners/MohamedEslam.png",
+    "Mohamed Ezz": "/Winners/MohamedEzz.jpg",
+    "Mohamed Ahmed Ezz": "/Winners/MohamedEzz.jpg",
+    "Omar Ezz": "/Winners/OmarEzz.jpg",
+    "Omar Hafez": "/Winners/OmarHafez.jpeg",
+    "Raphael Robier": "/Winners/RaphaelRobier.png",
+    "Youssef Yasser": "/Winners/YoussefYasser.jpg",
+    "Salma Ashraf": "/Icons/user.jpg",
+
+    // Leadership & past board members
+    "Mohamed Adel": "/Images/highboard/20-21/MohamedAdel.png",
+    "Muhammed Alaa Eldin": "/Images/highboard/20-21/MuhammedAlaaEldin.jpg",
+    "Mohamed Ebrahim": "/Images/highboard/22-23/MohamedEbrahim.jpg",
+    "Ahmed Fateen": "/Images/highboard/22-23/AhmedFateen.png",
+    "Thomas Emad": "/Images/highboard/23-24/ThomasEmad.png",
+    "Elaf Ahmed": "/Images/highboard/23-24/ElafAhmed.jpg",
+    "Amira Elhussainy": "/Images/highboard/23-24/AmiraElhussainy.jpg",
+    "Momen Mahmoud": "/Images/highboard/24-25/Momen.png",
+    "Momen": "/Images/highboard/24-25/Momen.png",
+    "Adham Elawady": "/Images/highboard/24-25/Adham.png",
+    "Adham": "/Images/highboard/24-25/Adham.png",
+    "Alaa Ibrahim": "/Images/highboard/24-25/Alaa.png",
+    "Alaa": "/Images/highboard/24-25/Alaa.png",
+    "Aml Ali": "/Images/highboard/24-25/Aml.png",
+    "Aml": "/Images/highboard/24-25/Aml.png",
+    "Rana Ahmed": "/Images/highboard/24-25/Rana.jpg"
+  };
 
   // Highboard history data containing current and past leadership structures
   const highboardHistory = [
@@ -66,11 +110,11 @@ export default function EventHistory() {
       year: "2026/2027",
       isCurrent: true,
       members: [
-        { name: "Ahmed Elkodariy", role: "President", image: "/Images/highboard/26-27/AhmedElkodariy.PNG" },
-        { name: "Omar Hafez", role: "Vice President", image: "/Images/highboard/26-27/OmarHafez.jpeg" },
-        { name: "Omar Ezz", role: "Head of Training", image: "/Images/highboard/26-27/OmarEzz.jpg" },
-        { name: "Haneen Yasser", role: "Head of Multimedia", image: "/Images/highboard/26-27/HaneenYasser.png" },
-        { name: "Raphael Robier", role: "Head of PR", image: "/Images/highboard/26-27/RaphaelRobier.png" },
+        { name: "Ahmed Elkodariy", role: "President", major: "CSAI", batch: "'27", image: "/Winners/AhmedElkodariy.PNG" },
+        { name: "Omar Hafez", role: "Vice President", major: "CSAI", batch: "'27", image: "/Winners/OmarHafez.jpeg" },
+        { name: "Omar Ezz", role: "Head of Training", major: "CSAI", batch: "'27", image: "/Winners/OmarEzz.jpg" },
+        { name: "Haneen Yasser", role: "Head of Multimedia", major: "CSAI", batch: "'27", image: "/Winners/HaneenYasser.png" },
+        { name: "Raphael Robier", role: "Head of PR", major: "CSAI", batch: "'27", image: "/Winners/RaphaelRobier.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" }
       ]
@@ -79,114 +123,112 @@ export default function EventHistory() {
       year: "2025/2026",
       isCurrent: false,
       members: [
-        { name: "Bosy Ayman", role: "President", image: "/Images/highboard/24-25/bosy.png" },
-        { name: "Abdelrahman Mohamed", role: "Vice President", image: "/Images/highboard/24-25/abdelrahman.png" },
-        { name: "Aml Ali", role: "Head of HR", image: "/Images/highboard/24-25/Aml.png" },
-        { name: "Momen Mahmoud", role: "Head of Training", image: "/Images/highboard/24-25/momen.png" },
-        { name: "Rana Ahmed", role: "Head of Multimedia", image: "/Images/highboard/24-25/rana.jpg" },
-        { name: "Alaa Ibrahim", role: "Head of Organization", image: "/Images/highboard/24-25/alaa.png" },
-        { name: "Adham Elawady", role: "Head of PR", image: "/Images/highboard/24-25/adham.png" }
+        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'26", image: "/Winners/BosyAyman.png" },
+        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'26", image: "/Winners/AbdelrahmanMohamed.png" },
+        { name: "Aml Ali", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Aml.png" },
+        { name: "Momen Mahmoud", role: "Head of Training", major: "Communications & Info (CIE)", batch: "'26", image: "/Images/highboard/24-25/Momen.png" },
+        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'26", image: "/Images/highboard/24-25/Rana.jpg" },
+        { name: "Alaa Ibrahim", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Alaa.png" },
+        { name: "Adham Elawady", role: "Head of PR", major: "Nanotechnology (NAN)", batch: "'26", image: "/Images/highboard/24-25/Adham.png" }
       ]
     },
     {
       year: "2024/2025",
       isCurrent: false,
       members: [
-        { name: "Bosy Ayman", role: "President", image: "/Images/highboard/24-25/bosy.png" },
-        { name: "Abdelrahman Mohamed", role: "Vice President", image: "/Images/highboard/24-25/abdelrahman.png" },
-        { name: "Aml Ali", role: "Head of HR", image: "/Images/highboard/24-25/Aml.png" },
-        { name: "Momen Mahmoud", role: "Head of Training", image: "/Images/highboard/24-25/momen.png" },
-        { name: "Rana Ahmed", role: "Head of Multimedia", image: "/Images/highboard/24-25/rana.jpg" },
-        { name: "Alaa Ibrahim", role: "Head of Organization", image: "/Images/highboard/24-25/alaa.png" },
-        { name: "Adham Elawady", role: "Head of PR", image: "/Images/highboard/24-25/adham.png" }
+        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'26", image: "/Winners/BosyAyman.png" },
+        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'26", image: "/Winners/AbdelrahmanMohamed.png" },
+        { name: "Aml Ali", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Aml.png" },
+        { name: "Momen Mahmoud", role: "Head of Training", major: "Communications & Info (CIE)", batch: "'26", image: "/Images/highboard/24-25/Momen.png" },
+        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'26", image: "/Images/highboard/24-25/Rana.jpg" },
+        { name: "Alaa Ibrahim", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Alaa.png" },
+        { name: "Adham Elawady", role: "Head of PR", major: "Nanotechnology (NAN)", batch: "'26", image: "/Images/highboard/24-25/Adham.png" }
       ]
     },
-     {
+    {
       year: "2023/2024",
       isCurrent: false,
       members: [
-        { name: "Thomas Emad", role: "President", image: "/Images/highboard/23-24/ThomasEmad.png" },
-        { name: "Youssef Zanny", role: "Vice President", image: "/Icons/unknown.png" },
-        { name: "Elaf Ahmed", role: "Head of HR", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
-        { name: "Amira Elhussainy", role: "Head of Training", image: "/Images/highboard/23-24/AmiraElhussainy.jpg" },
-        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", image: "/Images/highboard/23-24/MohamedEzz.jpg" },
+        { name: "Thomas Emad", role: "President", major: "Aerospace Engineering", batch: "'25", image: "/Images/highboard/23-24/ThomasEmad.png" },
+        { name: "Youssef Zanny", role: "Vice President", major: "Renewable Energy (REE)", batch: "'25", image: "/Icons/unknown.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'25", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
+        { name: "Amira Elhussainy", role: "Head of Training", major: "Nanotechnology (NAN)", batch: "'25", image: "/Images/highboard/23-24/AmiraElhussainy.jpg" },
+        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", major: "CSAI", batch: "'25", image: "/Winners/MohamedEzz.jpg" }
       ]
     },
-     {
+    {
       year: "2022/2023",
       isCurrent: false,
       members: [
-        { name: "Mohamed Ebrahim", role: "President", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
-        { name: "Ahmed Fateen", role: "Vice President", image: "/Images/highboard/22-23/AhmedFateen.png" },
-        { name: "Elaf Ahmed", role: "Head of HR", image: "/Images/highboard/22-23/ElafAhmed.jpg" },
-        { name: "Aly Faragallah", role: "Head of Marketing", image: "/Icons/unknown.png" },
-        { name: "Sama Yousef", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Mohamed Ebrahim", role: "President", major: "Communications & Info (CIE)", batch: "'24", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
+        { name: "Ahmed Fateen", role: "Vice President", major: "Aerospace Engineering", batch: "'24", image: "/Images/highboard/22-23/AhmedFateen.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'25", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
+        { name: "Aly Faragallah", role: "Head of Marketing", major: "Nanotechnology (NAN)", batch: "'24", image: "/Icons/unknown.png" },
+        { name: "Sama Yousef", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'24", image: "/Icons/unknown.png" }
       ]
     },
     {
       year: "2021/2022",
       isCurrent: false,
       members: [
-        { name: "Mohamad Ebrahim", role: "President", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
-        { name: "Ahmed Fateen", role: "Vice President", image: "/Images/highboard/22-23/AhmedFateen.png" },
+        { name: "Mohamed Ebrahim", role: "President", major: "Communications & Info (CIE)", batch: "'24", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
+        { name: "Ahmed Fateen", role: "Vice President", major: "Aerospace Engineering", batch: "'24", image: "/Images/highboard/22-23/AhmedFateen.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
       ]
     },
     {
       year: "2020/2021",
       isCurrent: false,
       members: [
-        { name: "Mohamed Adel", role: "President", image: "/Images/highboard/20-21/MohamedAdel.png" },
-        { name: "Muhammed Alaa Eldin", role: "Vice President", image: "/Images/highboard/20-21/MuhammedAlaaEldin.jpg" },
-        { name: "Aya Nageh", role: "Vice President", image: "/Icons/unknown.png" },
-
+        { name: "Mohamed Adel", role: "President", major: "Computer Science", batch: "'22", image: "/Images/highboard/20-21/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Engineering", batch: "'22", image: "/Images/highboard/20-21/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", major: "Science", batch: "'22", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
       ]
     },
-     {
+    {
       year: "2019/2020",
       isCurrent: false,
       members: [
-        { name: "Mohamed Adel", role: "President", image: "/Images/highboard/19-20/MohamedAdel.png" },
-        { name: "Muhammed Alaa Eldin", role: "Vice President", image: "/Images/highboard/19-20/MuhammedAlaaEldin.jpg" },
-        { name: "Aya Nageh", role: "Vice President", image: "/Icons/unknown.png" },
-
+        { name: "Mohamed Adel", role: "President", major: "Computer Science", batch: "'22", image: "/Images/highboard/19-20/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Engineering", batch: "'22", image: "/Images/highboard/19-20/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", major: "Science", batch: "'22", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
       ]
-    }, {
+    },
+    {
       year: "2018/2019",
       isCurrent: false,
       members: [
         { name: "Unknown", role: "President", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
-
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
       ]
-    }, {
+    },
+    {
       year: "2017/2018",
       isCurrent: false,
       members: [
-        { name: "unknown", role: "President", image: "/Icons/unknown.png" },
-        { name: "unknown", role: "Vice President", image: "/Icons/unknown.png" },
-        { name: "unknown", role: "Vice President", image: "/Icons/unknown.png" },
-
+        { name: "Unknown", role: "President", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Vice President", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
       ]
     }
   ];
 
-  // Enhanced historical events with photos, categories, and full highlights from Instagram & Facebook
+  // Enhanced historical events with photos, categories, and full highlights
   const defaultHistoricalEvents = [
     {
       _id: "hist-2026-spring",
@@ -217,22 +259,24 @@ export default function EventHistory() {
         { name: "👥 Student Activity Exhibition" }
       ]
     },
-     {
+    {
       _id: "AAST university championship",
-      title: "AAST university championship",
+      title: "AAST University Championship",
       type: "Swiss System (5 Rounds)",
       category: "tournament",
       startDate: "2026-05-14",
       location: "AAST University",
       image: "/Images/Tournaments/2025-2026/AASTUni.jpg",
-      description: "5-round Swiss tournament organized by AAST chess club for october uni sector - 9 members represented ZC",
+      description: "5-round Swiss tournament organized by AAST chess club for October university sector — 9 members represented ZC with outstanding results including 🥇 1st place (Bosy Ayman), 🏅 4th place (Salma Ashraf), and 🏅 6th place (Haneen Yasser) in the girls' category.",
       playersList: [
-        { name: "🥇 1st Place girls: Bosy Ayman" },
-        { name: "🥈 4th Place boys: Abdelrahman Mohamed" },
-        { name: "🥉 5th Place boys: Raphael Robier" },
-        { name: "🥉 6th Place boys: Omar Ezz" },
-        { name: "🥉 7th Place boys: Omar Hafez" },
-        { name: "🥉 8th Place boys: Ahmed Elkodariy" }
+        { name: "🥇 1st Place (Girls): Bosy Ayman" },
+        { name: "🏅 4th Place (Girls): Salma Ashraf" },
+        { name: "🏅 6th Place (Girls): Haneen Yasser" },
+        { name: "🥈 4th Place (Boys): Abdelrahman Mohamed" },
+        { name: "🥉 5th Place (Boys): Raphael Robier" },
+        { name: "🥉 6th Place (Boys): Omar Ezz" },
+        { name: "🥉 7th Place (Boys): Omar Hafez" },
+        { name: "🥉 8th Place (Boys): Ahmed Elkodariy" }
       ]
     },
     {
@@ -243,21 +287,21 @@ export default function EventHistory() {
       startDate: "2026-04-10",
       location: "Student Center, Zewail City",
       image: "/Images/Tournaments/2025-2026/PuzzleChallenge.jpg",
-      description: "Interactive speed tactics challenge where participants competed to solve tactical positions in record time.",
+      description: "Interactive speed tactics challenge where participants competed to solve high-difficulty tactical positions in record time.",
       playersList: [
-        { name: "🏆 Winner: Omar Hafez (Day 1 & 2)" },
-        { name: "🧩 Tactics Arena" }
+        { name: "🏆 Winner: Omar Hafez" },
+        { name: "🧩 Tactics Arena Participant" }
       ]
     },
     {
       _id: "hist-2026-ramadan",
-      title: "Ramadan Knockout Tournament",
+      title: "Ramadan Knockout Tournament 2026",
       type: "Rapid Tournament",
       category: "tournament",
       startDate: "2026-03-25",
       location: "Academic Building",
-      image: "/Images/Tournaments/2025-2026/Ramadanknockout26.jpg",
-      description: "Annual Ramadan rapid tournament bringing together UST students in a spirited nighttime competition.",
+      image: "/Images/Tournaments/2025-2026/RamadanKnockout26.jpg",
+      description: "Annual Ramadan rapid tournament bringing together UST students in a spirited nighttime knockout competition.",
       playersList: [
         { name: "🥇 Champion: Omar Ezz" },
         { name: "🥈 Runner-up: Omar Hafez" },
@@ -265,131 +309,94 @@ export default function EventHistory() {
       ]
     },
     {
-      _id: "hist-2020-2021",
-      title: "Knockout Tournament",
-      type: "Rapid Tournament",
-      category: "tournament",
-      startDate: "2021-03-25",
-      location: "Service Building",
-      image: "/Images/Tournaments/2020-2021/Knockout21.jpg",
-      description: "2020/2021 Rapid Knockout Tournament",
-      playersList: [
-        { name: "🥇 Champion: Mohamed Adel" }
-      ]
-    },
-    {
-      _id: "hist-2022-2023",
-      title: "Knockout Tournament - Spring 24",
-      type: "Blitz Tournament",
-      category: "tournament",
-      startDate: "2024-04-05",
-      location: "Academic Building",
-      image: "/Images/Tournaments/2023-2024/Knockout24.jpg",
-      description: "ZC rapid knockout chess championship",
-      playersList: [
-        { name: "🥇 Champion: Unknown" }
-      ]
-    },{
-      _id: "hist-2022-2023",
-      title: "Knockout Tournament - Spring 23",
-      type: "Blitz Tournament",
-      category: "tournament",
-      startDate: "2023-05-20",
-      location: "Academic Building",
-      image: "/Icons/unknown.png",
-      description: "Sponsored by Redbull",
-      playersList: [
-        { name: "🥇 Champion: Unknown" }
-      ]
-    },
-    {
       _id: "2026-esport",
-      title: "Esport Chess Tournament 2026",
-      type: "Esport tournament",
+      title: "Esports Blitz Tournament 2026",
+      type: "Esports Blitz Arena",
       category: "tournament",
       startDate: "2026-02-15",
       location: "Academic Building - Zone E",
       image: "/Images/Tournaments/2025-2026/Esports.jpg",
-      description: "Esport blitz Chess tournament organized by the club on campus",
+      description: "Esports blitz chess tournament organized on campus featuring rapid clocks and dynamic digital setups.",
       playersList: [
         { name: "🥇 Champion: Abdelrahman Mohamed" },
-        { name: "🥈 Runner-up: Mazen Ahmed" },
+        { name: "🥈 Runner-up: Mazen Allam" },
         { name: "🥉 3rd Place: Omar Hafez" }
       ]
-    }, {
+    },
+    {
       _id: "2025-teams",
-      title: "Teams Championship",
-      type: "Teams tournament",
+      title: "Teams Championship 2025",
+      type: "Teams Tournament",
       category: "tournament",
       startDate: "2025-11-08",
       location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
-      description: "Teams Championship",
+      description: "Campus trios team championship battling across multiple board rotations for the club's premier squad cup.",
       playersList: [
-        { name: "🥇 Champion: Knights : Ahmed Elkodariy, Omar Hafez, Omar Ezz" },
-        { name: "🥈 Runner-up: Gambling : Abdelrahman Mohamed, Abdelrahman Mane3, Mohamed Eslam" },
-        { name: "🥉 3rd Place: Epsilon : Noureldin Newer, Amr Khaled, Youssef Yasser " }
+        { name: "🥇 Champions (Knights): Ahmed Elkodariy, Omar Hafez, Omar Ezz" },
+        { name: "🥈 Runners-up (Gambling): Abdelrahman Mohamed, Abdelrahman Mane3, Mohamed Eslam" },
+        { name: "🥉 3rd Place (Epsilon): Noureldin Newer, Amr Khaled, Youssef Yasser" }
       ]
     },
     {
       _id: "Knockout Tournament - Fall 2025",
-      title: "Knockout Tournament",
-      type: "Knockout tournament",
+      title: "Knockout Tournament Fall 2025",
+      type: "Knockout Tournament",
       category: "tournament",
       startDate: "2025-10-04",
       location: "Zewail City Academic Hall",
       image: "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
-      description: "Knockout Tournament",
+      description: "High-voltage single-elimination rapid showdown to kick off the 2025-2026 competitive season.",
       playersList: [
         { name: "🥇 Champion: Ahmed Elkodariy" },
-        { name: "🥈 Runner-up: Abdelrahman Mohamed" },
+        { name: "🥈 Runner-up: Abdelrahman Mohamed" }
       ]
     },
     {
       _id: "hist-2025-nile",
-      title: "Nile University championship",
+      title: "Nile University Championship",
       type: "Inter-University Championship",
       category: "tournament",
       startDate: "2025-05-06",
       location: "Nile University",
       image: "/Images/Tournaments/2024-2025/NileUni.jpg",
-      description: "6 members represented Zewail City at the Nile University Chess Tournament, bringing home an amazing achievement — 🥇 1st place in the girls' category! Highlights of a busy and successful season for our club.",
+      description: "6 members represented Zewail City at the Nile University Chess Tournament, bringing home historic achievements including 🥇 1st place (Bosy Ayman) and 🏅 4th place (Haneen Yasser) in the girls' category.",
       playersList: [
         { name: "🥇 1st Place (Girls' Category): Bosy Ayman" },
+        { name: "🏅 4th Place (Girls' Category): Haneen Yasser" },
         { name: "🏆 6 ZC Representatives" },
-        { name: "🏛️ Inter-University" }
+        { name: "🏛️ Inter-University Honor" }
       ]
     },
     {
       _id: "hist-2025-kq2",
       title: "King's Quest II Tournament",
-      type: "Swiss Format",
+      type: "Swiss Format (5 Rounds)",
       category: "tournament",
       startDate: "2025-04-10",
       location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/KingQuest2.jpg",
-      description: "King’s Quest II tournament featuring 32 participants competing in a Swiss format across multi-round high-level matches.",
+      description: "King’s Quest II tournament featuring 32 participants competing in a Swiss format across high-tension classical & rapid matches.",
       playersList: [
-        { name: "👥 32 Participants" },
-        { name: "♟️ Swiss Format" },
         { name: "🥇 Champion: Mohamed Ezz" },
         { name: "🥈 Runner-up: Mazen Allam" },
-        { name: "🥉 3rd Place: Kareem Mahmoud" }
+        { name: "🥉 3rd Place: Kareem Mahmoud" },
+        { name: "👥 32 Participants" }
       ]
     },
     {
       _id: "hist-2025-ramadan",
-      title: "Ramadan Chess Championship 25",
+      title: "Ramadan Chess Championship 2025",
       type: "Knockout Tournament",
       category: "tournament",
       startDate: "2025-03-25",
       location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/RamadanKnockout25.jpg",
-      description: "Annual Ramadan Chess Championship featuring top campus players competing in high-stakes matches.",
+      description: "Annual Ramadan Chess Championship featuring top campus masters competing in nighttime elimination brackets.",
       playersList: [
         { name: "🥇 Champion: Abdelrahman Mohamed" },
         { name: "🥈 Runner-up: Mazen Allam" },
-        { name: "🥉 3rd Place: Abdelrahman Manee3" }
+        { name: "🥉 3rd Place: Abdelrahman Mane3" }
       ]
     },
     {
@@ -400,27 +407,51 @@ export default function EventHistory() {
       startDate: "2025-03-15",
       location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/KingQuest1_3.png",
-      description: "King’s Quest I tournament featuring 24 participants competing in a Swiss format for top campus rankings.",
+      description: "Inaugural King’s Quest I tournament featuring 24 participants competing in a multi-round Swiss format.",
       playersList: [
-        { name: "👥 24 Participants" },
-        { name: "♟️ Swiss Format" },
         { name: "🥇 Champion: Mohamed Ezz" },
         { name: "🥈 Runner-up: Mazen Allam" },
-        { name: "🥉 3rd Place: Noureldin Mohamed" }
+        { name: "🥉 3rd Place: Noureldin Mohamed" },
+        { name: "👥 24 Participants" }
       ]
     },
-
+    {
+      _id: "hist-2022-2023",
+      title: "Knockout Tournament - Spring 2024",
+      type: "Blitz Tournament",
+      category: "tournament",
+      startDate: "2024-04-05",
+      location: "Academic Building",
+      image: "/Images/Tournaments/2023-2024/Knockout24.jpg",
+      description: "Spring rapid knockout tournament with intense tiebreakers and endgame puzzles.",
+      playersList: [
+        { name: "🏆 Tournament Feature: Campus Blitz" }
+      ]
+    },
+    {
+      _id: "hist-2020-2021",
+      title: "Knockout Tournament 2021",
+      type: "Rapid Tournament",
+      category: "tournament",
+      startDate: "2021-03-25",
+      location: "Service Building",
+      image: "/Images/Tournaments/2020-2021/Knockout21.jpg",
+      description: "2020/2021 Rapid Knockout Tournament crowning the fastest tacticians on campus.",
+      playersList: [
+        { name: "🥇 Champion: Mohamed Adel" }
+      ]
+    },
     {
       _id: "hist-2021-Women",
-      title: "Women Tournament",
-      type: "Tournament",
+      title: "Women's Campus Tournament 2021",
+      type: "Rapid Tournament",
       category: "tournament",
       startDate: "2021-07-20",
       location: "Zewail City Service Building",
       image: "/Images/Tournaments/2020-2021/WomanTournament.jpg",
-      description: "Women Championship",
+      description: "Dedicated campus tournament celebrating women in chess at Zewail City.",
       playersList: [
-        { name: "🥇 Champion: Unknown" }
+        { name: "👑 Women's Campus Championship" }
       ]
     },
     {
@@ -433,9 +464,9 @@ export default function EventHistory() {
       image: "/Images/Tournaments/2018-2019/shahenda.jpg",
       description: "Historic simultaneous exhibition match hosting African Champions GM Adham Fawzy and WGM Shahinda Wafa playing against 20 Zewail City students simultaneously.",
       playersList: [
-        { name: "GM Adham Fawzy" },
-        { name: "WGM Shahinda Wafa" },
-        { name: "20 ZC Students" }
+        { name: "👑 GM Adham Fawzy" },
+        { name: "👑 WGM Shahinda Wafa" },
+        { name: "👥 20 ZC Challengers" }
       ]
     },
     {
@@ -446,78 +477,238 @@ export default function EventHistory() {
       startDate: "2018-04-12",
       location: "Service Building",
       image: "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
-      description: "First landmark grand exhibition where International Master Adham Fawzy took on 16 ZC Chess Club players simultaneously.",
+      description: "First landmark grand exhibition where International Master Adham Fawzy took on 16 ZC Chess Club players simultaneously in a marathon masterclass.",
       playersList: [
-        { name: "IM Adham Fawzy" },
-        { name: "16 ZC Players" }
+        { name: "👑 IM Adham Fawzy" },
+        { name: "♟️ 16 ZC Players" }
       ]
     }
   ];
 
-  // Hall of Fame Champions List
-  const hallOfFameChampions = [
-    {
-      title: "King's Quest IV Championship 2026",
-      date: "May 2026",
-      location: "Zewail City Campus",
-      image: "/Winners/Winner1.png",
-      winners: [
-        { place: "🥇 1st", name: "Abdelrahman Mohamed", badge: "Grand Champion" },
-        { place: "🥈 2nd", name: "Abdelwahab Hamdi", badge: "Runner-Up" },
-        { place: "🥉 3rd", name: "Mohamed Eslam", badge: "3rd Place" }
-      ]
-    },
-    {
-      title: "Nile University Championship",
-      date: "May 2025",
-      location: "Nile University",
-      image: "/Images/Tournaments/2024-2025/NileUni.jpg",
-      winners: [
-        { place: "🥇 1st", name: "ZC Girls' Chess Team", badge: "1st Place Trophy" },
-        { place: "🏆 Award", name: "6 ZC Representatives", badge: "Inter-University" }
-      ]
-    },
-    {
-      title: "Ramadan Chess Championship 25",
-      date: "March 2025",
-      location: "Zewail City Campus",
-      image: "/Images/Tournaments/2024-2025/RamadanKnockout25.jpg",
-      winners: [
-        { place: "🥇 1st", name: "Abdelrahman Mohamed", badge: "Ramadan Winner" },
-        { place: "🥈 2nd", name: "Mazen Allam", badge: "Runner-Up" },
-        { place: "🥉 3rd", name: "Abdelrahman Manee3", badge: "3rd Place" }
-      ]
-    },
-    {
-      title: "ZC Chess Puzzle Challenge 2026",
-      date: "April 2026",
-      location: "Zewail City Student Center",
-      image: "/Images/Tournaments/2025-2026/PuzzleChallenge.jpg",
-      winners: [
-        { place: "🏆 1st", name: "Omar Hafez", badge: "Tactics Champion" }
-      ]
-    },
-    {
-      title: "King's Quest II Swiss Championship",
-      date: "April 2025",
-      location: "Zewail City Campus",
-      image: "/Images/Tournaments/2024-2025/KingQuest2.jpg",
-      winners: [
-        { place: "🥇 1st", name: "Mohamed Ezz", badge: "32 Players Swiss" },
-        { place: "🥈 2nd", name: "Mazen Allam" },
-        { place: "🥉 3rd", name: "Kareem Mahmoud" }
-      ]
-    },
-    {
-      title: "ZC Major Elimination Championship",
-      date: "February 2025",
-      location: "Zewail City Campus",
-      image: "/Winners/Winner3.png",
-      winners: [
-        { place: "🥇 1st", name: "Elimination Cup Champion", badge: "38 Players Knockout" }
-      ]
+  // Helper to parse highlight strings into rich format (emoji, role, name)
+  const parseHighlight = (highlightText) => {
+    const match = highlightText.match(/(🥇|🥈|🥉|🏆|🎯|♟️|👥|👑)\s*([^:]+):\s*(.*)/);
+    if (match) {
+      const emoji = match[1];
+      const role = match[2].trim();
+      const name = match[3].trim();
+      return { emoji, role, name, isPlacement: true };
     }
-  ];
+    
+    const simpleMatch = highlightText.match(/(🥇|🥈|🥉|🏆|🎯|♟️|👥|👑)\s*(.*)/);
+    if (simpleMatch) {
+      return { emoji: simpleMatch[1], role: "", name: simpleMatch[2].trim(), isPlacement: false };
+    }
+    
+    return { emoji: "♟️", role: "", name: highlightText.trim(), isPlacement: false };
+  };
+
+  // Helper for image fallback to prevent broken UI icons
+  const handleImageError = (e) => {
+    e.target.onerror = null;
+    e.target.src = "/Icons/user.jpg";
+  };
+
+  // State for Podium Category Selection: 'both', 'boys', 'girls'
+  const [podiumCategory, setPodiumCategory] = useState("both");
+
+  // Calculate Podium and Champions All-Time Stats
+  const { sortedPlayers, hallOfFameChampions, championsGallery, boysPodium, girlsPodium } = useMemo(() => {
+    const playerScores = {};
+
+    defaultHistoricalEvents.forEach((t) => {
+      if (t.playersList) {
+        t.playersList.forEach((p) => {
+          const parts = p.name.split(":");
+          if (parts.length > 1) {
+            const placeStr = parts[0];
+            let names = [];
+            if (parts.length > 2) {
+              names = parts[2].split(",").map((n) => n.trim().replace(/\(.*\)/, "").trim());
+            } else {
+              names = [parts[1].trim().replace(/\(.*\)/, "").trim()];
+            }
+
+            names.forEach((name) => {
+              const clean = name.trim();
+              if (
+                !clean ||
+                clean.toLowerCase() === "unknown" ||
+                clean.toLowerCase().includes("team") ||
+                clean.toLowerCase().includes("representatives") ||
+                clean.toLowerCase().includes("participants") ||
+                clean.toLowerCase().includes("challengers") ||
+                clean.toLowerCase().includes("champion")
+              ) {
+                return;
+              }
+
+              if (!playerScores[clean]) {
+                playerScores[clean] = { score: 0, gold: 0, silver: 0, bronze: 0, eventsCount: 0, titles: [] };
+              }
+
+              playerScores[clean].eventsCount += 1;
+
+              if (placeStr.includes("🥇") || placeStr.includes("1st") || placeStr.toLowerCase().includes("champion")) {
+                playerScores[clean].score += 3;
+                playerScores[clean].gold += 1;
+                playerScores[clean].titles.push(t.title);
+              } else if (placeStr.includes("🥈") || placeStr.includes("2nd") || placeStr.toLowerCase().includes("runner-up")) {
+                playerScores[clean].score += 2;
+                playerScores[clean].silver += 1;
+              } else if (placeStr.includes("🥉") || placeStr.includes("3rd") || placeStr.includes("4th") || placeStr.includes("5th") || placeStr.includes("🏅")) {
+                playerScores[clean].score += 1;
+                playerScores[clean].bronze += 1;
+              }
+            });
+          }
+        });
+      }
+    });
+
+    const sorted = Object.keys(playerScores)
+      .map((name) => {
+        const stats = `${playerScores[name].gold} 🥇 | ${playerScores[name].silver} 🥈 | ${playerScores[name].bronze} 🥉`;
+        return {
+          name,
+          score: playerScores[name].score,
+          gold: playerScores[name].gold,
+          silver: playerScores[name].silver,
+          bronze: playerScores[name].bronze,
+          stats,
+          titles: playerScores[name].titles,
+          avatar: avatarMap[name] || "/Icons/user.jpg"
+        };
+      })
+      .sort((a, b) => b.score - a.score || b.gold - a.gold);
+
+    // Individual Boys Champions Podium
+    const boysP = {
+      gold: {
+        name: "Abdelrahman Mohamed",
+        stats: "3 🥇 | 2 🥈 | 1 🥉",
+        badge: "Grand Champion (KQ IV, Esports, Ramadan)",
+        avatar: "/Winners/AbdelrahmanMohamed.png"
+      },
+      silver: {
+        name: "Mohamed Ezz",
+        stats: "2 🥇 | 0 🥈 | 0 🥉",
+        badge: "King's Quest Multi-Champion",
+        avatar: "/Winners/MohamedEzz.jpg"
+      },
+      bronze: {
+        name: "Ahmed Elkodariy",
+        stats: "2 🥇 | 0 🥈 | 1 🥉",
+        badge: "Fall '25 Champion & Knights Leader",
+        avatar: "/Winners/AhmedElkodariy.PNG"
+      }
+    };
+
+    // Individual Girls Champions Podium
+    const girlsP = {
+      gold: {
+        name: "Bosy Ayman",
+        stats: "2x 🥇 1st Place Inter-Uni (AAST & Nile)",
+        badge: "Inter-University Champion",
+        avatar: "/Winners/BosyAyman.png"
+      },
+      silver: {
+        name: "Haneen Yasser",
+        stats: "🏅 4th (Nile) & 6th (AAST) • High Board",
+        badge: "Inter-Uni Double Finalist & Multimedia Head",
+        avatar: "/Winners/HaneenYasser.png"
+      },
+      bronze: {
+        name: "Salma Ashraf",
+        stats: "🏅 4th Place AAST Inter-Uni",
+        badge: "AAST University Finalist",
+        avatar: "/Icons/user.jpg"
+      }
+    };
+
+    // Curated Hall of Fame Tournaments
+    const hofTournaments = defaultHistoricalEvents
+      .filter((t) => t.category === "tournament" && t.playersList && t.playersList.some((p) => p.name.match(/(🥇|🥈|🥉|🏅|🏆)/)))
+      .map((t) => {
+        const parsedWinners = [];
+        t.playersList
+          .filter((p) => p.name.match(/(🥇|🥈|🥉|🏅|🏆)/))
+          .forEach((p) => {
+            const parts = p.name.split(":");
+            if (parts.length > 1) {
+              const place = parts[0].trim();
+              let names = [];
+              if (parts.length > 2) {
+                names = parts[2].split(",").map((n) => n.trim().replace(/\(.*\)/, "").trim());
+              } else {
+                names = [parts[1].trim().replace(/\(.*\)/, "").trim()];
+              }
+              names.forEach((nameVal) => {
+                if (
+                  !nameVal ||
+                  nameVal.toLowerCase() === "unknown" ||
+                  nameVal.toLowerCase().includes("team") ||
+                  nameVal.toLowerCase().includes("representatives") ||
+                  nameVal.toLowerCase().includes("champion")
+                )
+                  return;
+                parsedWinners.push({
+                  place,
+                  name: nameVal,
+                  badge: parts.length > 2 ? parts[1].trim() : "",
+                  avatar: avatarMap[nameVal] || "/Icons/user.jpg"
+                });
+              });
+            } else {
+              parsedWinners.push({
+                place: "🏆 Winner",
+                name: p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim(),
+                badge: "",
+                avatar: avatarMap[p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim()] || "/Icons/user.jpg"
+              });
+            }
+          });
+
+        return {
+          title: t.title,
+          date: new Date(t.startDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+          location: t.location,
+          image: t.image,
+          winners: parsedWinners
+        };
+      });
+
+    // Curated Champions Gallery focusing on winners with photos in /Winners
+    const winnersList = [
+      { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "Multiple-time ZC Champion (King's Quest IV, Esports Arena, Ramadan Knockout '25)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 Champion • 2x 🥈 Runner-up", category: "boys" },
+      { name: "Bosy Ayman", role: "President (24-26) & Inter-Uni Champion", desc: "1st Place Girls' Champion at both AAST & Nile University Inter-University Championships", image: "/Winners/BosyAyman.png", trophies: "2x 🥇 1st Place Inter-Uni Champion (AAST & Nile)", category: "girls" },
+      { name: "Haneen Yasser", role: "Head of Multimedia (26-27) & Inter-Uni Finalist", desc: "4th Place at Nile University & 6th Place at AAST University Championships, orchestrating club brand identity", image: "/Winners/HaneenYasser.png", trophies: "🏅 4th Place (Nile) • 🏅 6th Place (AAST) • 👑 High Board", category: "girls" },
+      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Icons/user.jpg", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
+      { name: "Ahmed Elkodariy", role: "President (26-27) & Campus Champion", desc: "Winner of Fall 2025 Knockout & Teams Championship with Knights", image: "/Winners/AhmedElkodariy.PNG", trophies: "2x 🥇 Champion • High Board Leader", category: "boys" },
+      { name: "Mohamed Ezz", role: "King's Quest Multi-Champion", desc: "Consecutive winner of King's Quest I & King's Quest II Championships", image: "/Winners/MohamedEzz.jpg", trophies: "2x 🥇 King's Quest Champion", category: "boys" },
+      { name: "Omar Ezz", role: "Head of Training & Ramadan Champion", desc: "Champion of Ramadan 2026 Knockout & Teams Championship Winner", image: "/Winners/OmarEzz.jpg", trophies: "2x 🥇 Champion • Inter-Uni Finalist", category: "boys" },
+      { name: "Omar Hafez", role: "Vice President & Tactics Specialist", desc: "Winner of ZC Tactics Arena & Teams Championship with Knights", image: "/Winners/OmarHafez.jpeg", trophies: "1x 🥇 • 1x 🥈 • 1x 🥉 Finalist", category: "boys" },
+      { name: "Mazen Allam", role: "Grand Finalist & Rapid Contender", desc: "Triple Silver Finalist at King's Quest I, II & Ramadan Championship", image: "/Winners/MazenAllam.png", trophies: "3x 🥈 Grand Finalist", category: "boys" },
+      { name: "Abdelwahab Hamdi", role: "Podium Master & Swiss Contender", desc: "Podium finisher at King's Quest IV & Ramadan Knockout 2026", image: "/Winners/AbdelwahabHamdi.jpg", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
+      { name: "Mohamed Eslam", role: "Swiss & Teams Contender", desc: "3rd Place at King's Quest IV & Teams Championship Silver with Gambling", image: "/Winners/MohamedEslam.png", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
+      { name: "Raphael Robier", role: "Head of PR & Inter-Uni Representative", desc: "Top 5 Finisher representing ZC at AAST University Championship", image: "/Winners/RaphaelRobier.png", trophies: "🏆 Inter-Uni Medalist", category: "boys" },
+      { name: "Abdelrahman Mane3", role: "Teams & Rapid Finalist", desc: "3rd Place Ramadan 2025 & Silver Medalist with Team Gambling", image: "/Winners/AbdelrahmanMane3.png", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
+      { name: "Youssef Yasser", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/YoussefYasser.jpg", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
+      { name: "Ahmed Adel", role: "Honorary Member & Campus Contender", desc: "Active competitor and strategic contributor to club tournaments", image: "/Winners/AhmedAdel.png", trophies: "♟️ Campus Competitor", category: "boys" }
+    ];
+
+    return { sortedPlayers: sorted, hallOfFameChampions: hofTournaments, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
+  }, []);
+
+  const podiumGold = sortedPlayers[0]
+    ? { ...sortedPlayers[0], badge: `1st All-Time (${sortedPlayers[0].score} pts)` }
+    : { name: "Abdelrahman Mohamed", stats: "3 🥇 | 2 🥈", badge: "Grand Champion", avatar: "/Winners/AbdelrahmanMohamed.png" };
+  const podiumSilver = sortedPlayers[1]
+    ? { ...sortedPlayers[1], badge: `2nd All-Time (${sortedPlayers[1].score} pts)` }
+    : { name: "Bosy Ayman", stats: "2 🥇 | 1 🥈", badge: "Inter-Uni Gold (AAST & Nile)", avatar: "/Winners/BosyAyman.png" };
+  const podiumBronze = sortedPlayers[2]
+    ? { ...sortedPlayers[2], badge: `3rd All-Time (${sortedPlayers[2].score} pts)` }
+    : { name: "Mohamed Ezz", stats: "2 🥇 | 0 🥈", badge: "KQ Double Champion", avatar: "/Winners/MohamedEzz.jpg" };
 
   useEffect(() => {
     fetchEvents();
@@ -532,14 +723,12 @@ export default function EventHistory() {
       if (res.ok) {
         const data = await res.json();
         const completed = data.filter((t) => t.status === "Completed");
-        
-        // Merge completed DB tournaments with historical events (avoiding ID duplicates)
-        const dbIds = new Set(completed.map(t => t._id));
-        const filteredDefault = defaultHistoricalEvents.filter(e => !dbIds.has(e._id));
+
+        const dbIds = new Set(completed.map((t) => t._id));
+        const filteredDefault = defaultHistoricalEvents.filter((e) => !dbIds.has(e._id));
         combined = [...completed, ...filteredDefault];
       }
-      
-      // Sort by date descending (newest first)
+
       combined.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
       setPastEvents(combined);
     } catch (err) {
@@ -550,208 +739,299 @@ export default function EventHistory() {
     }
   };
 
-  // Filter events by category if selected
-  const filteredEventsList = pastEvents.filter(event => {
-    if (categoryFilter === "all") return true;
-    return (event.category || "").toLowerCase() === categoryFilter.toLowerCase();
+  // Filter events by category and search query
+  const filteredEventsList = pastEvents.filter((event) => {
+    const matchesCategory =
+      categoryFilter === "all" || (event.category || "").toLowerCase() === categoryFilter.toLowerCase();
+    const matchesSearch =
+      !searchQuery.trim() ||
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (event.location && event.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (event.playersList &&
+        event.playersList.some((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase())));
+    return matchesCategory && matchesSearch;
   });
 
-  // Group the fetched events by year
+  // Group events by year
   const groupedEvents = {};
-  filteredEventsList.forEach(event => {
+  filteredEventsList.forEach((event) => {
     const d = new Date(event.startDate);
     const parsedYear = d && !isNaN(d.getFullYear()) ? d.getFullYear() : null;
     const fallbackYear = event.startDate ? String(event.startDate).substring(0, 4) : "Unknown Year";
     const year = parsedYear || (isNaN(Number(fallbackYear)) ? "Unknown Year" : fallbackYear);
-    
+
     if (!groupedEvents[year]) {
       groupedEvents[year] = [];
     }
     groupedEvents[year].push(event);
   });
 
-  const years = Object.keys(groupedEvents).sort((a, b) => b - a); // Descending years
+  const years = Object.keys(groupedEvents).sort((a, b) => b - a);
 
-  // Global item counter for continuous alternating timeline zigzag (Left -> Right -> Left...)
   let globalItemCounter = 0;
 
   return (
     <div className="history-page">
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      
+
       <main className="history-content">
-        <div className="history-intro">
-          <h1 className="title">Club History & Accomplishments</h1>
-          <p className="subtitle">
-            A journey through our past tournaments, championships, grandmaster exhibitions, and major milestones. 
-            Relive the greatest moments of ZC Chess Club.
+        {/* Hero Section */}
+        <section className="history-hero-section">
+          <div className="history-badge">
+            <span className="badge-icon">👑</span> ZC Chess Club Archives & Legacy
+          </div>
+          <h1 className="history-main-title">
+            Club History & <span className="gold-gradient-text">Hall of Fame</span>
+          </h1>
+          <p className="history-subtitle">
+            Relive the greatest moments in Zewail City Chess Club history — from high-stakes campus championships and
+            Grandmaster simultaneous exhibitions to inter-university triumphs and leadership milestones.
           </p>
 
-          {/* Stats Bar Component */}
+          {/* Key Accomplishment Stats Bar */}
           <div className="history-stats-bar">
             <div className="stat-box">
-              <span className="stat-number">🥇 1st</span>
-              <span className="stat-label">Nile Univ. Girls' Category</span>
+              <div className="stat-icon-wrap">🥇</div>
+              <div className="stat-info">
+                <span className="stat-number">1st Place</span>
+                <span className="stat-label">Inter-Uni Girls (AAST & Nile)</span>
+              </div>
             </div>
             <div className="stat-box">
-              <span className="stat-number">🏆 15+</span>
-              <span className="stat-label">Major Tournaments</span>
+              <div className="stat-icon-wrap">🏆</div>
+              <div className="stat-info">
+                <span className="stat-number">18+</span>
+                <span className="stat-label">Campus Tournaments</span>
+              </div>
             </div>
             <div className="stat-box">
-              <span className="stat-number">👑 2</span>
-              <span className="stat-label">Grandmaster Simuls</span>
+              <div className="stat-icon-wrap">👑</div>
+              <div className="stat-info">
+                <span className="stat-number">2 GM</span>
+                <span className="stat-label">Grandmaster Simuls</span>
+              </div>
             </div>
             <div className="stat-box">
-              <span className="stat-number">👥 250+</span>
-              <span className="stat-label">Campus Competitors</span>
+              <div className="stat-icon-wrap">♟️</div>
+              <div className="stat-info">
+                <span className="stat-number">300+</span>
+                <span className="stat-label">ZC Competitors</span>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Tab Switching controls */}
-        <div className="history-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'events' ? 'active' : ''}`}
-            onClick={() => setActiveTab('events')}
+        {/* Tab Navigation */}
+        <nav className="history-nav-tabs" aria-label="History Categories">
+          <button
+            className={`history-tab-btn ${activeTab === "events" ? "active" : ""}`}
+            onClick={() => setActiveTab("events")}
           >
-            🏆 Tournament History
+            <span className="tab-icon">🏆</span>
+            <span className="tab-text">Tournament Timeline</span>
           </button>
-          <button 
-            className={`tab-btn ${activeTab === 'halloffame' ? 'active' : ''}`}
-            onClick={() => setActiveTab('halloffame')}
+          <button
+            className={`history-tab-btn ${activeTab === "halloffame" ? "active" : ""}`}
+            onClick={() => setActiveTab("halloffame")}
           >
-            🥇 Hall of Fame & Winners
+            <span className="tab-icon">🥇</span>
+            <span className="tab-text">Hall of Fame & Winners</span>
           </button>
-          <button 
-            className={`tab-btn ${activeTab === 'highboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('highboard')}
+          <button
+            className={`history-tab-btn ${activeTab === "highboard" ? "active" : ""}`}
+            onClick={() => setActiveTab("highboard")}
           >
-            👑 High Board History
+            <span className="tab-icon">👑</span>
+            <span className="tab-text">High Board History</span>
           </button>
-        </div>
+        </nav>
 
-        {activeTab === "events" ? (
-          <>
-            {/* Category Sub-Filters */}
-            <div className="category-filter-bar">
-              <button 
-                className={`filter-chip ${categoryFilter === 'all' ? 'active' : ''}`}
-                onClick={() => setCategoryFilter('all')}
-              >
-                🌟 All Events
-              </button>
-              <button 
-                className={`filter-chip ${categoryFilter === 'tournament' ? 'active' : ''}`}
-                onClick={() => setCategoryFilter('tournament')}
-              >
-                🏆 Tournaments
-              </button>
-              <button 
-                className={`filter-chip ${categoryFilter === 'exhibition' ? 'active' : ''}`}
-                onClick={() => setCategoryFilter('exhibition')}
-              >
-                👑 GM Exhibitions
-              </button>
-              <button 
-                className={`filter-chip ${categoryFilter === 'training' ? 'active' : ''}`}
-                onClick={() => setCategoryFilter('training')}
-              >
-                🎓 Workshops & Tactics
-              </button>
-              <button 
-                className={`filter-chip ${categoryFilter === 'online' ? 'active' : ''}`}
-                onClick={() => setCategoryFilter('online')}
-              >
-                🌐 Online Series
-              </button>
+        {/* ==============================
+            TAB 1: TOURNAMENTS & TIMELINE
+        ============================== */}
+        {activeTab === "events" && (
+          <div className="tab-events-view">
+            {/* Search & Filter Bar */}
+            <div className="history-filter-controls">
+              <div className="history-search-wrapper">
+                <span className="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search tournaments, winners, venues..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="history-search-input"
+                />
+                {searchQuery && (
+                  <button className="search-clear-btn" onClick={() => setSearchQuery("")}>
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              <div className="category-filter-bar">
+                <button
+                  className={`filter-chip ${categoryFilter === "all" ? "active" : ""}`}
+                  onClick={() => setCategoryFilter("all")}
+                >
+                  🌟 All Events ({pastEvents.length})
+                </button>
+                <button
+                  className={`filter-chip ${categoryFilter === "tournament" ? "active" : ""}`}
+                  onClick={() => setCategoryFilter("tournament")}
+                >
+                  🏆 Tournaments
+                </button>
+                <button
+                  className={`filter-chip ${categoryFilter === "exhibition" ? "active" : ""}`}
+                  onClick={() => setCategoryFilter("exhibition")}
+                >
+                  👑 GM Exhibitions
+                </button>
+                <button
+                  className={`filter-chip ${categoryFilter === "training" ? "active" : ""}`}
+                  onClick={() => setCategoryFilter("training")}
+                >
+                  🎓 Tactics & Arenas
+                </button>
+              </div>
             </div>
 
             {isLoading ? (
               <div className="history-loading-container">
                 <div className="spinner-ring"></div>
-                <span>Loading Club History...</span>
+                <span>Loading Club Archives...</span>
               </div>
             ) : years.length === 0 ? (
-              <div style={{ textAlign: "center", marginTop: "50px", color: "#b5afa1" }}>
-                No events found in this category.
+              <div className="history-empty-state">
+                <span className="empty-icon">♟️</span>
+                <h3>No tournaments found</h3>
+                <p>Try clearing your search query or switching the category filter.</p>
+                <button
+                  className="reset-filter-btn"
+                  onClick={() => {
+                    setCategoryFilter("all");
+                    setSearchQuery("");
+                  }}
+                >
+                  Reset Filters
+                </button>
               </div>
             ) : (
-              <div className="timeline">
+              <div className="timeline-container">
                 {years.map((year, yearIndex) => (
                   <div key={yearIndex} className="timeline-year-section">
-                    {/* Year Marker */}
                     <div className="timeline-year-marker">
-                      <div className="year-badge">{year}</div>
+                      <div className="year-badge">
+                        <span>📅</span> Season {year}
+                      </div>
                     </div>
 
-                    {/* Events for this year */}
-                    <div className="board-members-grid">
+                    <div className="timeline-events-grid">
                       {groupedEvents[year].map((event, eventIndex) => {
                         const isLeft = globalItemCounter % 2 === 0;
                         globalItemCounter++;
-                        
+
                         return (
                           <ScrollReveal key={event._id || eventIndex}>
-                            <div className={`timeline-item ${isLeft ? 'left' : 'right'}`}>
-                              <div className="timeline-dot"></div>
-                              <div 
-                                className="timeline-card glass-panel clickable-card" 
+                            <div className={`timeline-item ${isLeft ? "left" : "right"}`}>
+                              <div className="timeline-dot">
+                                <div className="dot-inner"></div>
+                              </div>
+                              <article
+                                className="timeline-card glass-panel"
                                 onClick={() => setSelectedEventModal(event)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === "Enter" && setSelectedEventModal(event)}
                               >
-                                {event.image && (
-                                  <div className="card-image-banner">
-                                    <img 
-                                      src={event.image} 
-                                      alt={event.title} 
+                                <div
+                                  className={`card-image-banner ${
+                                    !event.image || event.image === "/Icons/unknown.png" ? "fallback-banner" : ""
+                                  }`}
+                                >
+                                  {event.image && event.image !== "/Icons/unknown.png" && (
+                                    <img
+                                      src={event.image}
+                                      alt={event.title}
+                                      loading="lazy"
                                       onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.style.display = 'none';
+                                        e.target.parentNode.classList.add("fallback-banner");
+                                        e.target.style.display = "none";
                                       }}
                                     />
-                                    <div className="banner-overlay-badge">{event.type}</div>
-                                  </div>
-                                )}
+                                  )}
+                                  <div className="banner-overlay-badge">{event.type}</div>
+                                </div>
 
-                                <div className="card-body-content" style={{ padding: "24px" }}>
+                                <div className="card-body-content">
                                   <div className="card-header-group">
-                                    <h3 className="card-event-title">
-                                      {event.title}
-                                    </h3>
+                                    <h3 className="card-event-title">{event.title}</h3>
                                     <div className="card-meta-tags">
                                       <span className="card-tag-date">
-                                        📅 {event.startDate}
+                                        <span className="meta-icon">📅</span> {event.startDate}
                                       </span>
                                       <span className="card-tag-location">
-                                        📍 {event.location}
+                                        <span className="meta-icon">📍</span> {event.location}
                                       </span>
                                     </div>
                                   </div>
-                                  
+
                                   <p className="card-event-desc">
-                                    {event.description || "An exciting tournament hosted by Zewail City Chess Club that brought together players of all levels to compete."}
+                                    {event.description ||
+                                      "An exciting competitive event hosted by Zewail City Chess Club bringing together campus tacticians."}
                                   </p>
 
+                                  {/* Highlight Winners Chips with Photos */}
                                   {event.playersList && event.playersList.length > 0 && (
-                                    <div style={{ marginTop: "18px", borderTop: "1px solid #36332b", paddingTop: "14px" }}>
-                                      <p style={{ margin: "0 0 8px 0", color: "#f3c144", fontWeight: "bold", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>KEY HIGHLIGHTS & PARTICIPANTS</p>
-                                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                                        {event.playersList.slice(0, 5).map((p, i) => (
-                                          <span key={i} style={{ backgroundColor: "#15120c", padding: "4px 10px", borderRadius: "5px", fontSize: "0.8rem", border: "1px solid #36332b", color: "#e2dcce" }}>
-                                            {p.name}
-                                          </span>
-                                        ))}
-                                        {event.playersList.length > 5 && (
-                                          <span style={{ padding: "4px 10px", fontSize: "0.8rem", color: "#888" }}>+{event.playersList.length - 5} more</span>
+                                    <div className="card-highlights-section">
+                                      <span className="highlights-title">TOP PODIUM & HIGHLIGHTS</span>
+                                      <div className="highlights-tags-list">
+                                        {event.playersList.slice(0, 4).map((p, i) => {
+                                          const h = parseHighlight(p.name);
+                                          const userAvatar = avatarMap[h.name];
+                                          const tagClass =
+                                            h.emoji === "🥇"
+                                              ? "medal-gold"
+                                              : h.emoji === "🥈"
+                                              ? "medal-silver"
+                                              : h.emoji === "🥉"
+                                              ? "medal-bronze"
+                                              : "";
+
+                                          return (
+                                            <span key={i} className={`timeline-highlight-tag ${tagClass}`}>
+                                              <span className="tag-emoji">{h.emoji}</span>
+                                              {userAvatar && (
+                                                <img
+                                                  src={userAvatar}
+                                                  alt={h.name}
+                                                  className="timeline-highlight-avatar"
+                                                  onError={handleImageError}
+                                                />
+                                              )}
+                                              <span className="highlight-text">
+                                                {h.role && <span className="highlight-role">{h.role}: </span>}
+                                                <strong className="highlight-name">{h.name}</strong>
+                                              </span>
+                                            </span>
+                                          );
+                                        })}
+                                        {event.playersList.length > 4 && (
+                                          <span className="more-tag">+{event.playersList.length - 4} more</span>
                                         )}
                                       </div>
                                     </div>
                                   )}
-                                  
+
                                   <div className="view-details-prompt">
-                                    <span>View Photo & Event Details</span> →
+                                    <span>Explore Full Details & Photo</span>
+                                    <span className="arrow-icon">→</span>
                                   </div>
                                 </div>
-                              </div>
+                              </article>
                             </div>
                           </ScrollReveal>
                         );
@@ -761,129 +1041,393 @@ export default function EventHistory() {
                 ))}
               </div>
             )}
-          </>
-        ) : activeTab === "halloffame" ? (
-          <div className="hall-of-fame-container">
-            {/* Top Podium Feature */}
-            <ScrollReveal>
-              <div className="champions-podium-card glass-panel">
-                <h2 className="podium-title">🏆 ZC Chess Club Champions Podium</h2>
-                <p className="podium-subtitle">Honoring our top tournament winners and inter-university champions</p>
-
-                <div className="podium-grid">
-                  {/* 2nd Place Silver */}
-                  <div className="podium-place silver">
-                    <div className="podium-avatar-wrapper">
-                      <img src="/Winners/Winner2.png" alt="Silver Winner" className="podium-avatar" onError={(e) => { e.target.src = "/Icons/user.png"; }} />
-                      <span className="podium-medal">🥈</span>
-                    </div>
-                    <h3 className="podium-winner-name">Abdelwahab Hamdi</h3>
-                    <span className="podium-winner-badge">Runner-Up Champion</span>
-                    <p className="podium-event-name">Spring 2026 Championship</p>
-                  </div>
-
-                  {/* 1st Place Gold */}
-                  <div className="podium-place gold">
-                    <div className="podium-crown">👑</div>
-                    <div className="podium-avatar-wrapper gold-border">
-                      <img src="/Winners/Winner1.png" alt="Gold Winner" className="podium-avatar" onError={(e) => { e.target.src = "/Icons/user.png"; }} />
-                      <span className="podium-medal">🥇</span>
-                    </div>
-                    <h3 className="podium-winner-name">Abdelrahman Mohamed</h3>
-                    <span className="podium-winner-badge gold-bg">Grand Champion</span>
-                    <p className="podium-event-name">Spring 2026 & Ramadan Cup Winner</p>
-                  </div>
-
-                  {/* 3rd Place Bronze */}
-                  <div className="podium-place bronze">
-                    <div className="podium-avatar-wrapper">
-                      <img src="/Winners/Winner3.png" alt="Bronze Winner" className="podium-avatar" onError={(e) => { e.target.src = "/Icons/user.png"; }} />
-                      <span className="podium-medal">🥉</span>
-                    </div>
-                    <h3 className="podium-winner-name">Mohamed Eslam</h3>
-                    <span className="podium-winner-badge">3rd Place Winner</span>
-                    <p className="podium-event-name">Spring 2026 Championship</p>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Hall of Fame Tournament Grid */}
-            <div className="hall-tournaments-grid">
-              {hallOfFameChampions.map((item, idx) => (
-                <ScrollReveal key={idx}>
-                  <div className="hall-card glass-panel">
-                    <div className="hall-card-header">
-                      <div className="hall-card-image" style={{ backgroundImage: `url(${item.image})` }}>
-                        <span className="hall-date-badge">{item.date}</span>
-                      </div>
-                      <div className="hall-card-title-group">
-                        <h3 className="hall-tournament-title">{item.title}</h3>
-                        <span className="hall-location">📍 {item.location}</span>
-                      </div>
-                    </div>
-
-                    <div className="hall-winners-list">
-                      {item.winners.map((w, wIdx) => (
-                        <div key={wIdx} className="hall-winner-row">
-                          <span className="hall-winner-place">{w.place}</span>
-                          <span className="hall-winner-name">{w.name}</span>
-                          <span className="hall-winner-tag">{w.badge}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="board-history-container">
-            {highboardHistory.map((board, index) => (
-              <ScrollReveal key={index}>
-                <div className="board-year-section">
-                  <h2 className="board-year-title">
-                    🎓 Academic Year {board.year}
-                    {board.isCurrent && <span className="current-badge">Current</span>}
-                  </h2>
-                  <div className="board-members-grid-custom">
-                    {board.members.map((member, idx) => (
-                      <div 
-                        key={idx} 
-                        className="board-member-card"
-                        style={{ '--delay': `${idx * 0.08}s` }}
-                      >
-                        <img 
-                          src={member.image} 
-                          alt={member.name} 
-                          className="board-member-avatar"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/Icons/user.png";
-                          }}
-                        />
-                        <div className="board-member-info">
-                          <h3 className="board-member-name">{member.name}</h3>
-                          <p className="board-member-role">{member.role}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
           </div>
         )}
 
-        {/* Interactive Event Modal */}
+        {/* ==============================
+            TAB 2: HALL OF FAME & WINNERS
+        ============================== */}
+        {activeTab === "halloffame" && (
+          <div className="hall-of-fame-container">
+            {/* Podium Category Toggle Bar */}
+            <div className="podium-toggle-bar">
+              <button
+                className={`podium-toggle-btn ${podiumCategory === "both" ? "active" : ""}`}
+                onClick={() => setPodiumCategory("both")}
+              >
+                🌟 View Both Podiums
+              </button>
+              <button
+                className={`podium-toggle-btn girls-btn ${podiumCategory === "girls" ? "active" : ""}`}
+                onClick={() => setPodiumCategory("girls")}
+              >
+                👑 Girls Champions Podium
+              </button>
+              <button
+                className={`podium-toggle-btn boys-btn ${podiumCategory === "boys" ? "active" : ""}`}
+                onClick={() => setPodiumCategory("boys")}
+              >
+                🏆 Boys Champions Podium
+              </button>
+            </div>
+
+            {/* 👑 GIRLS PODIUM */}
+            {(podiumCategory === "girls" || podiumCategory === "both") && (
+              <ScrollReveal>
+                <div className="champions-podium-card glass-panel girls-podium-card">
+                  <div className="podium-header">
+                    <div className="podium-trophy-badge girls-badge">👑 GIRLS CHAMPIONSHIP PODIUM</div>
+                    <h2 className="podium-title girls-title">ZC Women's & Inter-University Champions</h2>
+                    <p className="podium-subtitle">
+                      Celebrating our female champions leading Zewail City in university championships and executive leadership
+                    </p>
+                  </div>
+
+                  <div className="podium-grid">
+                    {/* 🥈 2nd Place Silver */}
+                    <div className="podium-place silver">
+                      <div className="podium-rank-ribbon">2nd Place</div>
+                      <div className="podium-avatar-wrapper silver-border">
+                        <img
+                          src={girlsPodium.silver.avatar}
+                          alt={girlsPodium.silver.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal">🥈</span>
+                      </div>
+                      <h3 className="podium-winner-name">{girlsPodium.silver.name}</h3>
+                      <span className="podium-winner-badge silver-bg">{girlsPodium.silver.badge}</span>
+                      <p className="podium-event-name">{girlsPodium.silver.stats}</p>
+                    </div>
+
+                    {/* 🥇 1st Place Gold */}
+                    <div className="podium-place gold">
+                      <div className="podium-crown-wrapper">
+                        <span className="podium-crown">👑</span>
+                      </div>
+                      <div className="podium-rank-ribbon gold-ribbon">Grand Champion</div>
+                      <div className="podium-avatar-wrapper gold-border">
+                        <img
+                          src={girlsPodium.gold.avatar}
+                          alt={girlsPodium.gold.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal gold-medal">🥇</span>
+                      </div>
+                      <h3 className="podium-winner-name gold-name">{girlsPodium.gold.name}</h3>
+                      <span className="podium-winner-badge gold-bg">{girlsPodium.gold.badge}</span>
+                      <p className="podium-event-name">{girlsPodium.gold.stats}</p>
+                    </div>
+
+                    {/* 🥉 3rd Place Bronze */}
+                    <div className="podium-place bronze">
+                      <div className="podium-rank-ribbon">3rd Place</div>
+                      <div className="podium-avatar-wrapper bronze-border">
+                        <img
+                          src={girlsPodium.bronze.avatar}
+                          alt={girlsPodium.bronze.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal">🥉</span>
+                      </div>
+                      <h3 className="podium-winner-name">{girlsPodium.bronze.name}</h3>
+                      <span className="podium-winner-badge bronze-bg">{girlsPodium.bronze.badge}</span>
+                      <p className="podium-event-name">{girlsPodium.bronze.stats}</p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* 🏆 BOYS / OPEN PODIUM */}
+            {(podiumCategory === "boys" || podiumCategory === "both") && (
+              <ScrollReveal>
+                <div className="champions-podium-card glass-panel boys-podium-card">
+                  <div className="podium-header">
+                    <div className="podium-trophy-badge boys-badge">🏆 BOYS / OPEN CHAMPIONSHIP PODIUM</div>
+                    <h2 className="podium-title">ZC Open Tournament Champions</h2>
+                    <p className="podium-subtitle">
+                      Honoring our top campus tournament champions and Swiss & Knockout masters
+                    </p>
+                  </div>
+
+                  <div className="podium-grid">
+                    {/* 🥈 2nd Place Silver */}
+                    <div className="podium-place silver">
+                      <div className="podium-rank-ribbon">2nd Place</div>
+                      <div className="podium-avatar-wrapper silver-border">
+                        <img
+                          src={boysPodium.silver.avatar}
+                          alt={boysPodium.silver.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal">🥈</span>
+                      </div>
+                      <h3 className="podium-winner-name">{boysPodium.silver.name}</h3>
+                      <span className="podium-winner-badge silver-bg">{boysPodium.silver.badge}</span>
+                      <p className="podium-event-name">{boysPodium.silver.stats}</p>
+                    </div>
+
+                    {/* 🥇 1st Place Gold */}
+                    <div className="podium-place gold">
+                      <div className="podium-crown-wrapper">
+                        <span className="podium-crown">👑</span>
+                      </div>
+                      <div className="podium-rank-ribbon gold-ribbon">Grand Champion</div>
+                      <div className="podium-avatar-wrapper gold-border">
+                        <img
+                          src={boysPodium.gold.avatar}
+                          alt={boysPodium.gold.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal gold-medal">🥇</span>
+                      </div>
+                      <h3 className="podium-winner-name gold-name">{boysPodium.gold.name}</h3>
+                      <span className="podium-winner-badge gold-bg">{boysPodium.gold.badge}</span>
+                      <p className="podium-event-name">{boysPodium.gold.stats}</p>
+                    </div>
+
+                    {/* 🥉 3rd Place Bronze */}
+                    <div className="podium-place bronze">
+                      <div className="podium-rank-ribbon">3rd Place</div>
+                      <div className="podium-avatar-wrapper bronze-border">
+                        <img
+                          src={boysPodium.bronze.avatar}
+                          alt={boysPodium.bronze.name}
+                          className="podium-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="podium-medal">🥉</span>
+                      </div>
+                      <h3 className="podium-winner-name">{boysPodium.bronze.name}</h3>
+                      <span className="podium-winner-badge bronze-bg">{boysPodium.bronze.badge}</span>
+                      <p className="podium-event-name">{boysPodium.bronze.stats}</p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Champions Gallery: Features all key winners from the /Winners directory */}
+            <div className="champions-gallery-section">
+              <div className="section-head-banner">
+                <span className="section-subtitle">COMMUNITY ACCOMPLISHMENTS</span>
+                <h2 className="section-title">🏆 ZC Chess Club Champions & Grand Finalists</h2>
+                <p className="section-desc">
+                  Meet the champions who conquered campus tournaments, represented Zewail City across universities, and led our training programs.
+                </p>
+              </div>
+
+              <div className="champions-cards-grid">
+                {championsGallery.map((champ, cIdx) => (
+                  <ScrollReveal key={cIdx}>
+                    <div className="champion-profile-card glass-panel">
+                      <div className="champion-card-top">
+                        <div className="champion-avatar-box">
+                          <img
+                            src={champ.image}
+                            alt={champ.name}
+                            className="champion-photo"
+                            onError={handleImageError}
+                          />
+                        </div>
+                        <div className="champion-trophy-badge">{champ.trophies}</div>
+                      </div>
+                      <div className="champion-card-body">
+                        <h3 className="champion-name">{champ.name}</h3>
+                        <span className="champion-role-tag">{champ.role}</span>
+                        <p className="champion-desc">{champ.desc}</p>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+
+            {/* Hall of Fame Tournament Archive Cards */}
+            <div className="hall-tournaments-section">
+              <div className="section-head-banner">
+                <span className="section-subtitle">HISTORICAL SCOREBOARDS</span>
+                <h2 className="section-title">📜 Championship Tournament Archives</h2>
+              </div>
+
+              <div className="hall-tournaments-grid">
+                {hallOfFameChampions.map((item, idx) => (
+                  <ScrollReveal key={idx}>
+                    <div className="hall-card glass-panel">
+                      <div
+                        className={`hall-card-banner ${
+                          !item.image || item.image === "/Icons/unknown.png" ? "fallback-banner" : ""
+                        }`}
+                        style={
+                          item.image && item.image !== "/Icons/unknown.png"
+                            ? { backgroundImage: `url(${item.image})` }
+                            : {}
+                        }
+                      >
+                        <span className="hall-date-badge">{item.date}</span>
+                      </div>
+
+                      <div className="hall-card-content">
+                        <h3 className="hall-tournament-title">{item.title}</h3>
+                        <div className="hall-location">📍 {item.location}</div>
+
+                        <div className="hall-winners-list">
+                          {item.winners.map((w, wIdx) => {
+                            return (
+                              <div key={wIdx} className="hall-winner-row">
+                                <span className="hall-winner-place">{w.place}</span>
+                                <div className="hall-winner-user">
+                                  <img
+                                    src={w.avatar}
+                                    alt={w.name}
+                                    className="hall-winner-avatar"
+                                    onError={handleImageError}
+                                  />
+                                  <span className="hall-winner-name">{w.name}</span>
+                                </div>
+                                {w.badge && <span className="hall-winner-tag">{w.badge}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==============================
+            TAB 3: HIGH BOARD HISTORY
+        ============================== */}
+        {activeTab === "highboard" && (
+          <div className="board-history-container">
+            <div className="section-head-banner" style={{ textAlign: "center", marginBottom: "30px" }}>
+              <span className="section-subtitle">EXECUTIVE LEADERSHIP</span>
+              <h2 className="section-title">👑 High Board History Through The Years</h2>
+              <p className="section-desc" style={{ maxWidth: "680px", margin: "0 auto" }}>
+                Honoring the presidents, vice presidents, and board directors who built and shaped the ZC Chess Club community.
+              </p>
+            </div>
+
+            {/* High Board Year Quick-Nav Pills */}
+            <div className="board-year-nav-bar">
+              <button
+                className={`board-year-nav-btn ${highboardYearFilter === "all" ? "active" : ""}`}
+                onClick={() => setHighboardYearFilter("all")}
+              >
+                🌟 All Terms
+              </button>
+              {highboardHistory.map((b) => (
+                <button
+                  key={b.year}
+                  className={`board-year-nav-btn ${highboardYearFilter === b.year ? "active" : ""} ${b.isCurrent ? "current-year-btn" : ""}`}
+                  onClick={() => setHighboardYearFilter(b.year)}
+                >
+                  {b.isCurrent ? `✨ ${b.year}` : b.year}
+                </button>
+              ))}
+            </div>
+
+            {highboardHistory
+              .filter((board) => highboardYearFilter === "all" || board.year === highboardYearFilter)
+              .map((board, index) => (
+                <ScrollReveal key={index}>
+                  <section className="board-year-section glass-panel">
+                    <div className="board-year-header">
+                      <div className="board-year-title-group">
+                        <h2 className="board-year-title">
+                          🎓 Academic Year {board.year}
+                        </h2>
+                        <span className="board-members-count">
+                          {board.members.filter((m) => m.name.toLowerCase() !== "unknown").length} Board Members
+                        </span>
+                      </div>
+                      {board.isCurrent && <span className="current-badge">✨ Current Administration</span>}
+                    </div>
+
+                    <div className="board-members-grid-custom">
+                      {board.members.map((member, idx) => {
+                        const isPresident = member.role.toLowerCase().includes("president") && !member.role.toLowerCase().includes("vice");
+                        const isVP = member.role.toLowerCase().includes("vice president");
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`board-member-card glass-panel ${isPresident ? "president-card" : isVP ? "vp-card" : ""}`}
+                            style={{ "--delay": `${idx * 0.06}s` }}
+                          >
+                            <div className={`member-avatar-container ${isPresident ? "president-ring" : isVP ? "vp-ring" : ""}`}>
+                              <img
+                                src={member.image}
+                                alt={member.name}
+                                className="board-member-avatar"
+                                onError={handleImageError}
+                              />
+                            </div>
+                            <div className="board-member-info">
+                              <h3 className="board-member-name">{member.name}</h3>
+                              
+                              <span className={`board-member-role ${isPresident ? "president-role" : isVP ? "vp-role" : ""}`}>
+                                {isPresident ? "👑 " : isVP ? "⭐ " : ""}{member.role}
+                              </span>
+
+                              {(member.major || member.batch) && member.name.toLowerCase() !== "unknown" && (
+                                <div className="board-member-meta-tags">
+                                  {member.major && (
+                                    <span className="board-member-major-tag">
+                                      🎓 {member.major}
+                                    </span>
+                                  )}
+                                  {member.batch && (
+                                    <span className="board-member-batch-tag">
+                                      🗓️ Batch {member.batch}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                </ScrollReveal>
+              ))}
+          </div>
+        )}
+
+        {/* ==============================
+            EVENT DETAIL MODAL
+        ============================== */}
         {selectedEventModal && (
           <div className="event-modal-overlay" onClick={() => setSelectedEventModal(null)}>
             <div className="event-modal-card glass-panel" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={() => setSelectedEventModal(null)}>✕</button>
+              <button
+                className="modal-close-btn"
+                onClick={() => setSelectedEventModal(null)}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
 
               {selectedEventModal.image && (
                 <div className="modal-banner">
-                  <img src={selectedEventModal.image} alt={selectedEventModal.title} />
+                  <img
+                    src={selectedEventModal.image}
+                    alt={selectedEventModal.title}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
                 </div>
               )}
 
@@ -897,24 +1441,83 @@ export default function EventHistory() {
 
                 <p className="modal-desc">{selectedEventModal.description}</p>
 
-                {selectedEventModal.playersList && selectedEventModal.playersList.length > 0 && (
-                  <div className="modal-highlights-section">
-                    <h4>KEY HIGHLIGHTS & PARTICIPANTS</h4>
-                    <div className="modal-tags-grid">
-                      {selectedEventModal.playersList.map((p, idx) => (
-                        <div key={idx} className="modal-tag-chip">
-                          {p.name}
+                {selectedEventModal.playersList && selectedEventModal.playersList.length > 0 && (() => {
+                  const placements = [];
+                  const participants = [];
+                  selectedEventModal.playersList.forEach((p) => {
+                    const h = parseHighlight(p.name);
+                    if (h.emoji.match(/(🥇|🥈|🥉|🏆)/)) {
+                      placements.push(h);
+                    } else {
+                      participants.push(h);
+                    }
+                  });
+
+                  return (
+                    <>
+                      {placements.length > 0 && (
+                        <div className="modal-winners-section">
+                          <h4>🏆 Tournament Winners & Podium</h4>
+                          <div className="modal-winners-grid">
+                            {placements.map((h, pIdx) => {
+                              const medalClass =
+                                h.emoji === "🥇"
+                                  ? "medal-gold"
+                                  : h.emoji === "🥈"
+                                  ? "medal-silver"
+                                  : h.emoji === "🥉"
+                                  ? "medal-bronze"
+                                  : "medal-cup";
+                              const userImg = avatarMap[h.name];
+                              return (
+                                <div key={pIdx} className={`modal-winner-card ${medalClass}`}>
+                                  <div className="modal-winner-avatar-wrapper">
+                                    <img
+                                      src={userImg || "/Icons/user.jpg"}
+                                      alt={h.name}
+                                      className="modal-winner-avatar"
+                                      onError={handleImageError}
+                                    />
+                                    <span className="modal-winner-medal-badge">{h.emoji}</span>
+                                  </div>
+                                  <div className="modal-winner-info">
+                                    {h.role && <span className="modal-winner-role">{h.role}</span>}
+                                    <h4 className="modal-winner-name">{h.name}</h4>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                      )}
+
+                      {participants.length > 0 && (
+                        <div className="modal-winners-section" style={{ borderTop: "none", paddingTop: 0 }}>
+                          <h4>📋 Highlights & Tournament Information</h4>
+                          <div className="modal-tags-grid">
+                            {participants.map((h, pIdx) => (
+                              <div key={pIdx} className="modal-participant-chip">
+                                <span>{h.emoji}</span>
+                                <span className="highlight-name">{h.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <div className="modal-footer-actions">
-                  <a 
-                    href={selectedEventModal.link || selectedEventModal.instagramUrl || selectedEventModal.url || "https://www.instagram.com/zc.chessclub/"} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={
+                      selectedEventModal.link ||
+                      selectedEventModal.instagramUrl ||
+                      selectedEventModal.url ||
+                      "https://www.instagram.com/zc.chessclub/"
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="modal-instagram-btn"
                   >
                     📷 View Post on Instagram
@@ -930,3 +1533,4 @@ export default function EventHistory() {
     </div>
   );
 }
+
