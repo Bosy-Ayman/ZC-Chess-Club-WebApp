@@ -171,3 +171,33 @@
   color: #232018;
   font-weight: bold;
 }
+
+@media (max-width: 600px) {
+  .calendar-container {
+    padding: 16px 8px 32px;
+  }
+
+  .month-grid {
+    gap: 3px;
+  }
+
+  .day-name {
+    padding: 6px 2px;
+    font-size: 0.68rem;
+  }
+
+  .day-cell {
+    min-height: 55px;
+    padding: 4px;
+
+  }
+
+  .date-num {
+    font-size: 0.75rem;
+  }
+
+  .event-item {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+}

@@ -13,8 +13,8 @@ const HomePage = () => {
     "/Images/Tournaments/2024-2025/KingQuest2.jpg",
     "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
     "/Images/Tournaments/2024-2025/NileUni.jpg",
+    "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
     "/Images/Tournaments/2025-2026/AASTUni.jpg",
-
   ];
 
   const [heroIndex, setHeroIndex] = useState(0);
@@ -72,10 +72,10 @@ const HomePage = () => {
   const otherAnnouncements = announcements.filter((a) => !a.pinned);
 
   const galleryImages = [
-    "/Images/Tournaments/2024-2025/image1.jpg",
-    "/Images/Tournaments/2024-2025/image4.jpg",
-    "/Images/Tournaments/2024-2025/image2.jpg",
-    "/Images/Tournaments/2024-2025/image3.jpg",
+    "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
+    "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
+    "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
+    "/Images/Tournaments/2025-2026/AASTUni.jpg",
   ];
 
   return (

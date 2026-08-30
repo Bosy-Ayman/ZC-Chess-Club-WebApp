@@ -12,7 +12,11 @@ export default function Tournaments() {
   const [tournaments, setTournaments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const userEmail = localStorage.getItem("adminEmail");
+  const isLoggedIn = !!localStorage.getItem("adminToken");
+
+  const fetchTournaments = () => {
+    setIsLoading(true);
     fetch(`${API_BASE}/api/tournaments`)
       .then(res => res.json())
       .then(data => {
@@ -23,7 +27,38 @@ export default function Tournaments() {
         console.error("Error fetching tournaments:", err);
         setIsLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchTournaments();
   }, []);
+
+  const handleJoinTournament = async (tId) => {
+    if (!isLoggedIn || !userEmail) {
+      window.location.href = "/?login=true";
+      return;
+    }
+
+    try {
+      const userRes = await fetch(`${API_BASE}/api/profile?email=${userEmail}`);
+      const userData = await userRes.json();
+      const name = userData.name || userEmail.split("@")[0];
+
+      const res = await fetch(`${API_BASE}/api/tournaments/${tId}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail, name }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to register for tournament");
+
+      alert("🎉 Successfully registered for " + (data.data?.title || "the tournament") + "!");
+      fetchTournaments();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
@@ -55,62 +90,134 @@ export default function Tournaments() {
               </div>
             </div>
 
-            {/* Table Section */}
+            {/* Table / Cards Section */}
             <div className="tournaments-table-section">
-              <div className="table-container">
-                {isLoading ? (
-                  <div className="tournaments-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Loading tournaments…</p>
+              {isLoading ? (
+                <div className="tournaments-loading">
+                  <div className="loading-spinner"></div>
+                  <p>Loading tournaments…</p>
+                </div>
+              ) : tournaments.length === 0 ? (
+                <div className="tournaments-empty-state">
+                  <div className="empty-icon">♟</div>
+                  <p>No tournaments scheduled yet. Check back soon!</p>
+                </div>
+              ) : (
+                <>
+                  {/* DESKTOP TABLE */}
+                  <div className="table-container tournaments-desktop-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Tournament Name</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Start Date</th>
+                          <th>End Date</th>
+                          <th>Players</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tournaments.map((t) => {
+                          const isRegistered = userEmail && t.registrations?.some(r => r.email === userEmail);
+                          return (
+                            <tr key={t._id}>
+                              <td style={{ fontWeight: "700", color: "#fff" }}>{t.title}</td>
+                              <td>{t.type}</td>
+                              <td>
+                                <span className={`status-button ${getStatusClass(t.status)}`}>
+                                  {t.status}
+                                </span>
+                              </td>
+                              <td>{t.startDate}</td>
+                              <td>{t.endDate || "—"}</td>
+                              <td>👥 {t.players}</td>
+                              <td>
+                                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                  <a href={`/tournamentdetails?id=${t._id}`} className="view-button">
+                                    Details ➔
+                                  </a>
+                                  {t.status === "Upcoming" && (
+                                    isRegistered ? (
+                                      <span style={{ color: "#2ecc71", fontWeight: "bold", fontSize: "0.85rem", background: "rgba(46,204,113,0.12)", padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(46,204,113,0.3)" }}>
+                                        ✓ Joined
+                                      </span>
+                                    ) : (
+                                      <button
+                                        onClick={() => handleJoinTournament(t._id)}
+                                        className="view-button"
+                                        style={{ background: "#f3c144", color: "#15120c", border: "none", fontWeight: "800" }}
+                                      >
+                                        ⚡ Join
+                                      </button>
+                                    )
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                ) : tournaments.length === 0 ? (
-                  <div className="tournaments-empty-state">
-                    <div className="empty-icon">♟</div>
-                    <p>No tournaments scheduled yet. Check back soon!</p>
-                  </div>
-                ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Tournament Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Players</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tournaments.map((t) => (
-                        <tr key={t._id}>
-                          <td>{t.title}</td>
-                          <td>{t.type}</td>
-                          <td>
+
+                  {/* MOBILE CARDS VIEW */}
+                  <div className="tournaments-mobile-cards">
+                    {tournaments.map((t) => {
+                      const isRegistered = userEmail && t.registrations?.some(r => r.email === userEmail);
+                      return (
+                        <div key={t._id} className="mobile-tournament-card">
+                          <div className="mobile-card-header">
                             <span className={`status-button ${getStatusClass(t.status)}`}>
                               {t.status}
                             </span>
-                          </td>
-                          <td>{t.startDate}</td>
-                          <td>{t.endDate || "—"}</td>
-                          <td>{t.players}</td>
-                          <td>
-                            {t.detailsUrl ? (
-                              <a href={t.detailsUrl} target="_blank" rel="noopener noreferrer" className="view-button">
-                                View / Register
-                              </a>
-                            ) : (
-                              <a href={`/tournamentdetails?id=${t._id}`} className="view-button">
-                                View Details
-                              </a>
+                            <span className="type-badge">{t.type}</span>
+                          </div>
+                          
+                          <h3 className="mobile-card-title">{t.title}</h3>
+                          
+                          <div className="mobile-card-details">
+                            <div className="detail-item">
+                              <span className="detail-label">Start Date</span>
+                              <span className="detail-val">{t.startDate}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">End Date</span>
+                              <span className="detail-val">{t.endDate || "—"}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Players</span>
+                              <span className="detail-val">👥 {t.players}</span>
+                            </div>
+                          </div>
+
+                          <div className="mobile-card-action" style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
+                            {t.status === "Upcoming" && (
+                              isRegistered ? (
+                                <div style={{ textAlign: "center", color: "#2ecc71", fontWeight: "bold", fontSize: "0.9rem", background: "rgba(46,204,113,0.12)", padding: "8px", borderRadius: "8px", border: "1px solid rgba(46,204,113,0.3)" }}>
+                                  ✓ Registered for Tournament
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleJoinTournament(t._id)}
+                                  className="view-button mobile-full-btn"
+                                  style={{ background: "#f3c144", color: "#15120c", border: "none", fontWeight: "800" }}
+                                >
+                                  ⚡ Join Tournament Now
+                                </button>
+                              )
                             )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+                            <a href={`/tournamentdetails?id=${t._id}`} className="view-button mobile-full-btn" style={{ textAlign: "center" }}>
+                              View Tournament Details ➔
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

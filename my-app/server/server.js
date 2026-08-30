@@ -133,7 +133,8 @@ const TournamentSchema = new mongoose.Schema({
     round: { type: Number, required: true },
     white: { type: String, required: true },
     black: { type: String, required: true },
-    result: { type: String, required: true }
+    result: { type: String, required: true },
+    bracket: { type: String, default: 'upper' }
   }],
   rounds: { type: Number, default: 0 }, // Total planned rounds
   createdAt: { type: Date, default: Date.now }
@@ -684,8 +685,9 @@ app.post('/api/tournaments/:id/generate-swiss-round', async (req, res) => {
     if (!tournament) return res.status(404).json({ error: "Tournament not found" });
 
     const players = tournament.playersList || [];
-    if (players.length < 2) {
-      return res.status(400).json({ error: "At least 2 players are required to generate Swiss pairings." });
+    const minPlayersRequired = tournament.rounds ? tournament.rounds + 1 : 2;
+    if (players.length < minPlayersRequired) {
+      return res.status(400).json({ error: `Not enough players! A ${tournament.rounds || 1}-round Swiss tournament requires at least ${minPlayersRequired} players to generate pairings. Currently registered: ${players.length}` });
     }
 
     const existingMatches = tournament.matches || [];
@@ -943,7 +945,7 @@ app.post('/api/tournaments/:id/generate-knockout-round', async (req, res) => {
         });
       }
 
-      tournament.matches = newMatches;
+      tournament.matches.push(...newMatches);
       await tournament.save();
       return res.json({ message: "Knockout Round 1 bracket generated successfully!", data: tournament });
     }
@@ -957,48 +959,130 @@ app.post('/api/tournaments/:id/generate-knockout-round', async (req, res) => {
       });
     }
 
-    // Find the current highest round
-    const maxRound = existingMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
-    const lastRoundMatches = existingMatches.filter(m => m.round === maxRound);
-
-    if (lastRoundMatches.length === 1) {
-      return res.status(400).json({ error: "The tournament is already completed! The Grand Finals match is finished." });
-    }
-
-    const nextRound = maxRound + 1;
-    const winners = lastRoundMatches.map(m => {
-      if (m.result === "1-0" || m.result === "1 - 0") return m.white;
-      if (m.result === "0-1" || m.result === "0 - 1") return m.black;
-      return m.white; // Fallback
-    });
-
+    const isDoubleElim = tournament.type === "Double Elimination";
     const newMatches = [];
-    const wCount = winners.length;
-    const halfW = Math.floor(wCount / 2);
 
-    for (let i = 0; i < halfW; i++) {
-      newMatches.push({
-        round: nextRound,
-        white: winners[i * 2],
-        black: winners[i * 2 + 1],
-        result: "Pending"
-      });
+    const upperMatches = existingMatches.filter(m => !m.bracket || m.bracket === "upper");
+    const lowerMatches = existingMatches.filter(m => m.bracket === "lower");
+    const gfMatches = existingMatches.filter(m => m.bracket === "grand_finals");
+    const gfrMatches = existingMatches.filter(m => m.bracket === "grand_finals_reset");
+
+    const uMax = upperMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
+    const lMax = lowerMatches.reduce((max, m) => Math.max(max, m.round || 1), 0);
+
+    const uLast = upperMatches.filter(m => m.round === uMax);
+    const lLast = lowerMatches.filter(m => m.round === lMax);
+
+    const getWinners = (matches) => matches.map(m => (m.result === "1-0" || m.result === "1 - 0") ? m.white : ((m.result === "0-1" || m.result === "0 - 1") ? m.black : m.white));
+    const getLosers = (matches) => matches.map(m => (m.result === "1-0" || m.result === "1 - 0") ? m.black : ((m.result === "0-1" || m.result === "0 - 1") ? m.white : m.black));
+
+    // Handle Grand Finals completion
+    if (isDoubleElim && gfMatches.length > 0) {
+       if (gfrMatches.length > 0) {
+         return res.status(400).json({ error: "The tournament is fully completed! Grand Finals Reset is finished." });
+       }
+       const gf = gfMatches[0];
+       // Did the lower bracket winner (black) win?
+       if (gf.result === "0-1" || gf.result === "0 - 1") {
+         newMatches.push({ round: 1, white: gf.white, black: gf.black, bracket: "grand_finals_reset", result: "Pending" });
+         tournament.matches.push(...newMatches);
+         await tournament.save();
+         return res.json({ message: "Grand Finals Reset generated!", data: tournament });
+       } else {
+         return res.status(400).json({ error: "The tournament is fully completed! Upper Bracket Champion won the Grand Finals." });
+       }
     }
 
-    // Odd number of winners gets a bye
-    if (wCount % 2 !== 0) {
-      newMatches.push({
-        round: nextRound,
-        white: winners[wCount - 1],
-        black: "BYE",
-        result: "1-0"
-      });
+    if (!isDoubleElim && uLast.length === 1) {
+       return res.status(400).json({ error: "The tournament is already completed! The Grand Finals match is finished." });
+    }
+
+    // Double Elim: Are we ready for Grand Finals?
+    // Upper must have 1 winner. Lower must have 1 winner AND have played the max possible rounds.
+    const expectedMaxLowerRounds = Math.max(1, 2 * uMax - 2);
+    if (isDoubleElim && uLast.length === 1 && lMax === expectedMaxLowerRounds && lLast.length === 1) {
+       const upperWinner = getWinners(uLast)[0];
+       const lowerWinner = getWinners(lLast)[0];
+       newMatches.push({ round: 1, white: upperWinner, black: lowerWinner, bracket: "grand_finals", result: "Pending" });
+       tournament.matches.push(...newMatches);
+       await tournament.save();
+       return res.json({ message: "Grand Finals generated!", data: tournament });
+    }
+
+    // Otherwise, advance brackets
+    let generatedSomething = false;
+
+    // Advance Upper Bracket
+    if (uLast.length > 1) {
+      const uWinners = getWinners(uLast);
+      const nextU = uMax + 1;
+      const wCount = uWinners.length;
+      const halfW = Math.floor(wCount / 2);
+      for (let i = 0; i < halfW; i++) {
+        newMatches.push({ round: nextU, white: uWinners[i * 2], black: uWinners[i * 2 + 1], bracket: "upper", result: "Pending" });
+      }
+      if (wCount % 2 !== 0) {
+        newMatches.push({ round: nextU, white: uWinners[wCount - 1], black: "BYE", bracket: "upper", result: "1-0" });
+      }
+      generatedSomething = true;
+    }
+
+    // Advance Lower Bracket (Double Elim only)
+    if (isDoubleElim) {
+      const nextL = lMax + 1;
+      
+      // Determine if nextL requires upper bracket losers
+      let dropInUpperRound = null;
+      if (nextL === 1) {
+        dropInUpperRound = 1;
+      } else if (nextL % 2 === 0) {
+        dropInUpperRound = (nextL + 2) / 2;
+      }
+
+      if (dropInUpperRound) {
+        // Drop-in round: Lower bracket survivors vs Upper bracket losers
+        // Make sure Upper round `dropInUpperRound` is completed!
+        if (uMax >= dropInUpperRound) {
+           const dropMatches = upperMatches.filter(m => m.round === dropInUpperRound);
+           const drops = getLosers(dropMatches).filter(p => p !== "BYE"); // ignore byes
+           const survivors = lMax > 0 ? getWinners(lLast) : [];
+           
+           let pool = nextL === 1 ? drops : [...survivors, ...drops];
+           
+           if (pool.length > 0) {
+             const half = Math.floor(pool.length / 2);
+             for (let i = 0; i < half; i++) {
+               newMatches.push({ round: nextL, white: pool[i], black: pool[pool.length - 1 - i], bracket: "lower", result: "Pending" });
+             }
+             if (pool.length % 2 !== 0) {
+               newMatches.push({ round: nextL, white: pool[half], black: "BYE", bracket: "lower", result: "1-0" });
+             }
+             generatedSomething = true;
+           }
+        }
+      } else {
+        // Normal lower round: survivors play each other
+        if (lMax > 0 && lLast.length > 1) { 
+           const survivors = getWinners(lLast);
+           const half = Math.floor(survivors.length / 2);
+           for (let i = 0; i < half; i++) {
+             newMatches.push({ round: nextL, white: survivors[i * 2], black: survivors[i * 2 + 1], bracket: "lower", result: "Pending" });
+           }
+           if (survivors.length % 2 !== 0) {
+             newMatches.push({ round: nextL, white: survivors[survivors.length - 1], black: "BYE", bracket: "lower", result: "1-0" });
+           }
+           generatedSomething = true;
+        }
+      }
+    }
+
+    if (!generatedSomething) {
+       return res.status(400).json({ error: "Cannot generate matches at this time. Wait for more matches to finish." });
     }
 
     tournament.matches.push(...newMatches);
     await tournament.save();
-
-    res.json({ message: `Round ${nextRound} matchups generated successfully!`, data: tournament });
+    return res.json({ message: "Next Knockout round(s) generated successfully!", data: tournament });
   } catch (error) {
     res.status(500).json({ error: 'Server error generating next Knockout round', details: error.message });
   }
@@ -1134,6 +1218,23 @@ app.delete('/api/tournaments/:id', async (req, res) => {
     res.json({ message: 'Tournament deleted successfully!', data: deletedTournament });
   } catch (error) {
     res.status(500).json({ error: 'Server error', details: error.message });
+  }
+});
+
+// PUT: update tournament status or details by ID
+app.put('/api/tournaments/:id', async (req, res) => {
+  try {
+    const updatedTournament = await Tournament.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    if (!updatedTournament) {
+      return res.status(404).json({ error: 'Tournament not found' });
+    }
+    res.json({ message: 'Tournament updated successfully!', data: updatedTournament });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error updating tournament', details: error.message });
   }
 });
 

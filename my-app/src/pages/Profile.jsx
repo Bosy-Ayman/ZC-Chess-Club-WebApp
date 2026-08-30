@@ -11,7 +11,6 @@ export default function Profile() {
 
   const [profile, setProfile] = useState(null);
   const [tournaments, setTournaments] = useState([]);
-  const [allTournaments, setAllTournaments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -43,13 +42,6 @@ export default function Profile() {
       const tourData = await tourRes.json();
       if (tourRes.ok) {
         setTournaments(tourData);
-      }
-
-      // Fetch All Upcoming Tournaments
-      const allRes = await fetch(`${API_BASE}/api/tournaments`);
-      const allData = await allRes.json();
-      if (allRes.ok) {
-        setAllTournaments(allData.filter(t => t.status === "Upcoming"));
       }
     } catch (err) {
       setError(err.message);
@@ -88,23 +80,6 @@ export default function Profile() {
       }
     };
     reader.readAsDataURL(file);
-  };
-
-  const handleRegister = async (tournamentId) => {
-    if (!profile) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: profile.email, name: profile.name }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Registration failed");
-      alert("Successfully registered for the tournament!");
-      fetchData(); // Refresh lists
-    } catch (err) {
-      alert(err.message);
-    }
   };
 
   const handleLeaveTournament = async (tournamentId) => {
@@ -271,35 +246,21 @@ export default function Profile() {
         </section>
 
         <section className="dashboard-section" style={{ marginBottom: "50px" }}>
-          <h3 className="section-title">Upcoming Tournaments</h3>
-          {allTournaments.length === 0 ? (
-            <p style={{ color: "var(--light-text)" }}>No upcoming tournaments available to join.</p>
-          ) : (
-            <div className="tournament-grid-dashboard">
-              {allTournaments.map((t) => {
-                const alreadyJoined = tournaments.some((joined) => joined._id === t._id);
-                if (alreadyJoined) return null;
-
-                return (
-                  <div key={t._id} className="tournament-card-dashboard">
-                    <div className="t-header">
-                      <h3 className="t-title">{t.title}</h3>
-                    </div>
-                    <div className="t-info-row">
-                      <span className="t-info-text"><strong>Date:</strong> {t.startDate}</span>
-                      <span className="t-info-text"><strong>Type:</strong> {t.type}</span>
-                    </div>
-                    <button 
-                      onClick={() => handleRegister(t._id)}
-                      className="btn-primary"
-                    >
-                      Join Tournament
-                    </button>
-                  </div>
-                );
-              })}
+          <div className="explore-tournaments-banner" style={{ background: "rgba(28, 25, 18, 0.85)", border: "1px solid rgba(243, 193, 68, 0.25)", borderRadius: "16px", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+            <div>
+              <h3 style={{ color: "#fff", margin: "0 0 8px 0", fontSize: "1.3rem", fontWeight: "800" }}>🏆 Explore & Join Championships</h3>
+              <p style={{ color: "#b5afa1", margin: 0, fontSize: "0.95rem", maxWidth: "600px" }}>
+                Browse our active schedule of Swiss & Knockout tournaments, view match pairings, check standings, and register directly from the official Tournaments Hub!
+              </p>
             </div>
-          )}
+            <a 
+              href="/tournaments" 
+              className="btn-primary" 
+              style={{ background: "#f3c144", color: "#15120c", padding: "12px 24px", borderRadius: "10px", fontWeight: "800", textDecoration: "none", whiteSpace: "nowrap" }}
+            >
+              Go to Tournaments Page ➔
+            </a>
+          </div>
         </section>
       </main>
       <Footer />

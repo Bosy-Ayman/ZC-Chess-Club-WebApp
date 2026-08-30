@@ -40,6 +40,19 @@ export default function AdminDashboard() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Responsive board width for mobile puzzle editor
+  const [boardWidth, setBoardWidth] = useState(
+    typeof window !== "undefined" ? Math.min(window.innerWidth - 64, 360) : 360
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setBoardWidth(Math.min(window.innerWidth - 64, 360));
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Modal state for applications
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
@@ -54,7 +67,6 @@ export default function AdminDashboard() {
     time: "",
     location: "Zewail Chess Club",
     description: "",
-    players: 0,
     detailsUrl: "",
     rounds: 5  // Swiss only — FIDE: N rounds needs ≥ N+1 players
   });
@@ -121,6 +133,7 @@ export default function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, userRole, location.search]);
 
+  // eslint-disable-next-line no-unused-vars
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminEmail");
@@ -375,7 +388,6 @@ export default function AdminDashboard() {
         time: "",
         location: "Zewail Chess Club",
         description: "",
-        players: 0,
         detailsUrl: "",
         rounds: 5
       });
@@ -473,24 +485,70 @@ export default function AdminDashboard() {
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
       <main className="admin-container">
-        <section className="intro-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", borderBottom: "1px solid #393428", paddingBottom: "15px" }}>
-          <div>
-            <h1 style={{ fontSize: "2.5rem", color: "white", margin: 0 }}>Admin Dashboard</h1>
-            <p style={{ color: "#caba91", margin: "5px 0 0 0" }}>Create and manage club tournaments, and review member applications.</p>
+        <section className="intro-header">
+          <div className="admin-header-content">
+            <div className="admin-header-titles">
+              <span className="admin-role-badge">
+                {userRole === "admin" ? "👑 Executive Admin Portal" : userRole === "oc" ? "⚡ Organizing Committee Portal" : "📋 HR Management Portal"}
+              </span>
+              <h1>Zewail City Chess Club Dashboard</h1>
+              <p>Manage club tournaments, schedule rounds, review member applications, and set up daily puzzle challenges.</p>
+            </div>
+
+            <div className="admin-kpi-bar">
+              <div className="kpi-pill">
+                <span className="kpi-num">{tournaments.length}</span>
+                <span className="kpi-label">Tournaments</span>
+              </div>
+              <div className="kpi-pill">
+                <span className="kpi-num">{applications.length}</span>
+                <span className="kpi-label">Applications</span>
+              </div>
+              {userRole === "admin" && (
+                <div className="kpi-pill">
+                  <span className="kpi-num">{users.length}</span>
+                  <span className="kpi-label">Members</span>
+                </div>
+              )}
+            </div>
           </div>
-          <button onClick={handleLogout} className="tab-btn" style={{ borderColor: "#e74c3c", color: "#e74c3c" }}>
-            Log Out
-          </button>
         </section>
 
-        {/* Tab Controls */}
-        <div className="admin-tabs">
+        {/* Mobile Tab Selector (Visible on < 768px) */}
+        <div className="admin-mobile-tab-select-wrapper">
+          <label htmlFor="admin-mobile-tab-select" className="admin-mobile-tab-label">Switch Admin Section:</label>
+          <select
+            id="admin-mobile-tab-select"
+            className="admin-mobile-tab-select"
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+          >
+            {(userRole === "admin" || userRole === "oc") && (
+              <option value="add-tournament">➕ Add Tournament</option>
+            )}
+            {(userRole === "admin" || userRole === "oc") && (
+              <option value="tournaments-list">🏆 Manage Tournaments ({tournaments.length})</option>
+            )}
+            {(userRole === "admin" || userRole === "hr") && (
+              <option value="applications">📋 Club Applications ({applications.length})</option>
+            )}
+            {userRole === "admin" && (
+              <option value="manage-users">👥 Manage Users ({users.length})</option>
+            )}
+            {(userRole === "admin" || userRole === "oc") && (
+              <option value="manage-puzzles">🧩 Chess Puzzles {puzzlesList.length > 0 ? `(${puzzlesList.length})` : ""}</option>
+            )}
+          </select>
+        </div>
+
+        {/* Desktop Tab Controls (Visible on >= 768px) */}
+        <div className="admin-tabs admin-desktop-tabs">
           {(userRole === "admin" || userRole === "oc") && (
             <button
               className={`tab-btn ${activeTab === "add-tournament" ? "active" : ""}`}
               onClick={() => setActiveTab("add-tournament")}
             >
-              Add Tournament
+              ➕ Add Tournament
             </button>
           )}
           {(userRole === "admin" || userRole === "oc") && (
@@ -498,7 +556,7 @@ export default function AdminDashboard() {
               className={`tab-btn ${activeTab === "tournaments-list" ? "active" : ""}`}
               onClick={() => setActiveTab("tournaments-list")}
             >
-              Manage Tournaments ({tournaments.length})
+              🏆 Manage Tournaments ({tournaments.length})
             </button>
           )}
           {(userRole === "admin" || userRole === "hr") && (
@@ -506,7 +564,7 @@ export default function AdminDashboard() {
               className={`tab-btn ${activeTab === "applications" ? "active" : ""}`}
               onClick={() => setActiveTab("applications")}
             >
-              Club Applications ({applications.length})
+              📋 Club Applications ({applications.length})
             </button>
           )}
           {userRole === "admin" && (
@@ -514,7 +572,7 @@ export default function AdminDashboard() {
               className={`tab-btn ${activeTab === "manage-users" ? "active" : ""}`}
               onClick={() => setActiveTab("manage-users")}
             >
-              Manage Users ({users.length})
+              👥 Manage Users ({users.length})
             </button>
           )}
           {(userRole === "admin" || userRole === "oc") && (
@@ -522,7 +580,7 @@ export default function AdminDashboard() {
               className={`tab-btn ${activeTab === "manage-puzzles" ? "active" : ""}`}
               onClick={() => setActiveTab("manage-puzzles")}
             >
-              Chess Puzzles
+              🧩 Chess Puzzles {puzzlesList.length > 0 ? `(${puzzlesList.length})` : ""}
             </button>
           )}
         </div>
@@ -562,8 +620,8 @@ export default function AdminDashboard() {
                       onChange={handleInputChange}
                     >
                       <option value="Swiss">Swiss</option>
-                      <option value="Knockout Single Elimination">Knockout Single Elimination</option>
-                      <option value="Knockout Double Elimination">Knockout Double Elimination</option>
+                      <option value="Single Elimination">Single Elimination (Knockout)</option>
+                      <option value="Double Elimination">Double Elimination (Knockout)</option>
                     </select>
                   </div>
 
@@ -654,28 +712,16 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="players">Initial Registered Players</label>
+                    <label htmlFor="location">Location</label>
                     <input
-                      type="number"
-                      id="players"
-                      name="players"
-                      value={form.players}
+                      type="text"
+                      id="location"
+                      name="location"
+                      value={form.location}
                       onChange={handleInputChange}
-                      min="0"
+                      placeholder="e.g. Zewail Chess Club Room"
                     />
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="location">Location</label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={form.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Zewail Chess Club Room"
-                  />
                 </div>
 
 
@@ -705,63 +751,106 @@ export default function AdminDashboard() {
               {tournaments.length === 0 ? (
                 <p className="empty-message">No tournaments found. Go ahead and add one!</p>
               ) : (
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Tournament</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tournaments.map((t) => (
-                        <tr key={t._id}>
-                          <td className="strong">{t.title}</td>
-                          <td>{t.type}</td>
-                          <td>
-                            <span className={`status-badge ${t.status.toLowerCase()}`}>
-                              {t.status}
-                            </span>
-                          </td>
-                          <td>{t.startDate}</td>
-                          <td>{t.time}</td>
-                          <td>{t.location}</td>
-                          <td>
-                            <div style={{ display: "flex", gap: "8px" }}>
-                              <a
-                                href={`/tournamentdetails?id=${t._id}`}
-                                className="action-btn"
-                                style={{
-                                  background: "rgba(243, 193, 68, 0.15)",
-                                  color: "#f3c144",
-                                  padding: "4px 10px",
-                                  borderRadius: "6px",
-                                  textDecoration: "none",
-                                  fontSize: "0.8rem",
-                                  fontWeight: "700",
-                                  border: "1px solid rgba(243, 193, 68, 0.3)"
-                                }}
-                              >
-                                View & Edit Matches ➔
-                              </a>
-                              <button
-                                className="delete-btn"
-                                onClick={() => handleDeleteTournament(t._id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
+                <>
+                  <div className="admin-table-container tournaments-desktop-table">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Tournament</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Date</th>
+                          <th>Time</th>
+                          <th>Location</th>
+                          <th>Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {tournaments.map((t) => (
+                          <tr key={t._id}>
+                            <td className="strong">{t.title}</td>
+                            <td>{t.type}</td>
+                            <td>
+                              <span className={`status-badge ${t.status.toLowerCase()}`}>
+                                {t.status}
+                              </span>
+                            </td>
+                            <td>{t.startDate}</td>
+                            <td>{t.time}</td>
+                            <td>{t.location}</td>
+                            <td>
+                              <div style={{ display: "flex", gap: "8px" }}>
+                                <a
+                                  href={`/tournamentdetails?id=${t._id}`}
+                                  className="action-btn"
+                                  style={{
+                                    background: "rgba(243, 193, 68, 0.15)",
+                                    color: "#f3c144",
+                                    padding: "4px 10px",
+                                    borderRadius: "6px",
+                                    textDecoration: "none",
+                                    fontSize: "0.8rem",
+                                    fontWeight: "700",
+                                    border: "1px solid rgba(243, 193, 68, 0.3)"
+                                  }}
+                                >
+                                  View & Edit Matches ➔
+                                </a>
+                                <button
+                                  className="delete-btn"
+                                  onClick={() => handleDeleteTournament(t._id)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Tournaments Cards View */}
+                  <div className="tournaments-mobile-cards">
+                    {tournaments.map((t) => (
+                      <div key={t._id} className="mobile-tournament-card" style={{ padding: "16px" }}>
+                        <div className="mobile-card-header">
+                          <h3 className="mobile-card-title">{t.title}</h3>
+                          <span className={`status-badge ${t.status.toLowerCase()}`}>{t.status}</span>
+                        </div>
+                        <div style={{ fontSize: "0.85rem", color: "#bab19c", margin: "8px 0" }}>
+                          <div>Format: <strong style={{ color: "#f3c144" }}>{t.type}</strong></div>
+                          <div>Date: {t.startDate} ({t.time})</div>
+                          <div>Location: {t.location}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+                          <a
+                            href={`/tournamentdetails?id=${t._id}`}
+                            className="mobile-full-btn"
+                            style={{
+                              background: "rgba(243, 193, 68, 0.15)",
+                              color: "#f3c144",
+                              textDecoration: "none",
+                              textAlign: "center",
+                              border: "1px solid rgba(243, 193, 68, 0.3)",
+                              fontWeight: "bold",
+                              padding: "8px"
+                            }}
+                          >
+                            View Matches ➔
+                          </a>
+                          <button
+                            className="delete-btn"
+                            style={{ flexShrink: 0, padding: "8px 14px" }}
+                            onClick={() => handleDeleteTournament(t._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -773,47 +862,76 @@ export default function AdminDashboard() {
               {applications.length === 0 ? (
                 <p className="empty-message">No applications submitted yet.</p>
               ) : (
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Applicant</th>
-                        <th>Email</th>
-                        <th>ID</th>
-                        <th>Major & Batch</th>
-                        <th>Department</th>
-                        <th>Applied Role</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {applications.map((app) => (
-                        <tr key={app._id}>
-                          <td className="strong">{app.name}</td>
-                          <td>{app.email}</td>
-                          <td>{app.idNumber}</td>
-                          <td>{app.major} (Batch {app.batch})</td>
-                          <td>{app.department}</td>
-                          <td className="strong">{app.roleTitle}</td>
-                          <td>
-                            <span className={`status-badge ${(app.status || 'Pending').toLowerCase()}`}>
-                              {app.status || 'Pending'}
-                            </span>
-                          </td>
-                          <td>
-                            <button className="view-btn" onClick={() => {
-                              setSelectedApp(app);
-                              setModalOpen(true);
-                            }}>
-                              View Answers
-                            </button>
-                          </td>
+                <>
+                  <div className="admin-table-container tournaments-desktop-table">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Applicant</th>
+                          <th>Email</th>
+                          <th>ID</th>
+                          <th>Major & Batch</th>
+                          <th>Department</th>
+                          <th>Applied Role</th>
+                          <th>Status</th>
+                          <th>Details</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {applications.map((app) => (
+                          <tr key={app._id}>
+                            <td className="strong">{app.name}</td>
+                            <td>{app.email}</td>
+                            <td>{app.idNumber}</td>
+                            <td>{app.major} (Batch {app.batch})</td>
+                            <td>{app.department}</td>
+                            <td className="strong">{app.roleTitle}</td>
+                            <td>
+                              <span className={`status-badge ${(app.status || 'Pending').toLowerCase()}`}>
+                                {app.status || 'Pending'}
+                              </span>
+                            </td>
+                            <td>
+                              <button className="view-btn" onClick={() => {
+                                setSelectedApp(app);
+                                setModalOpen(true);
+                              }}>
+                                View Answers
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Applications Cards View */}
+                  <div className="tournaments-mobile-cards">
+                    {applications.map((app) => (
+                      <div key={app._id} className="mobile-tournament-card" style={{ padding: "16px" }}>
+                        <div className="mobile-card-header">
+                          <h3 className="mobile-card-title">{app.name}</h3>
+                          <span className={`status-badge ${(app.status || 'Pending').toLowerCase()}`}>{app.status || 'Pending'}</span>
+                        </div>
+                        <div style={{ fontSize: "0.85rem", color: "#bab19c", margin: "8px 0", lineHeight: "1.5" }}>
+                          <div>Role: <strong style={{ color: "#f3c144" }}>{app.roleTitle}</strong> ({app.department})</div>
+                          <div>Email: {app.email}</div>
+                          <div>Major: {app.major} (Batch {app.batch})</div>
+                        </div>
+                        <button 
+                          className="view-btn mobile-full-btn" 
+                          style={{ marginTop: "8px" }}
+                          onClick={() => {
+                            setSelectedApp(app);
+                            setModalOpen(true);
+                          }}
+                        >
+                          View Full Application ➔
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -825,47 +943,74 @@ export default function AdminDashboard() {
               {users.length === 0 ? (
                 <p className="empty-message">No users found.</p>
               ) : (
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>ID Number</th>
-                        <th>Major</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((u) => (
-                        <tr key={u._id}>
-                          <td className="strong">{u.name}</td>
-                          <td>{u.email}</td>
-                          <td>{u.idNumber || "N/A"}</td>
-                          <td>{u.major || "N/A"}</td>
-                          <td>
-                            <span className={`status-badge ${u.role === 'admin' ? 'approved' : 'pending'}`}>
-                              {u.role.toUpperCase()}
-                            </span>
-                          </td>
-                          <td>
-                            {u.role !== 'admin' ? (
-                              <button
-                                className="delete-btn"
-                                onClick={() => handleDeleteUser(u._id)}
-                              >
-                                Delete
-                              </button>
-                            ) : (
-                              <span style={{color: "#888", fontStyle: "italic"}}>Admin</span>
-                            )}
-                          </td>
+                <>
+                  <div className="admin-table-container tournaments-desktop-table">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>ID Number</th>
+                          <th>Major</th>
+                          <th>Role</th>
+                          <th>Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {users.map((u) => (
+                          <tr key={u._id}>
+                            <td className="strong">{u.name}</td>
+                            <td>{u.email}</td>
+                            <td>{u.idNumber || "N/A"}</td>
+                            <td>{u.major || "N/A"}</td>
+                            <td>
+                              <span className={`status-badge ${u.role === 'admin' ? 'approved' : 'pending'}`}>
+                                {u.role.toUpperCase()}
+                              </span>
+                            </td>
+                            <td>
+                              {u.role !== 'admin' ? (
+                                <button
+                                  className="delete-btn"
+                                  onClick={() => handleDeleteUser(u._id)}
+                                >
+                                  Delete
+                                </button>
+                              ) : (
+                                <span style={{color: "#888", fontStyle: "italic"}}>Admin</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Users Cards View */}
+                  <div className="tournaments-mobile-cards">
+                    {users.map((u) => (
+                      <div key={u._id} className="mobile-tournament-card" style={{ padding: "16px" }}>
+                        <div className="mobile-card-header">
+                          <h3 className="mobile-card-title">{u.name}</h3>
+                          <span className={`status-badge ${u.role === 'admin' ? 'approved' : 'pending'}`}>{u.role.toUpperCase()}</span>
+                        </div>
+                        <div style={{ fontSize: "0.85rem", color: "#bab19c", margin: "6px 0" }}>
+                          <div>Email: {u.email}</div>
+                          <div>Major: {u.major || "N/A"} | ID: {u.idNumber || "N/A"}</div>
+                        </div>
+                        {u.role !== 'admin' && (
+                          <button
+                            className="delete-btn mobile-full-btn"
+                            style={{ marginTop: "8px" }}
+                            onClick={() => handleDeleteUser(u._id)}
+                          >
+                            Delete User Account
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -957,7 +1102,7 @@ export default function AdminDashboard() {
                         position={activePuzzleFen}
                         onSquareClick={handleSquareClick}
                         onPieceDrop={handlePieceDrop}
-                        boardWidth={360}
+                        boardWidth={boardWidth}
                         arePiecesDraggable={!setupMode}
                       />
                     </div>

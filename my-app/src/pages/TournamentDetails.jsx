@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ChallongeBracket from "../components/ChallongeBracket";
+import Confetti from "react-confetti";
+import { useWindowSize } from "react-use";
 import './TournamentDetails.css';
 
 export default function TournamentDetails() {
@@ -12,6 +14,8 @@ export default function TournamentDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState("bracket"); // "bracket" or "table"
+  const [celebrationModalOpen, setCelebrationModalOpen] = useState(false);
+  const { width, height } = useWindowSize();
 
   // Check role
   const userRole = localStorage.getItem("userRole") || "member";
@@ -138,6 +142,14 @@ export default function TournamentDetails() {
       return;
     }
 
+    // Enforce minimum players requirement for Swiss tournaments before the first round starts
+    const isFirstRound = !tournament?.matches || tournament.matches.length === 0;
+    const minPlayersRequired = tournament?.rounds ? tournament.rounds + 1 : 2;
+    if (isFirstRound && (tournament?.playersList?.length || 0) < minPlayersRequired) {
+      alert(`⚠️ Not enough players! A ${tournament.rounds}-round Swiss tournament requires at least ${minPlayersRequired} players to begin. Currently registered: ${tournament?.playersList?.length || 0}`);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}/generate-swiss-round`, {
         method: "POST",
@@ -232,6 +244,22 @@ export default function TournamentDetails() {
       fetchTournamentDetails();
     } catch (err) {
       alert("Error removing player: " + err.message);
+    }
+  };
+
+  const handleUpdateTournamentStatus = async (newStatus) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/tournaments/${tournamentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update tournament status");
+      alert(`Tournament status updated to "${newStatus}"!`);
+      fetchTournamentDetails();
+    } catch (err) {
+      alert("Error updating status: " + err.message);
     }
   };
 
@@ -340,27 +368,92 @@ export default function TournamentDetails() {
               </div>
 
               {/* Tournament Progress Box */}
-              <h2 className="section-title">Tournament Progress</h2>
-              <div className="role-card">
-                <div className="role-info">
-                  <p className="title">Status: {tournament.status}</p>
-                  <p className="desc">Time: {tournament.time} | Participants: {tournament.players}</p>
-                  <div className="progress-bar-bg">
-                    <div 
-                      className="progress-bar-fill" 
-                      style={{ 
-                        width: tournament.status === "Completed" ? "100%" : tournament.status === "Ongoing" ? "50%" : "10%" 
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
+              {(() => {
+                const currentStatus = tournament.status || "Upcoming";
+                let progressPct = 0;
+                let progressMsg = "";
+                let badgeColor = "#3498db";
+
+                if (currentStatus === "Completed") {
+                  progressPct = 100;
+                  progressMsg = "Tournament Finished (100% Completed)";
+                  badgeColor = "#2ecc71";
+                } else if (currentStatus === "Ongoing") {
+                  const totalRounds = tournament.rounds || 5;
+                  const matches = tournament.matches || [];
+                  const maxRound = matches.reduce((max, m) => Math.max(max, m.round || 1), 1);
+                  const completedMatches = matches.filter(m => m.result && m.result !== "Pending");
+
+                  if (isSwissFormat) {
+                    progressPct = Math.min(Math.round((maxRound / totalRounds) * 100), 90);
+                    progressMsg = `Round ${maxRound} of ${totalRounds} in Progress (${progressPct}% Completed)`;
+                  } else {
+                    progressPct = matches.length > 0 ? Math.min(Math.round((completedMatches.length / matches.length) * 100), 90) : 30;
+                    progressMsg = `Knockout Bracket Ongoing (${progressPct}% Completed)`;
+                  }
+                  badgeColor = "#f3c144";
+                } else {
+                  // Upcoming
+                  progressPct = 0;
+                  progressMsg = `Registration Open — Starts ${tournament.startDate || "Soon"} (0% Completed)`;
+                  badgeColor = "#3498db";
+                }
+
+                return (
+                  <>
+                    <h2 className="section-title">Tournament Progress</h2>
+                    <div className="role-card" style={{ padding: "20px 24px", background: "#1f1d18", border: `1px solid ${badgeColor}` }}>
+                      <div className="role-info" style={{ width: "100%" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "#fff" }}>
+                            Status: <span style={{ color: badgeColor, textTransform: "uppercase", letterSpacing: "0.5px" }}>{currentStatus}</span>
+                          </span>
+                          <span style={{ fontSize: "0.85rem", color: "#caba91", fontWeight: "600" }}>
+                            {progressMsg}
+                          </span>
+                        </div>
+
+                        <div className="progress-bar-bg" style={{ height: "10px", background: "rgba(255,255,255,0.08)", borderRadius: "6px", overflow: "hidden", marginTop: "8px" }}>
+                          <div 
+                            className="progress-bar-fill" 
+                            style={{ 
+                              width: `${progressPct}%`,
+                              background: badgeColor === "#2ecc71" ? "#2ecc71" : badgeColor === "#f3c144" ? "linear-gradient(90deg, #f3c144, #e2b033)" : "#3498db",
+                              height: "100%",
+                              transition: "width 0.5s ease"
+                            }}
+                          ></div>
+                        </div>
+
+                        <div style={{ display: "flex", gap: "20px", marginTop: "12px", fontSize: "0.88rem", color: "#b5afa1", flexWrap: "wrap" }}>
+                          <span>⏰ <strong>Time:</strong> {tournament.time || "TBD"}</span>
+                          <span>👥 <strong>Participants:</strong> {tournament.playersList?.length || tournament.players || 0} Registered</span>
+                          {isSwissFormat && <span>📋 <strong>Rounds:</strong> {tournament.rounds || 5} Total Rounds</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
 
               {/* Staff controls for OC and Admins */}
               {isStaff && (
                 <div style={{ marginTop: "30px" }}>
                   <h2 className="section-title">Staff Actions (Organizing Committee)</h2>
-                  <div className="staff-actions" style={{ gap: "12px", flexWrap: "wrap" }}>
+                  <div className="staff-actions" style={{ gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#15120c", padding: "8px 14px", borderRadius: "8px", border: "1px solid #f3c144" }}>
+                      <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.85rem" }}>Update Status:</span>
+                      <select
+                        value={tournament.status || "Upcoming"}
+                        onChange={(e) => handleUpdateTournamentStatus(e.target.value)}
+                        style={{ background: "transparent", color: "#fff", border: "none", fontWeight: "800", cursor: "pointer", outline: "none" }}
+                      >
+                        <option value="Upcoming" style={{ background: "#15120c" }}>Upcoming (Registration Open)</option>
+                        <option value="Ongoing" style={{ background: "#15120c" }}>Ongoing (Tournament Live)</option>
+                        <option value="Completed" style={{ background: "#15120c" }}>Completed (Finished)</option>
+                      </select>
+                    </div>
+
                     <button className="add-btn" onClick={() => setPlayerModalOpen(true)}>
                       + Add Participant
                     </button>
@@ -431,9 +524,11 @@ export default function TournamentDetails() {
               {/* SWISS FORMAT SPECIFIC DISPLAY */}
               {isSwissFormat ? (
                 <>
-                  {/* Swiss Standings Table */}
+                  {/* Swiss Standings Table & Mobile Cards */}
                   <h2 className="section-title">🏆 Swiss System Standings (Live Table)</h2>
-                  <div className="application-table-wrapper" style={{ marginBottom: "40px" }}>
+                  
+                  {/* Desktop Table View */}
+                  <div className="application-table-wrapper tournaments-desktop-table" style={{ marginBottom: "40px" }}>
                     <table className="application-table">
                       <thead>
                         <tr>
@@ -457,34 +552,91 @@ export default function TournamentDetails() {
                             <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
                             <td style={{ color: "#f3c144", fontWeight: "800", fontSize: "1.05rem" }}>{p.points} pts</td>
                             <td style={{ color: "#bab19c" }}>{p.wins}W - {p.draws}D - {p.losses}L</td>
-                             <td>{p.played}</td>
-                             <td>{p.byes > 0 ? <span style={{ color: "#f3c144", fontWeight: "bold" }}>{p.byes} BYE</span> : "—"}</td>
-                             <td>{p.rating}</td>
-                             <td>{p.major}</td>
-                             {isStaff && (
-                               <td>
-                                 <button
-                                   onClick={() => handleRemovePlayer(p.name)}
-                                   style={{
-                                     background: "rgba(217, 83, 79, 0.15)",
-                                     color: "#d9534f",
-                                     border: "1px solid #d9534f",
-                                     padding: "3px 8px",
-                                     borderRadius: "4px",
-                                     fontSize: "0.75rem",
-                                     fontWeight: "bold",
-                                     cursor: "pointer",
-                                     transition: "all 0.2s"
-                                   }}
-                                 >
-                                   Remove
-                                 </button>
-                               </td>
-                             )}
-                           </tr>
+                            <td>{p.played}</td>
+                            <td>{p.byes > 0 ? <span style={{ color: "#f3c144", fontWeight: "bold" }}>{p.byes} BYE</span> : "—"}</td>
+                            <td>{p.rating}</td>
+                            <td>{p.major}</td>
+                            {isStaff && (
+                              <td>
+                                <button
+                                  onClick={() => handleRemovePlayer(p.name)}
+                                  style={{
+                                    background: "rgba(217, 83, 79, 0.15)",
+                                    color: "#d9534f",
+                                    border: "1px solid #d9534f",
+                                    padding: "3px 8px",
+                                    borderRadius: "4px",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "bold",
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                  }}
+                                >
+                                  Remove
+                                </button>
+                              </td>
+                            )}
+                          </tr>
                         ))}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* Mobile Standings Cards View */}
+                  <div className="tournaments-mobile-cards" style={{ marginBottom: "40px" }}>
+                    {swissStandings.map((p, idx) => (
+                      <div key={idx} className="mobile-tournament-card" style={{ borderColor: idx === 0 ? "rgba(243, 193, 68, 0.5)" : "rgba(57, 52, 40, 0.6)" }}>
+                        <div className="mobile-card-header">
+                          <span style={{ fontWeight: "bold", fontSize: "0.95rem", color: idx === 0 ? "#f3c144" : idx === 1 ? "#d0d0d0" : idx === 2 ? "#cd7f32" : "#e8e8e8" }}>
+                            {idx === 0 ? "🥇 1st Rank" : idx === 1 ? "🥈 2nd Rank" : idx === 2 ? "🥉 3rd Rank" : `#${idx + 1} Rank`}
+                          </span>
+                          <span style={{ color: "#f3c144", fontWeight: "800", fontSize: "1.1rem" }}>{p.points} pts</span>
+                        </div>
+
+                        <h3 className="mobile-card-title">{p.name}</h3>
+
+                        <div className="mobile-card-details">
+                          <div className="detail-item">
+                            <span className="detail-label">Record</span>
+                            <span className="detail-val">{p.wins}W - {p.draws}D - {p.losses}L</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Played</span>
+                            <span className="detail-val">{p.played}</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Rating</span>
+                            <span className="detail-val">{p.rating}</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Major</span>
+                            <span className="detail-val">{p.major}</span>
+                          </div>
+                          {p.byes > 0 && (
+                            <div className="detail-item">
+                              <span className="detail-label">Byes</span>
+                              <span className="detail-val" style={{ color: "#f3c144" }}>{p.byes} BYE</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {isStaff && (
+                          <button
+                            onClick={() => handleRemovePlayer(p.name)}
+                            className="mobile-full-btn"
+                            style={{
+                              background: "rgba(217, 83, 79, 0.15)",
+                              color: "#d9534f",
+                              border: "1px solid #d9534f",
+                              borderRadius: "8px",
+                              fontWeight: "bold"
+                            }}
+                          >
+                            Remove Participant
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Swiss Round-by-Round Results */}
@@ -508,9 +660,22 @@ export default function TournamentDetails() {
                     </div>
                     {isStaff && (
                       tournament?.rounds > 0 && sortedRounds.length >= tournament.rounds ? (
-                        <span style={{ background: "rgba(77,189,116,0.15)", color: "#4dbd74", border: "1px solid #4dbd74", padding: "6px 14px", borderRadius: "8px", fontWeight: "700", fontSize: "0.82rem" }}>
-                          ✅ All {tournament.rounds} Rounds Complete
-                        </span>
+                        <button 
+                          onClick={() => setCelebrationModalOpen(true)}
+                          style={{
+                            background: "linear-gradient(135deg, #4dbd74, #28a745)",
+                            color: "#fff",
+                            border: "none",
+                            padding: "8px 18px",
+                            borderRadius: "8px",
+                            fontWeight: "800",
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            boxShadow: "0 4px 12px rgba(77, 189, 116, 0.25)"
+                          }}
+                        >
+                          🎉 Finish Tournament & Show Winners
+                        </button>
                       ) : (
                         <button 
                           onClick={handleGenerateNextRound}
@@ -540,7 +705,8 @@ export default function TournamentDetails() {
                         <h3 style={{ color: "#f3c144", fontSize: "1.1rem", marginBottom: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                           Round {rNum} Pairings & Results
                         </h3>
-                        <div className="application-table-wrapper">
+                        {/* Desktop Table View */}
+                        <div className="application-table-wrapper tournaments-desktop-table">
                           <table className="application-table">
                             <thead>
                               <tr>
@@ -550,43 +716,89 @@ export default function TournamentDetails() {
                                 <th>Black Player</th>
                               </tr>
                             </thead>
-                             <tbody>
-                               {matchesByRound[rNum].map((m, idx) => {
-                                 const isByeRow = m.black === "BYE";
-                                 return (
-                                   <tr key={m._id || idx} style={{ background: isByeRow ? "rgba(243,193,68,0.05)" : "transparent", opacity: isByeRow ? 0.8 : 1 }}>
-                                     <td style={{ color: "#888" }}>Board {idx + 1}</td>
-                                     <td style={{ fontWeight: (m.result === "1-0" || m.result === "1 - 0") ? "bold" : "normal", color: (m.result === "1-0" || m.result === "1 - 0") ? "#f3c144" : "#fff" }}>
-                                       {m.white} {!isByeRow && (m.result === "1-0" || m.result === "1 - 0") ? "✓" : ""}
-                                     </td>
-                                     <td>
-                                       {isByeRow ? (
-                                         <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.9rem", background: "rgba(243,193,68,0.12)", padding: "2px 8px", borderRadius: "4px" }}>
-                                           BYE (+1 pt)
-                                         </span>
-                                       ) : isStaff && m._id ? (
-                                         <select
-                                           value={m.result}
-                                           onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
-                                           style={{ background: "#15120c", color: "#f3c144", border: "1px solid #f3c144", padding: "4px 10px", borderRadius: "6px", fontWeight: "800", fontSize: "0.88rem", cursor: "pointer" }}
-                                         >
-                                           <option value="1-0">1 - 0 (White Wins)</option>
-                                           <option value="0-1">0 - 1 (Black Wins)</option>
-                                           <option value="1/2-1/2">½ - ½ (Draw)</option>
-                                           <option value="Pending">Pending</option>
-                                         </select>
-                                       ) : (
-                                         <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
-                                       )}
-                                     </td>
-                                     <td style={{ fontWeight: (m.result === "0-1" || m.result === "0 - 1") ? "bold" : "normal", color: (m.result === "0-1" || m.result === "0 - 1") ? "#f3c144" : isByeRow ? "#888" : "#fff" }}>
-                                       {isByeRow ? <em>— BYE —</em> : `${m.black} ${(m.result === "0-1" || m.result === "0 - 1") ? "✓" : ""}`}
-                                     </td>
-                                   </tr>
-                                 );
-                               })}
-                             </tbody>
+                            <tbody>
+                              {matchesByRound[rNum].map((m, idx) => {
+                                const isByeRow = m.black === "BYE";
+                                return (
+                                  <tr key={m._id || idx} style={{ background: isByeRow ? "rgba(243,193,68,0.05)" : "transparent", opacity: isByeRow ? 0.8 : 1 }}>
+                                    <td style={{ color: "#888" }}>Board {idx + 1}</td>
+                                    <td style={{ fontWeight: (m.result === "1-0" || m.result === "1 - 0") ? "bold" : "normal", color: (m.result === "1-0" || m.result === "1 - 0") ? "#f3c144" : "#fff" }}>
+                                      {m.white} {!isByeRow && (m.result === "1-0" || m.result === "1 - 0") ? "✓" : ""}
+                                    </td>
+                                    <td>
+                                      {isByeRow ? (
+                                        <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.9rem", background: "rgba(243,193,68,0.12)", padding: "2px 8px", borderRadius: "4px" }}>
+                                          BYE (+1 pt)
+                                        </span>
+                                      ) : isStaff && m._id ? (
+                                        <select
+                                          value={m.result}
+                                          onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
+                                          style={{ background: "#15120c", color: "#f3c144", border: "1px solid #f3c144", padding: "4px 10px", borderRadius: "6px", fontWeight: "800", fontSize: "0.88rem", cursor: "pointer" }}
+                                        >
+                                          <option value="1-0">1 - 0 (White Wins)</option>
+                                          <option value="0-1">0 - 1 (Black Wins)</option>
+                                          <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                          <option value="Pending">Pending</option>
+                                        </select>
+                                      ) : (
+                                        <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
+                                      )}
+                                    </td>
+                                    <td style={{ fontWeight: (m.result === "0-1" || m.result === "0 - 1") ? "bold" : "normal", color: (m.result === "0-1" || m.result === "0 - 1") ? "#f3c144" : isByeRow ? "#888" : "#fff" }}>
+                                      {isByeRow ? <em>— BYE —</em> : `${m.black} ${(m.result === "0-1" || m.result === "0 - 1") ? "✓" : ""}`}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
                           </table>
+                        </div>
+
+                        {/* Mobile Match Cards View */}
+                        <div className="tournaments-mobile-cards">
+                          {matchesByRound[rNum].map((m, idx) => {
+                            const isByeRow = m.black === "BYE";
+                            return (
+                              <div key={m._id || idx} className="mobile-tournament-card" style={{ padding: "14px" }}>
+                                <div className="mobile-card-header">
+                                  <span style={{ fontSize: "0.78rem", color: "#888", fontWeight: "bold" }}>Board {idx + 1}</span>
+                                  {isByeRow ? (
+                                    <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.78rem", background: "rgba(243,193,68,0.12)", padding: "2px 8px", borderRadius: "4px" }}>
+                                      BYE (+1 pt)
+                                    </span>
+                                  ) : (
+                                    <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.85rem" }}>{m.result}</span>
+                                  )}
+                                </div>
+
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", margin: "6px 0" }}>
+                                  <span style={{ fontWeight: (m.result === "1-0" || m.result === "1 - 0") ? "bold" : "normal", color: (m.result === "1-0" || m.result === "1 - 0") ? "#f3c144" : "#fff", fontSize: "0.95rem" }}>
+                                    ⚪ {m.white}
+                                  </span>
+                                  <span style={{ color: "#888", fontSize: "0.75rem", fontWeight: "bold" }}>VS</span>
+                                  <span style={{ fontWeight: (m.result === "0-1" || m.result === "0 - 1") ? "bold" : "normal", color: (m.result === "0-1" || m.result === "0 - 1") ? "#f3c144" : isByeRow ? "#888" : "#fff", fontSize: "0.95rem" }}>
+                                    ⚫ {isByeRow ? "BYE" : m.black}
+                                  </span>
+                                </div>
+
+                                {isStaff && !isByeRow && m._id && (
+                                  <div style={{ marginTop: "6px" }}>
+                                    <select
+                                      value={m.result}
+                                      onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
+                                      style={{ width: "100%", background: "#15120c", color: "#f3c144", border: "1px solid #f3c144", padding: "8px 12px", borderRadius: "8px", fontWeight: "800", fontSize: "0.85rem", cursor: "pointer" }}
+                                    >
+                                      <option value="1-0">1 - 0 (White Wins)</option>
+                                      <option value="0-1">0 - 1 (Black Wins)</option>
+                                      <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                      <option value="Pending">Pending</option>
+                                    </select>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ))
@@ -653,103 +865,177 @@ export default function TournamentDetails() {
                           {(!tournament.playersList || tournament.playersList.length === 0) ? (
                             <p style={{ color: "#888", fontStyle: "italic" }}>No participants registered yet.</p>
                           ) : (
-                            <div className="application-table-wrapper">
-                              <table className="application-table">
-                                <thead>
-                                  <tr>
-                                    <th>Name</th>
-                                    <th>Rating</th>
-                                    <th>Major</th>
-                                    {isStaff && <th>Actions</th>}
+                            <>
+                              {/* Desktop Table View */}
+                              <div className="application-table-wrapper tournaments-desktop-table">
+                            <table className="application-table">
+                              <thead>
+                                <tr>
+                                  <th>Name</th>
+                                  <th>Rating</th>
+                                  <th>Major</th>
+                                  {isStaff && <th>Actions</th>}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {tournament.playersList.map((p, idx) => (
+                                  <tr key={idx}>
+                                    <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
+                                    <td>{p.rating}</td>
+                                    <td>{p.major}</td>
+                                    {isStaff && (
+                                      <td>
+                                        <button
+                                          onClick={() => handleRemovePlayer(p.name)}
+                                          style={{
+                                            background: "rgba(217, 83, 79, 0.15)",
+                                            color: "#d9534f",
+                                            border: "1px solid #d9534f",
+                                            padding: "3px 8px",
+                                            borderRadius: "4px",
+                                            fontSize: "0.75rem",
+                                            fontWeight: "bold",
+                                            cursor: "pointer"
+                                          }}
+                                        >
+                                          Remove
+                                        </button>
+                                      </td>
+                                    )}
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  {tournament.playersList.map((p, idx) => (
-                                    <tr key={idx}>
-                                      <td style={{ fontWeight: "600", color: "#fff" }}>{p.name}</td>
-                                      <td>{p.rating}</td>
-                                      <td>{p.major}</td>
-                                      {isStaff && (
-                                        <td>
-                                          <button
-                                            onClick={() => handleRemovePlayer(p.name)}
-                                            style={{
-                                              background: "rgba(217, 83, 79, 0.15)",
-                                              color: "#d9534f",
-                                              border: "1px solid #d9534f",
-                                              padding: "3px 8px",
-                                              borderRadius: "4px",
-                                              fontSize: "0.75rem",
-                                              fontWeight: "bold",
-                                              cursor: "pointer"
-                                            }}
-                                          >
-                                            Remove
-                                          </button>
-                                        </td>
-                                      )}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
-                        </div>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Mobile Participants View */}
+                          <div className="tournaments-mobile-cards">
+                            {tournament.playersList.map((p, idx) => (
+                              <div key={idx} className="mobile-tournament-card" style={{ padding: "14px" }}>
+                                <div className="mobile-card-header">
+                                  <h3 className="mobile-card-title">{p.name}</h3>
+                                  <span className="type-badge">{p.major}</span>
+                                </div>
+                                <div style={{ fontSize: "0.85rem", color: "#bab19c", marginTop: "4px" }}>
+                                  Rating: <strong style={{ color: "#f3c144" }}>{p.rating}</strong>
+                                </div>
+                                {isStaff && (
+                                  <button
+                                    onClick={() => handleRemovePlayer(p.name)}
+                                    className="mobile-full-btn"
+                                    style={{
+                                      marginTop: "8px",
+                                      background: "rgba(217, 83, 79, 0.15)",
+                                      color: "#d9534f",
+                                      border: "1px solid #d9534f",
+                                      borderRadius: "6px",
+                                      fontWeight: "bold"
+                                    }}
+                                  >
+                                    Remove Participant
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </>
                       )}
+                    </div>
+                  )}
                     </>
                   ) : (!tournament.matches || tournament.matches.length === 0) ? (
                     <p style={{ color: "#888", fontStyle: "italic", margin: "10px 0" }}>No match results recorded yet.</p>
                   ) : (
-                    <div className="application-table-wrapper">
-                      <table className="application-table">
-                        <thead>
-                          <tr>
-                            <th>Round</th>
-                            <th>White Player</th>
-                            <th>Black Player</th>
-                            <th>Result</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tournament.matches.map((m, index) => (
-                            <tr key={index}>
-                              <td>Round {m.round}</td>
-                              <td style={{ fontWeight: m.result === "1-0" || m.result === "1 - 0" ? "bold" : "normal", color: m.result === "1-0" || m.result === "1 - 0" ? "#f3c144" : "#fff" }}>
-                                {m.white} {m.result === "1-0" || m.result === "1 - 0" ? "✓" : ""}
-                              </td>
-                              <td style={{ fontWeight: m.result === "0-1" || m.result === "0 - 1" ? "bold" : "normal", color: m.result === "0-1" || m.result === "0 - 1" ? "#f3c144" : "#fff" }}>
-                                {m.black} {m.result === "0-1" || m.result === "0 - 1" ? "✓" : ""}
-                              </td>
-                              <td>
-                                {isStaff && m._id ? (
-                                  <select
-                                    value={m.result}
-                                    onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
-                                    style={{
-                                      background: "#15120c",
-                                      color: "#f3c144",
-                                      border: "1px solid #f3c144",
-                                      padding: "4px 10px",
-                                      borderRadius: "6px",
-                                      fontWeight: "800",
-                                      fontSize: "0.88rem",
-                                      cursor: "pointer"
-                                    }}
-                                  >
-                                    <option value="1-0">1 - 0 (White Wins)</option>
-                                    <option value="0-1">0 - 1 (Black Wins)</option>
-                                    <option value="1/2-1/2">½ - ½ (Draw)</option>
-                                    <option value="Pending">Pending</option>
-                                  </select>
-                                ) : (
-                                  <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
-                                )}
-                              </td>
+                    <>
+                      {/* Desktop Knockout Table View */}
+                      <div className="application-table-wrapper tournaments-desktop-table">
+                        <table className="application-table">
+                          <thead>
+                            <tr>
+                              <th>Round</th>
+                              <th>White Player</th>
+                              <th>Black Player</th>
+                              <th>Result</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {tournament.matches.map((m, index) => (
+                              <tr key={index}>
+                                <td>Round {m.round}</td>
+                                <td style={{ fontWeight: m.result === "1-0" || m.result === "1 - 0" ? "bold" : "normal", color: m.result === "1-0" || m.result === "1 - 0" ? "#f3c144" : "#fff" }}>
+                                  {m.white} {m.result === "1-0" || m.result === "1 - 0" ? "✓" : ""}
+                                </td>
+                                <td style={{ fontWeight: m.result === "0-1" || m.result === "0 - 1" ? "bold" : "normal", color: m.result === "0-1" || m.result === "0 - 1" ? "#f3c144" : "#fff" }}>
+                                  {m.black} {m.result === "0-1" || m.result === "0 - 1" ? "✓" : ""}
+                                </td>
+                                <td>
+                                  {isStaff && m._id ? (
+                                    <select
+                                      value={m.result}
+                                      onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
+                                      style={{
+                                        background: "#15120c",
+                                        color: "#f3c144",
+                                        border: "1px solid #f3c144",
+                                        padding: "4px 10px",
+                                        borderRadius: "6px",
+                                        fontWeight: "800",
+                                        fontSize: "0.88rem",
+                                        cursor: "pointer"
+                                      }}
+                                    >
+                                      <option value="1-0">1 - 0 (White Wins)</option>
+                                      <option value="0-1">0 - 1 (Black Wins)</option>
+                                      <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                      <option value="Pending">Pending</option>
+                                    </select>
+                                  ) : (
+                                    <span style={{ color: "#f4c653", fontWeight: "bold", fontSize: "1rem" }}>{m.result}</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Knockout Cards View */}
+                      <div className="tournaments-mobile-cards">
+                        {tournament.matches.map((m, index) => (
+                          <div key={index} className="mobile-tournament-card" style={{ padding: "14px" }}>
+                            <div className="mobile-card-header">
+                              <span style={{ fontSize: "0.78rem", color: "#888", fontWeight: "bold" }}>Round {m.round}</span>
+                              <span style={{ color: "#f3c144", fontWeight: "bold", fontSize: "0.85rem" }}>{m.result}</span>
+                            </div>
+
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", margin: "6px 0" }}>
+                              <span style={{ fontWeight: (m.result === "1-0" || m.result === "1 - 0") ? "bold" : "normal", color: (m.result === "1-0" || m.result === "1 - 0") ? "#f3c144" : "#fff", fontSize: "0.95rem" }}>
+                                ⚪ {m.white}
+                              </span>
+                              <span style={{ color: "#888", fontSize: "0.75rem", fontWeight: "bold" }}>VS</span>
+                              <span style={{ fontWeight: (m.result === "0-1" || m.result === "0 - 1") ? "bold" : "normal", color: (m.result === "0-1" || m.result === "0 - 1") ? "#f3c144" : "#fff", fontSize: "0.95rem" }}>
+                                ⚫ {m.black}
+                              </span>
+                            </div>
+
+                            {isStaff && m._id && (
+                              <div style={{ marginTop: "6px" }}>
+                                <select
+                                  value={m.result}
+                                  onChange={(e) => handleUpdateMatch(m._id, { result: e.target.value })}
+                                  style={{ width: "100%", background: "#15120c", color: "#f3c144", border: "1px solid #f3c144", padding: "8px 12px", borderRadius: "8px", fontWeight: "800", fontSize: "0.85rem", cursor: "pointer" }}
+                                >
+                                  <option value="1-0">1 - 0 (White Wins)</option>
+                                  <option value="0-1">0 - 1 (Black Wins)</option>
+                                  <option value="1/2-1/2">½ - ½ (Draw)</option>
+                                  <option value="Pending">Pending</option>
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </>
               )}
@@ -881,6 +1167,68 @@ export default function TournamentDetails() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- CELEBRATION MODAL --- */}
+      {celebrationModalOpen && (
+        <div className="modal-overlay" onClick={() => setCelebrationModalOpen(false)}>
+          <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />
+          <div className="modal-card celebration-card" onClick={(e) => e.stopPropagation()} style={{ textAlign: "center", maxWidth: "600px", padding: "40px 20px" }}>
+            <button className="close-btn" onClick={() => setCelebrationModalOpen(false)}>
+              &times;
+            </button>
+            <h2 style={{ fontSize: "2rem", color: "#f3c144", marginBottom: "10px" }}>🏆 Tournament Complete! 🏆</h2>
+            <p style={{ color: "#bab19c", marginBottom: "30px", fontSize: "1.1rem" }}>
+              Congratulations to our top players for their outstanding performance!
+            </p>
+            
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: "15px", marginBottom: "30px" }}>
+              {/* 2nd Place */}
+              {swissStandings[1] && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <div style={{ fontSize: "3rem", marginBottom: "10px" }}>🥈</div>
+                  <div style={{ background: "linear-gradient(180deg, #d0d0d0, #888)", padding: "15px", borderRadius: "12px 12px 0 0", minWidth: "120px", height: "100px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <h4 style={{ color: "#fff", margin: 0, fontSize: "1.1rem" }}>{swissStandings[1].name}</h4>
+                    <p style={{ color: "#fff", margin: 0, fontWeight: "bold" }}>{swissStandings[1].points} pts</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* 1st Place */}
+              {swissStandings[0] && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2 }}>
+                  <div style={{ fontSize: "4rem", marginBottom: "10px" }}>🥇</div>
+                  <div style={{ background: "linear-gradient(180deg, #f3c144, #d4a32a)", padding: "20px", borderRadius: "12px 12px 0 0", minWidth: "140px", height: "130px", display: "flex", flexDirection: "column", justifyContent: "center", boxShadow: "0 -4px 15px rgba(243, 193, 68, 0.4)" }}>
+                    <h4 style={{ color: "#15120c", margin: 0, fontSize: "1.3rem", fontWeight: "900" }}>{swissStandings[0].name}</h4>
+                    <p style={{ color: "#15120c", margin: 0, fontWeight: "bold" }}>{swissStandings[0].points} pts</p>
+                  </div>
+                </div>
+              )}
+
+              {/* 3rd Place */}
+              {swissStandings[2] && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <div style={{ fontSize: "2.5rem", marginBottom: "10px" }}>🥉</div>
+                  <div style={{ background: "linear-gradient(180deg, #cd7f32, #a05a2c)", padding: "10px", borderRadius: "12px 12px 0 0", minWidth: "110px", height: "80px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <h4 style={{ color: "#fff", margin: 0, fontSize: "1rem" }}>{swissStandings[2].name}</h4>
+                    <p style={{ color: "#fff", margin: 0, fontWeight: "bold" }}>{swissStandings[2].points} pts</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <button 
+              className="btn-primary" 
+              onClick={() => {
+                setCelebrationModalOpen(false);
+                handleUpdateTournamentStatus("Completed");
+              }}
+              style={{ padding: "12px 30px", fontSize: "1.1rem" }}
+            >
+              Mark Tournament as Completed
+            </button>
           </div>
         </div>
       )}

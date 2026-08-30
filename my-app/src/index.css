@@ -259,3 +259,35 @@ input:-webkit-autofill:active {
   text-shadow: 0 0 12px rgba(243, 193, 68, 0.3);
   margin: 0 8px;
 }
+
+/* ========================
+   GLOBAL MOBILE RESPONSIVE UTILITIES
+======================== */
+.responsive-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(243, 193, 68, 0.4);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+  
+  /* Touch target optimization for buttons & inputs */
+  button, input, select, textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS inputs */
+  }
+}
+

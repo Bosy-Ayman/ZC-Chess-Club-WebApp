@@ -21,7 +21,6 @@ export default function Footer() {
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>
-          <Link to="/admin" className="footer-admin-link">Admin</Link>
         </nav>
 
         {/* Socials */}

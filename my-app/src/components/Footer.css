@@ -66,15 +66,6 @@
   padding-left: 4px;
 }
 
-.footer-admin-link {
-  color: var(--muted-foreground) !important;
-  opacity: 0.6;
-}
-
-.footer-admin-link:hover {
-  opacity: 1;
-}
-
 /* Socials Column */
 .footer-socials-col {
   display: flex;

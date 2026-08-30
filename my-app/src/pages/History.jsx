@@ -194,7 +194,7 @@ export default function EventHistory() {
       type: "Swiss System (5 Rounds)",
       category: "tournament",
       startDate: "2026-05-15",
-      location: "Zewail City Campus",
+      location: "Academic Building",
       image: "/Images/Tournaments/2025-2026/KingQuest4.jpg",
       description: "5-round intense Swiss tournament featuring the top players of Zewail City competing for the 2026 season championship.",
       playersList: [
@@ -255,7 +255,7 @@ export default function EventHistory() {
       type: "Rapid Tournament",
       category: "tournament",
       startDate: "2026-03-25",
-      location: "Zewail City Campus",
+      location: "Academic Building",
       image: "/Images/Tournaments/2025-2026/Ramadanknockout26.jpg",
       description: "Annual Ramadan rapid tournament bringing together UST students in a spirited nighttime competition.",
       playersList: [
@@ -270,7 +270,7 @@ export default function EventHistory() {
       type: "Rapid Tournament",
       category: "tournament",
       startDate: "2021-03-25",
-      location: "Zewail City Campus",
+      location: "Service Building",
       image: "/Images/Tournaments/2020-2021/Knockout21.jpg",
       description: "2020/2021 Rapid Knockout Tournament",
       playersList: [
@@ -279,25 +279,25 @@ export default function EventHistory() {
     },
     {
       _id: "hist-2022-2023",
-      title: "Knockout Tournament",
+      title: "Knockout Tournament - Spring 24",
       type: "Blitz Tournament",
       category: "tournament",
-      startDate: "2022-05-05",
-      location: "Zewail City Campus",
-      image: "/Images/Tournaments/2021-2022/Knockout22.jpg",
-      description: "sponsored by redbull",
+      startDate: "2024-04-05",
+      location: "Academic Building",
+      image: "/Images/Tournaments/2023-2024/Knockout24.jpg",
+      description: "ZC rapid knockout chess championship",
       playersList: [
         { name: "🥇 Champion: Unknown" }
       ]
     },{
-      _id: "hist-2023-2024",
-      title: "Knockout Tournament",
+      _id: "hist-2022-2023",
+      title: "Knockout Tournament - Spring 23",
       type: "Blitz Tournament",
       category: "tournament",
-      startDate: "2024-04-20",
-      location: "Zewail City Campus",
-      image: "/Images/Tournaments/2023-2024/Knockout24.jpg",
-      description: "Unknown",
+      startDate: "2023-05-20",
+      location: "Academic Building",
+      image: "/Icons/unknown.png",
+      description: "Sponsored by Redbull",
       playersList: [
         { name: "🥇 Champion: Unknown" }
       ]
@@ -308,7 +308,7 @@ export default function EventHistory() {
       type: "Esport tournament",
       category: "tournament",
       startDate: "2026-02-15",
-      location: "Zewail City Academic Hall",
+      location: "Academic Building - Zone E",
       image: "/Images/Tournaments/2025-2026/Esports.jpg",
       description: "Esport blitz Chess tournament organized by the club on campus",
       playersList: [
@@ -322,7 +322,7 @@ export default function EventHistory() {
       type: "Teams tournament",
       category: "tournament",
       startDate: "2025-11-08",
-      location: "Academic Building",
+      location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
       description: "Teams Championship",
       playersList: [
@@ -366,7 +366,7 @@ export default function EventHistory() {
       type: "Swiss Format",
       category: "tournament",
       startDate: "2025-04-10",
-      location: "Zewail City Campus",
+      location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/KingQuest2.jpg",
       description: "King’s Quest II tournament featuring 32 participants competing in a Swiss format across multi-round high-level matches.",
       playersList: [
@@ -383,7 +383,7 @@ export default function EventHistory() {
       type: "Knockout Tournament",
       category: "tournament",
       startDate: "2025-03-25",
-      location: "Zewail City Campus",
+      location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/RamadanKnockout25.jpg",
       description: "Annual Ramadan Chess Championship featuring top campus players competing in high-stakes matches.",
       playersList: [
@@ -398,7 +398,7 @@ export default function EventHistory() {
       type: "Swiss Format",
       category: "tournament",
       startDate: "2025-03-15",
-      location: "Zewail City Campus",
+      location: "Academic Building - Palm Tree",
       image: "/Images/Tournaments/2024-2025/KingQuest1_3.png",
       description: "King’s Quest I tournament featuring 24 participants competing in a Swiss format for top campus rankings.",
       playersList: [
@@ -429,7 +429,7 @@ export default function EventHistory() {
       type: "Exhibition Match",
       category: "exhibition",
       startDate: "2019-11-15",
-      location: "Zewail City Auditorium",
+      location: "Service Building",
       image: "/Images/Tournaments/2018-2019/shahenda.jpg",
       description: "Historic simultaneous exhibition match hosting African Champions GM Adham Fawzy and WGM Shahinda Wafa playing against 20 Zewail City students simultaneously.",
       playersList: [
@@ -444,7 +444,7 @@ export default function EventHistory() {
       type: "Exhibition Match",
       category: "exhibition",
       startDate: "2018-04-12",
-      location: "Zewail City Campus",
+      location: "Service Building",
       image: "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
       description: "First landmark grand exhibition where International Master Adham Fawzy took on 16 ZC Chess Club players simultaneously.",
       playersList: [

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Xarrow, { Xwrapper } from "react-xarrows";
 import "./ChallongeBracket.css";
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -13,101 +14,88 @@ function convertDBMatchesToBracket(dbMatches = [], dbPlayers = []) {
     return { upper: [], lower: [], champion: null };
   }
 
-  // Create a seed map from players list if available
   const playerSeedMap = {};
   if (dbPlayers && dbPlayers.length > 0) {
-    // Sort players by rating descending to assign seeds
     const sorted = [...dbPlayers].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    sorted.forEach((p, idx) => {
-      playerSeedMap[p.name] = idx + 1;
-    });
+    sorted.forEach((p, idx) => { playerSeedMap[p.name] = idx + 1; });
   }
 
-  // Group matches by round number
-  const roundsMap = {};
-  dbMatches.forEach((m) => {
-    const r = m.round || 1;
-    if (!roundsMap[r]) roundsMap[r] = [];
-    roundsMap[r].push(m);
-  });
-
-  const sortedRoundNumbers = Object.keys(roundsMap).map(Number).sort((a, b) => a - b);
-  const totalRounds = sortedRoundNumbers.length;
-
-  const upperRounds = sortedRoundNumbers.map((rNum, idx) => {
-    // Determine dynamic round title
-    let roundName = `Round ${rNum}`;
-    if (idx === totalRounds - 1 && totalRounds > 1) {
-      roundName = "Grand Finals";
-    } else if (idx === totalRounds - 2 && totalRounds > 2) {
-      roundName = "Semifinals";
-    } else if (idx === 0 && totalRounds > 2) {
-      roundName = "Quarterfinals";
-    }
-
-    const matchesInRound = roundsMap[rNum].map((m, mIdx) => {
+  const parseMatches = (matchesArr) => {
+    return matchesArr.map((m, mIdx) => {
       const p1Winner = m.result === "1-0" || m.result === "1 - 0";
       const p2Winner = m.result === "0-1" || m.result === "0 - 1";
       const isDraw = m.result === "1/2-1/2" || m.result === "½ - ½" || m.result === "Draw";
-
-      const p1Score = p1Winner ? "1" : isDraw ? "½" : "0";
-      const p2Score = p2Winner ? "1" : isDraw ? "½" : "0";
-
       return {
-        id: m._id || `db-match-${rNum}-${mIdx}`,
-        matchCode: `R${rNum}-M${mIdx + 1}`,
-        p1: {
-          seed: playerSeedMap[m.white] || mIdx * 2 + 1,
-          name: m.white || "TBD",
-          score: p1Score,
-          isWinner: p1Winner
-        },
-        p2: {
-          seed: playerSeedMap[m.black] || mIdx * 2 + 2,
-          name: m.black || "TBD",
-          score: p2Score,
-          isWinner: p2Winner
-        },
-        status: "Completed"
+        id: m._id || `db-match-${m.round}-${mIdx}`,
+        matchCode: `R${m.round}-M${mIdx + 1}`,
+        p1: { seed: playerSeedMap[m.white] || "-", name: m.white || "TBD", score: p1Winner ? "1" : isDraw ? "½" : "0", isWinner: p1Winner },
+        p2: { seed: playerSeedMap[m.black] || "-", name: m.black || "TBD", score: p2Winner ? "1" : isDraw ? "½" : "0", isWinner: p2Winner },
+        status: (!m.result || m.result === "Pending") ? "Pending" : "Completed"
       };
     });
+  };
 
-    return {
-      roundName,
+  const groupRounds = (matchesArr, namePrefix) => {
+    const map = {};
+    matchesArr.forEach(m => {
+      const r = m.round || 1;
+      if (!map[r]) map[r] = [];
+      map[r].push(m);
+    });
+    const sorted = Object.keys(map).map(Number).sort((a, b) => a - b);
+    return sorted.map(rNum => ({
+      roundName: `${namePrefix} ${rNum}`,
       roundNumber: rNum,
-      matches: matchesInRound
-    };
-  });
+      matches: parseMatches(map[rNum])
+    }));
+  };
 
-  // Extract champion from final match if available
+  const upperMatches = dbMatches.filter(m => !m.bracket || m.bracket === 'upper');
+  const lowerMatches = dbMatches.filter(m => m.bracket === 'lower');
+  const gfMatch = dbMatches.find(m => m.bracket === 'grand_finals');
+  const gfrMatch = dbMatches.find(m => m.bracket === 'grand_finals_reset');
+
+  const upperRounds = groupRounds(upperMatches, "Upper");
+  const lowerRounds = groupRounds(lowerMatches, "Lower");
+
+  if (gfMatch) {
+    const maxU = upperRounds.length > 0 ? Math.max(...upperRounds.map(r => r.roundNumber)) : 0;
+    upperRounds.push({
+      roundName: "Grand Finals",
+      roundNumber: maxU + 1,
+      matches: parseMatches([{ ...gfMatch, round: maxU + 1 }])
+    });
+    if (gfrMatch) {
+      upperRounds.push({
+        roundName: "Bracket Reset",
+        roundNumber: maxU + 2,
+        matches: parseMatches([{ ...gfrMatch, round: maxU + 2 }])
+      });
+    }
+  } else {
+    // Rename last rounds for Single Elim / Upper
+    if (upperRounds.length > 0) {
+      const totalRounds = upperRounds.length;
+      if (totalRounds > 1) upperRounds[totalRounds - 1].roundName = "Upper Finals";
+      if (totalRounds > 2) upperRounds[totalRounds - 2].roundName = "Semifinals";
+      if (totalRounds > 3) upperRounds[totalRounds - 3].roundName = "Quarterfinals";
+    }
+  }
+
   let champion = null;
   if (upperRounds.length > 0) {
     const finalRound = upperRounds[upperRounds.length - 1];
     const finalMatch = finalRound.matches[finalRound.matches.length - 1];
-    if (finalMatch) {
-      if (finalMatch.p1.isWinner) {
-        champion = {
-          name: finalMatch.p1.name,
-          title: "Tournament Winner",
-          seed: finalMatch.p1.seed,
-          trophy: "🥇 Grand Champion"
-        };
-      } else if (finalMatch.p2.isWinner) {
-        champion = {
-          name: finalMatch.p2.name,
-          title: "Tournament Winner",
-          seed: finalMatch.p2.seed,
-          trophy: "🥇 Grand Champion"
-        };
+    if (finalMatch && finalMatch.status === "Completed") {
+      const winnerName = finalMatch.p1.isWinner ? finalMatch.p1.name : (finalMatch.p2.isWinner ? finalMatch.p2.name : null);
+      const winnerSeed = finalMatch.p1.isWinner ? finalMatch.p1.seed : (finalMatch.p2.isWinner ? finalMatch.p2.seed : "-");
+      if (winnerName) {
+        champion = { name: winnerName, title: "Tournament Winner", seed: winnerSeed, trophy: "🥇 Grand Champion" };
       }
     }
   }
 
-  return {
-    upper: upperRounds,
-    lower: [], // Can be populated if lower bracket matches exist
-    champion
-  };
+  return { upper: upperRounds, lower: lowerRounds, champion };
 }
 
 export default function ChallongeBracket({ 
@@ -166,11 +154,69 @@ export default function ChallongeBracket({
   // Convert raw DB matches into Challonge tree structure
   const bracketData = convertDBMatchesToBracket(dbMatches, dbPlayers);
   const currentRounds = activeTab === "upper" ? bracketData.upper : bracketData.lower;
-  const isSingleElimination = (dbType || tournamentType) === "Knockout Single Elimination";
+  const typeStr = (dbType || tournamentType || "").toLowerCase();
+  const isSingleElimination = typeStr.includes("single") || (!typeStr.includes("double") && !typeStr.includes("lower"));
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.15, 1.4));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.15, 0.7));
   const handleResetZoom = () => setZoomLevel(1);
+
+  const renderXarrows = () => {
+    if (isLoading || error || currentRounds.length === 0) return null;
+    const arrows = [];
+    currentRounds.forEach((round, rIndex) => {
+      if (rIndex === currentRounds.length - 1) return;
+      const nextRound = currentRounds[rIndex + 1];
+      
+      round.matches.forEach((match, mIdx) => {
+        let targetMIdx = 0;
+        if (activeTab === "upper" || isSingleElimination) {
+          targetMIdx = Math.floor(mIdx / 2);
+        } else {
+          if (nextRound.roundNumber % 2 === 0) {
+            targetMIdx = mIdx;
+          } else {
+            targetMIdx = Math.floor(mIdx / 2);
+          }
+        }
+        
+        const nextMatch = nextRound.matches[targetMIdx];
+        if (nextMatch) {
+          arrows.push(
+            <Xarrow
+              key={`${match.id}-${nextMatch.id}`}
+              start={`match-${activeTab}-${round.roundNumber}-${mIdx}`}
+              end={`match-${activeTab}-${nextRound.roundNumber}-${targetMIdx}`}
+              color="#f3c144"
+              strokeWidth={2}
+              path="grid"
+              startAnchor="right"
+              endAnchor="left"
+            />
+          );
+        }
+      });
+    });
+
+    if (activeTab === "upper" && bracketData.champion && currentRounds.length > 0) {
+      const lastRound = currentRounds[currentRounds.length - 1];
+      if (lastRound.matches.length > 0) {
+        arrows.push(
+          <Xarrow
+            key="champion-arrow"
+            start={`match-${activeTab}-${lastRound.roundNumber}-0`}
+            end="champion-display-box"
+            color="#f3c144"
+            strokeWidth={3}
+            path="grid"
+            startAnchor="right"
+            endAnchor="left"
+          />
+        );
+      }
+    }
+    return arrows;
+  };
 
   return (
     <div className="challonge-wrapper glass-panel">
@@ -234,11 +280,12 @@ export default function ChallongeBracket({
             </p>
           </div>
         ) : (
-          <div
-            className="bracket-tree-canvas"
-            style={{ transform: `scale(${zoomLevel})`, transformOrigin: "top left" }}
-          >
-            {currentRounds.map((round, rIndex) => (
+          <Xwrapper>
+            <div
+              className="bracket-tree-canvas"
+              style={{ transform: `scale(${zoomLevel})`, transformOrigin: "top left" }}
+            >
+              {currentRounds.map((round, rIndex) => (
               <div key={rIndex} className="bracket-round-column">
                 {/* Round Header */}
                 <div className="round-header-box">
@@ -248,9 +295,10 @@ export default function ChallongeBracket({
 
                 {/* Round Matchup Cards */}
                 <div className="round-matches-list">
-                  {round.matches.map((match) => (
+                  {round.matches.map((match, mIdx) => (
                     <div
                       key={match.id}
+                      id={`match-${activeTab}-${round.roundNumber}-${mIdx}`}
                       className="match-card glass-panel-card clickable-match"
                       onClick={() => {
                         setSelectedMatchModal(match);
@@ -291,9 +339,6 @@ export default function ChallongeBracket({
                           {match.p2.isWinner && <span className="winner-check">✓</span>}
                         </div>
                       </div>
-
-                      {/* Connecting Branch Line */}
-                      <div className="connector-line-out"></div>
                     </div>
                   ))}
                 </div>
@@ -308,7 +353,7 @@ export default function ChallongeBracket({
                   <span className="round-name-text gold">Tournament Winner</span>
                 </div>
 
-                <div className="champion-display-box glass-panel-card gold-glow">
+                <div id="champion-display-box" className="champion-display-box glass-panel-card gold-glow">
                   <div className="champion-trophy-icon">🏆</div>
                   <h3 className="champion-name">{bracketData.champion.name}</h3>
                   <span className="champion-title-tag">{bracketData.champion.title}</span>
@@ -316,7 +361,10 @@ export default function ChallongeBracket({
                 </div>
               </div>
             )}
+            
+            {renderXarrows()}
           </div>
+          </Xwrapper>
         )}
       </div>
 
@@ -401,7 +449,6 @@ export default function ChallongeBracket({
 
             <div className="match-modal-info">
               <p>Status: <strong>{selectedMatchModal.status}</strong></p>
-              <p>Source: <strong>MongoDB Atlas Cluster Database</strong></p>
             </div>
 
             {isStaff && onUpdateMatch && (

@@ -965,9 +965,24 @@
 /* Hall of Fame Tournament Grid */
 .hall-tournaments-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
 }
+
+@media (max-width: 480px) {
+  .hall-tournaments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hall-card {
+    padding: 16px;
+  }
+
+  .history-container {
+    padding: 16px 12px 32px;
+  }
+}
+
 
 .hall-card {
   background: #1f1d18;

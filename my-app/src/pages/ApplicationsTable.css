@@ -107,7 +107,28 @@
 }
 
 /* Keep everything else from previous version (wide table, etc.) */
-.applications-table {
-  min-width: 1200px; /* still super wide */
+.applications-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
 }
+
+.applications-table {
+  min-width: 900px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+  }
+  .modal-header {
+    padding: 14px 18px;
+  }
+  .modal-body {
+    padding: 16px;
+  }
+}
+
 

@@ -307,3 +307,37 @@
     transform: rotate(360deg);
   }
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .layout-container {
+    padding: 0 12px;
+  }
+
+  .intro-text h1 {
+    font-size: 22px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .role-card {
+    padding: 14px;
+  }
+
+  .staff-actions {
+    flex-direction: column;
+  }
+
+  .staff-actions .add-btn {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .application-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

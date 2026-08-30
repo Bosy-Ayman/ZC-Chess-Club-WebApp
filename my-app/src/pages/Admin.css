@@ -1,5 +1,7 @@
+/* Admin.css - Premium Glassmorphic Admin Dashboard */
+
 .admin-wrapper {
-  background-color: #181611;
+  background-color: #12100c;
   color: #bab19c;
   min-height: 100vh;
   display: flex;
@@ -8,72 +10,211 @@
 
 .admin-container {
   flex: 1;
-  padding: 40px 20px;
-  max-width: 1200px;
+  padding: 40px 24px 60px;
+  max-width: 1240px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
-.intro-text {
-  text-align: center;
-  margin-bottom: 40px;
+/* Header & Banner */
+.intro-header {
+  background: linear-gradient(135deg, rgba(35, 30, 20, 0.9), rgba(20, 18, 14, 0.95));
+  border: 1px solid rgba(243, 193, 68, 0.25);
+  border-radius: 20px;
+  padding: 30px 36px;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
 }
 
-.intro-text h1 {
-  font-size: 2.5rem;
-  color: white;
-  margin-bottom: 10px;
+.intro-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f3c144, #e2b033, rgba(243, 193, 68, 0.2));
+}
+
+.admin-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.admin-role-badge {
+  display: inline-block;
+  align-self: flex-start;
+  background: rgba(243, 193, 68, 0.15);
+  color: #f3c144;
+  border: 1px solid rgba(243, 193, 68, 0.35);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.admin-header-titles h1 {
+  font-size: 2.2rem;
+  color: #ffffff;
+  margin: 4px 0 8px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   font-family: 'Outfit', sans-serif;
 }
 
-.intro-text p {
-  font-size: 1.1rem;
-  color: #caba91;
+.admin-header-titles p {
+  color: #b5afa1;
+  font-size: 0.98rem;
+  margin: 0;
+  max-width: 650px;
+  line-height: 1.5;
 }
 
-/* Tabs */
+.admin-kpi-bar {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.kpi-pill {
+  background: rgba(21, 18, 12, 0.8);
+  border: 1px solid rgba(243, 193, 68, 0.2);
+  border-radius: 12px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kpi-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f3c144;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  color: #bab19c;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.logout-btn {
+  background: rgba(217, 83, 79, 0.12);
+  border: 1px solid rgba(217, 83, 79, 0.4);
+  color: #d9534f;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.logout-btn:hover {
+  background: #d9534f;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(217, 83, 79, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Mobile Tab Selector Wrapper (Hidden on desktop) */
+.admin-mobile-tab-select-wrapper {
+  display: none;
+  background: rgba(28, 25, 18, 0.85);
+  border: 1px solid rgba(243, 193, 68, 0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.admin-mobile-tab-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #f3c144;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.admin-mobile-tab-select {
+  width: 100%;
+  background-color: #12100c;
+  color: #ffffff;
+  border: 1px solid #f3c144;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Tabs Bar */
 .admin-tabs {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  justify-content: flex-start;
+  gap: 12px;
   margin-bottom: 30px;
-  flex-wrap: wrap;
+  background: rgba(25, 22, 16, 0.7);
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(243, 193, 68, 0.15);
+  backdrop-filter: blur(10px);
 }
 
 .tab-btn {
-  background: #232018;
-  border: 1px solid #393428;
+  background: transparent;
+  border: none;
   color: #bab19c;
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 8px;
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
+  transition: all 0.25s ease;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tab-btn:hover {
-  background: #393428;
-  border-color: #f3c144;
-  color: white;
+  background: rgba(243, 193, 68, 0.1);
+  color: #f3c144;
 }
 
 .tab-btn.active {
   background: #f3c144;
-  border-color: #f3c144;
-  color: #15120c;
-  box-shadow: 0 4px 15px rgba(243, 193, 68, 0.2);
+  color: #12100c;
+  font-weight: 800;
+  box-shadow: 0 4px 18px rgba(243, 193, 68, 0.35);
 }
 
 /* Alert Messages */
 .alert-message {
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 14px 22px;
+  border-radius: 12px;
   margin-bottom: 25px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   animation: fadeIn 0.3s ease;
+  font-size: 0.95rem;
 }
 
 .alert-message.success {
@@ -89,38 +230,41 @@
 }
 
 /* Cards */
-.form-card, .table-card {
-  background: #232018;
-  border: 1px solid #393428;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.form-card,
+.table-card {
+  background: rgba(28, 25, 18, 0.85);
+  border: 1px solid rgba(243, 193, 68, 0.18);
+  border-radius: 18px;
+  padding: 34px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
 }
 
-.form-card h2, .table-card h2 {
-  color: white;
-  margin-bottom: 25px;
-  font-size: 1.8rem;
-  border-bottom: 2px solid #393428;
-  padding-bottom: 10px;
+.form-card h2,
+.table-card h2 {
+  color: #ffffff;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  border-left: 4px solid #f3c144;
+  padding-left: 14px;
 }
 
 /* Forms */
 .admin-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
 .form-row {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 22px;
 }
 
 .form-row .form-group {
   flex: 1;
-  min-width: 250px;
+  min-width: 0;
 }
 
 .form-group {
@@ -130,21 +274,24 @@
 }
 
 .form-group label {
-  color: #caba91;
-  font-weight: 600;
-  font-size: 0.95rem;
+  color: #f3c144;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
 }
 
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
-  background-color: #15120c;
-  border: 1px solid #393428;
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 1rem;
+  background-color: #12100c;
+  border: 1px solid rgba(243, 193, 68, 0.2);
+  color: #ffffff;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 0.98rem;
   transition: all 0.3s ease;
+  font-family: inherit;
+  box-sizing: border-box;
 }
 
 .admin-form input:focus,
@@ -152,7 +299,8 @@
 .admin-form textarea:focus {
   outline: none;
   border-color: #f3c144;
-  box-shadow: 0 0 8px rgba(243, 193, 68, 0.15);
+  box-shadow: 0 0 14px rgba(243, 193, 68, 0.25);
+  background-color: #17140f;
 }
 
 .admin-form select {
@@ -160,80 +308,89 @@
 }
 
 .submit-btn {
-  background: #f3c144;
-  color: #15120c;
+  background: linear-gradient(135deg, #f3c144, #e2b033);
+  color: #12100c;
   border: none;
-  padding: 14px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border-radius: 8px;
+  padding: 15px 28px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 6px 20px rgba(243, 193, 68, 0.25);
 }
 
 .submit-btn:hover {
-  background: #e2b033;
+  background: linear-gradient(135deg, #ffd466, #f3c144);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(243, 193, 68, 0.3);
+  box-shadow: 0 8px 25px rgba(243, 193, 68, 0.4);
 }
 
 .submit-btn:disabled {
-  background: #555;
+  background: #444;
   color: #888;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-/* Tables */
+/* Tables Desktop View */
 .admin-table-container {
   overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid #393428;
+  border-radius: 12px;
+  border: 1px solid rgba(243, 193, 68, 0.15);
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  background-color: #2b281f;
+  background-color: #17140f;
 }
 
-.admin-table th, .admin-table td {
-  padding: 15px 20px;
-  border-bottom: 1px solid #393428;
+.admin-table th,
+.admin-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(243, 193, 68, 0.08);
 }
 
 .admin-table th {
-  background-color: #393428;
+  background-color: #231f16;
   color: #f3c144;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.admin-table tr:last-child td {
-  border-bottom: none;
+  letter-spacing: 0.6px;
 }
 
 .admin-table tr:hover {
-  background-color: #353127;
+  background-color: rgba(243, 193, 68, 0.04);
 }
 
 .admin-table td.strong {
-  color: white;
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Desktop vs Mobile cards toggle */
+.tournaments-desktop-table {
+  display: block;
+}
+
+.tournaments-mobile-cards {
+  display: none;
 }
 
 /* Badges */
 .status-badge {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
   display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-badge.upcoming {
@@ -260,7 +417,8 @@
   color: #e67e22;
 }
 
-.status-badge.accepted {
+.status-badge.accepted,
+.status-badge.approved {
   background-color: rgba(46, 204, 113, 0.15);
   border: 1px solid #2ecc71;
   color: #2ecc71;
@@ -278,15 +436,17 @@
   border: 1px solid #e74c3c;
   color: #e74c3c;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
+  transition: all 0.25s ease;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .delete-btn:hover {
   background-color: #e74c3c;
-  color: white;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .view-btn {
@@ -294,20 +454,22 @@
   border: 1px solid #f3c144;
   color: #f3c144;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
+  transition: all 0.25s ease;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .view-btn:hover {
   background-color: #f3c144;
-  color: #15120c;
+  color: #12100c;
+  box-shadow: 0 4px 12px rgba(243, 193, 68, 0.3);
 }
 
 .empty-message {
   text-align: center;
-  color: #888;
+  color: #888888;
   padding: 40px 0;
   font-style: italic;
 }
@@ -325,42 +487,42 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px);
 }
 
 .admin-modal-content {
-  background-color: #232018;
+  background-color: #1c1912;
   border: 1px solid #f3c144;
-  border-radius: 15px;
+  border-radius: 18px;
   max-width: 700px;
   width: 100%;
-  padding: 30px;
+  padding: 32px;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 30px rgba(243, 193, 68, 0.1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
   animation: modalSlideUp 0.3s ease;
 }
 
 .close-modal-btn {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 18px;
+  right: 22px;
   background: none;
   border: none;
   font-size: 2rem;
   color: #bab19c;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
 .close-modal-btn:hover {
-  color: white;
+  color: #ffffff;
 }
 
 .admin-modal-content h3 {
-  color: white;
-  font-size: 1.6rem;
+  color: #ffffff;
+  font-size: 1.5rem;
   margin-bottom: 20px;
   margin-right: 30px;
 }
@@ -368,52 +530,75 @@
 .modal-divider {
   border: 0;
   height: 1px;
-  background: #393428;
+  background: rgba(243, 193, 68, 0.15);
   margin: 20px 0;
 }
 
-.modal-info-grid {
+/* Puzzle Management Styles */
+.puzzle-dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 15px;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  margin-top: 20px;
 }
 
-.modal-info-grid div {
-  font-size: 1rem;
-  color: #bab19c;
+.puzzle-board-container {
+  background: #17140f;
+  border: 1px solid rgba(243, 193, 68, 0.18);
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-.modal-info-grid strong {
-  color: #caba91;
-}
-
-.pretty-role-data {
-  background: #15120c;
-  border: 1px solid #393428;
+.puzzle-board-wrapper {
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 4px solid #282318;
   border-radius: 8px;
-  padding: 20px;
-  font-size: 0.95rem;
+  overflow: hidden;
 }
 
-.pretty-role-array-item {
-  border: 1px dashed #393428;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
-  background-color: rgba(255, 255, 255, 0.02);
+.piece-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+  background: #12100c;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(243, 193, 68, 0.15);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.pretty-role-array-item h4 {
-  color: #f3c144;
-  margin-bottom: 10px;
+.palette-btn {
+  background: #231f16;
+  border: 1px solid rgba(243, 193, 68, 0.2);
+  color: #bab19c;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 42px;
+  text-align: center;
 }
 
-.pretty-field {
-  margin-bottom: 10px;
+.palette-btn:hover {
+  border-color: #f3c144;
+  color: #ffffff;
 }
 
-.pretty-field strong {
-  color: #caba91;
+.palette-btn.active {
+  background: #f3c144;
+  color: #12100c;
+  border-color: #f3c144;
+  font-weight: bold;
 }
 
 /* Animations */
@@ -427,144 +612,138 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-@media (max-width: 768px) {
-  .admin-container {
-    padding: 20px 10px;
-  }
-  .form-card, .table-card {
-    padding: 20px 15px;
-  }
-}
-
-/* Puzzle Management Styles */
-.puzzle-dashboard-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 30px;
-  margin-top: 20px;
-}
-
+/* -------------------------------------------------------------------------- */
+/* Responsive Mobile Media Queries                                            */
+/* -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
   .puzzle-dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.puzzle-board-container {
-  background: #1e1b14;
-  border: 1px solid #393428;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 20px 14px 40px;
+  }
+
+  .intro-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+    border-radius: 16px;
+    gap: 18px;
+  }
+
+  .admin-header-titles h1 {
+    font-size: 1.7rem;
+  }
+
+  .admin-kpi-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .kpi-pill {
+    padding: 6px 14px;
+  }
+
+  .logout-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-mobile-tab-select-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-desktop-tabs {
+    display: none !important;
+  }
+
+  .form-card,
+  .table-card {
+    padding: 22px 16px;
+    border-radius: 16px;
+  }
+
+  .form-card h2,
+  .table-card h2 {
+    font-size: 1.35rem;
+    margin-bottom: 18px;
+  }
+
+  /* Switch tables to mobile cards on small screens */
+  .tournaments-desktop-table {
+    display: none;
+  }
+
+  .tournaments-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mobile-tournament-card {
+    background: #17140f;
+    border: 1px solid rgba(243, 193, 68, 0.18);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .mobile-card-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .mobile-full-btn {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    border-radius: 8px;
+  }
 }
 
-.puzzle-board-wrapper {
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  border: 4px solid #2d2920;
-  border-radius: 6px;
-  overflow: hidden;
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-row .form-group {
+    min-width: 100%;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+  }
 }
 
-.piece-palette {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 10px;
-  background: #181611;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #393428;
-  width: 100%;
-  box-sizing: border-box;
-}
+@media (max-width: 480px) {
+  .admin-container {
+    padding: 16px 10px 32px;
+  }
 
-.palette-btn {
-  background: #232018;
-  border: 1px solid #393428;
-  color: #bab19c;
-  padding: 6px 10px;
-  font-size: 1.1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 38px;
-  text-align: center;
-}
+  .admin-header-titles h1 {
+    font-size: 1.45rem;
+  }
 
-.palette-btn:hover {
-  border-color: #f3c144;
-  color: white;
-}
-
-.palette-btn.active {
-  background: #f3c144;
-  color: #15120c;
-  border-color: #f3c144;
-  font-weight: bold;
-}
-
-.puzzle-list-manager {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: #1e1b14;
-  border: 1px solid #393428;
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.puzzle-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #232018;
-  border: 1px solid #393428;
-  padding: 12px 16px;
-  border-radius: 8px;
-}
-
-.puzzle-item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.puzzle-item-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: white;
-}
-
-.puzzle-item-desc {
-  font-size: 0.8rem;
-  color: #caba91;
-}
-
-.puzzle-moves-log {
-  margin-top: 15px;
-  background: #181611;
-  border: 1px solid #393428;
-  border-radius: 8px;
-  padding: 12px;
-  font-family: monospace;
-  font-size: 0.9rem;
-  min-height: 50px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.move-token {
-  background: #393428;
-  color: #f3c144;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: bold;
+  .form-card,
+  .table-card {
+    padding: 16px 12px;
+  }
 }

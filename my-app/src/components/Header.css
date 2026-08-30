@@ -828,7 +828,28 @@
   .hamburger {
     display: flex;
   }
+
+  .notifications-dropdown {
+    right: -10px;
+    width: 290px;
+    max-width: 90vw;
+  }
+
+  .user-drawer {
+    width: 280px;
+    max-width: 85vw;
+  }
 }
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.1rem;
+  }
+  .header {
+    padding: 10px 14px;
+  }
+}
+
 
 /* ============================================================
    LEGACY / keep for backward compat
