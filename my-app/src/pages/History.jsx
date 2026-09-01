@@ -52,6 +52,7 @@ export default function EventHistory() {
   const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "tournament", "exhibition", "training", "online"
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEventModal, setSelectedEventModal] = useState(null);
+  const [selectedPlayerModal, setSelectedPlayerModal] = useState(null);
   const [highboardYearFilter, setHighboardYearFilter] = useState("all");
 
   // Check URL query params for active tab (e.g. ?tab=halloffame)
@@ -1250,7 +1251,18 @@ export default function EventHistory() {
               <div className="champions-cards-grid">
                 {championsGallery.map((champ, cIdx) => (
                   <ScrollReveal key={cIdx}>
-                    <div className="champion-profile-card glass-panel">
+                    <div 
+                      className="champion-profile-card glass-panel"
+                      onClick={() => {
+                        const playerData = sortedPlayers.find(s => s.name === champ.name) || {
+                          name: champ.name,
+                          score: 0, gold: 0, silver: 0, bronze: 0,
+                          titles: [], avatar: champ.image
+                        };
+                        setSelectedPlayerModal(playerData);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
                       <div className="champion-card-top">
                         <div className="champion-avatar-box">
                           <img
@@ -1551,6 +1563,79 @@ export default function EventHistory() {
                   >
                     📷 View Post on Instagram
                   </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Player Profile Trading Card Modal */}
+        {selectedPlayerModal && (
+          <div
+            className="event-modal-overlay active"
+            onClick={() => setSelectedPlayerModal(null)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="event-modal-content trading-card-modal glass-panel" onClick={(e) => e.stopPropagation()}>
+              <button
+                className="modal-close-btn"
+                onClick={() => setSelectedPlayerModal(null)}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+
+              <div className="trading-card-inner">
+                <div className="tc-image-section">
+                  <img
+                    src={selectedPlayerModal.avatar}
+                    alt={selectedPlayerModal.name}
+                    className="tc-avatar"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/Icons/unknown.png";
+                    }}
+                  />
+                  <div className="tc-score-badge">
+                    <span className="tc-score-val">{selectedPlayerModal.score}</span>
+                    <span className="tc-score-lbl">Total Score</span>
+                  </div>
+                </div>
+
+                <div className="tc-info-section">
+                  <h2 className="tc-name">{selectedPlayerModal.name}</h2>
+                  
+                  <div className="tc-medals-row">
+                    <div className="tc-medal">
+                      <span className="tc-medal-icon">🥇</span>
+                      <span className="tc-medal-count">{selectedPlayerModal.gold}</span>
+                      <span className="tc-medal-lbl">Gold</span>
+                    </div>
+                    <div className="tc-medal">
+                      <span className="tc-medal-icon">🥈</span>
+                      <span className="tc-medal-count">{selectedPlayerModal.silver}</span>
+                      <span className="tc-medal-lbl">Silver</span>
+                    </div>
+                    <div className="tc-medal">
+                      <span className="tc-medal-icon">🥉</span>
+                      <span className="tc-medal-count">{selectedPlayerModal.bronze}</span>
+                      <span className="tc-medal-lbl">Bronze</span>
+                    </div>
+                  </div>
+
+                  <div className="tc-titles-section">
+                    <h4>🏆 Championship Titles</h4>
+                    {selectedPlayerModal.titles && selectedPlayerModal.titles.length > 0 ? (
+                      <ul className="tc-titles-list">
+                        {selectedPlayerModal.titles.map((title, i) => (
+                          <li key={i}>{title}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="tc-no-titles">No major 1st place titles yet.</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -797,6 +797,113 @@
   line-height: 1.6;
 }
 
+/* ========================
+   Hall of Records Banner
+======================== */
+.hall-of-records-banner {
+  background: var(--bg-glass-strong);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 32px 40px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(243, 193, 68, 0.1);
+}
+
+.hall-of-records-banner::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(243, 193, 68, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.records-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.records-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(243, 193, 68, 0.15);
+  color: var(--gold-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(243, 193, 68, 0.3);
+}
+
+.records-header h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 2rem;
+  color: #fff;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.record-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 12, 8, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  transition: transform var(--transition-smooth);
+}
+
+.record-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(243, 193, 68, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.record-value {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--gold-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 15px rgba(243, 193, 68, 0.3);
+}
+
+.record-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .records-grid {
+    grid-template-columns: 1fr;
+  }
+  .hall-of-records-banner {
+    padding: 24px;
+  }
+}
+
 /* Podium Category Toggle Bar */
 .podium-toggle-bar {
   display: flex;
@@ -1848,6 +1955,143 @@
 .modal-instagram-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(225, 48, 108, 0.45);
+}
+
+/* ── Trading Card Modal ── */
+.trading-card-modal {
+  max-width: 450px !important;
+  background: linear-gradient(145deg, #1f1b13, #15120c) !important;
+  border: 1px solid var(--border-gold) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.trading-card-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.tc-image-section {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: radial-gradient(circle at top, rgba(243, 193, 68, 0.15), transparent 70%);
+}
+
+.tc-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+}
+
+.tc-score-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--gold-primary);
+  color: #12100c;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(243, 193, 68, 0.4);
+}
+
+.tc-score-val {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tc-score-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tc-info-section {
+  padding: 24px;
+}
+
+.tc-name {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.tc-medals-row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tc-medal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tc-medal-icon {
+  font-size: 1.5rem;
+}
+
+.tc-medal-count {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.tc-medal-lbl {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.tc-titles-section {
+  text-align: center;
+}
+
+.tc-titles-section h4 {
+  font-size: 0.9rem;
+  color: var(--gold-primary);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tc-titles-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tc-titles-list li {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.tc-no-titles {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* ── Scroll-Reveal Animation Utilities ── */
