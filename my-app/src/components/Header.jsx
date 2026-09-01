@@ -19,6 +19,8 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
   const [userDrawerOpen, setUserDrawerOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
@@ -69,7 +71,10 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("adminToken"));
     setUserRole(localStorage.getItem("userRole"));
-    setUserEmail(localStorage.getItem("adminEmail") || "");
+    const email = localStorage.getItem("adminEmail") || "";
+    setUserEmail(email);
+    setUserName(localStorage.getItem("userName") || (email ? email.split("@")[0] : ""));
+    setUserAvatar(localStorage.getItem("userAvatar") || "");
     
     const params = new URLSearchParams(window.location.search);
     if (params.get("login") === "true") {
@@ -87,6 +92,8 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminEmail");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userAvatar");
     setIsLoggedIn(false);
     setUserDrawerOpen(false);
     window.location.reload();
@@ -94,10 +101,10 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
 
   const closeUserDrawer = () => setUserDrawerOpen(false);
 
-  // Derive initials for avatar from email
-  const getInitials = (email) => {
-    const name = email.split("@")[0];
-    const parts = name.split(/[._-]/);
+  const getInitials = (str) => {
+    if (!str) return "?";
+    const name = str.includes("@") ? str.split("@")[0] : str;
+    const parts = name.split(/[\s._-]/);
     if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
   };
@@ -157,8 +164,12 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
 
             {/* User menu button */}
             <button className="user-menu-btn" onClick={() => setUserDrawerOpen(true)}>
-              <span className="user-menu-avatar">👤</span>
-              <span className="user-menu-text">{userEmail.split('@')[0]}</span>
+              {userAvatar ? (
+                <img src={userAvatar} alt="Avatar" className="user-menu-avatar-img" referrerPolicy="no-referrer" />
+              ) : (
+                <span className="user-menu-avatar-initials">{getInitials(userName || userEmail)}</span>
+              )}
+              <span className="user-menu-text">{userName || userEmail.split('@')[0]}</span>
               {userRole && <span className="user-role-badge">{userRole}</span>}
             </button>
           </div>
@@ -271,10 +282,15 @@ const Header = ({ sidebarOpen, toggleSidebar }) => {
 
             {/* User Header */}
             <div className="drawer-header">
-              <div className="drawer-avatar-initials">
-                {userEmail ? getInitials(userEmail) : "?"}
+              <div className="drawer-avatar-initials" style={userAvatar ? { padding: 0, overflow: 'hidden' } : {}}>
+                {userAvatar ? (
+                  <img src={userAvatar} alt="Profile" referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                ) : (
+                  getInitials(userName || userEmail)
+                )}
               </div>
               <div className="drawer-user-info">
+                <span className="drawer-user-name">{userName || userEmail.split('@')[0]}</span>
                 <span className="drawer-user-email">{userEmail}</span>
                 {userRole && <span className="drawer-role-tag">{userRole}</span>}
               </div>

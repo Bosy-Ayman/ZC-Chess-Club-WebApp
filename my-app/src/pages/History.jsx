@@ -526,8 +526,7 @@ export default function EventHistory() {
   // State for Podium Category Selection: 'both', 'boys', 'girls'
   const [podiumCategory, setPodiumCategory] = useState("both");
 
-  // Calculate Podium and Champions All-Time Stats
-  const { sortedPlayers, hallOfFameChampions, championsGallery, boysPodium, girlsPodium } = useMemo(() => {
+  const { sortedPlayers, championsGallery, boysPodium, girlsPodium } = useMemo(() => {
     const playerScores = {};
 
     defaultHistoricalEvents.forEach((t) => {
@@ -636,7 +635,7 @@ export default function EventHistory() {
         name: "Salma Ashraf",
         stats: "🏅 4th Place AAST Inter-Uni",
         badge: "AAST University Finalist",
-        avatar: "/Icons/unknown.png"
+        avatar: "/Winners/SalmaAshraf.jpg"
       }
     };
 
@@ -697,7 +696,7 @@ export default function EventHistory() {
       { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "Multiple-time ZC Champion (King's Quest IV, Esports Arena, Ramadan Knockout '25)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 Champion • 2x 🥈 Runner-up", category: "boys" },
       { name: "Bosy Ayman", role: "President (24-26) & Inter-Uni Champion", desc: "1st Place Girls' Champion at both AAST & Nile University Inter-University Championships", image: "/Winners/BosyAyman.png", trophies: "2x 🥇 1st Place Inter-Uni Champion (AAST & Nile)", category: "girls" },
       { name: "Haneen Yasser", role: "Head of Multimedia (26-27) & Inter-Uni Finalist", desc: "4th Place at Nile University & 6th Place at AAST University Championships, orchestrating club brand identity", image: "/Winners/HaneenYasser.png", trophies: "🏅 4th Place (Nile) • 🏅 6th Place (AAST) • 👑 High Board", category: "girls" },
-      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Icons/unknown.png", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
+      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Winners/SalmaAshraf.jpg", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
       { name: "Ahmed Elkodariy", role: "President (26-27) & Campus Champion", desc: "Winner of Fall 2025 Knockout & Teams Championship with Knights", image: "/Winners/AhmedElkodariy.PNG", trophies: "2x 🥇 Champion • High Board Leader", category: "boys" },
       { name: "Mohamed Ezz", role: "King's Quest Multi-Champion", desc: "Consecutive winner of King's Quest I & King's Quest II Championships", image: "/Winners/MohamedEzz.jpg", trophies: "2x 🥇 King's Quest Champion", category: "boys" },
       { name: "Omar Ezz", role: "Head of Training & Ramadan Champion", desc: "Champion of Ramadan 2026 Knockout & Teams Championship Winner", image: "/Winners/OmarEzz.jpg", trophies: "2x 🥇 Champion • Inter-Uni Finalist", category: "boys" },
@@ -715,18 +714,8 @@ export default function EventHistory() {
       { name: "Mazen Ayman", role: "Esports Arena Runner-up", desc: "Silver Medalist at the 2026 Esports Blitz Tournament", image: "/Winners/MazenAyman.jpg", trophies: "1x 🥈 Runner-up", category: "boys" }
     ];
 
-    return { sortedPlayers: sorted, hallOfFameChampions: hofTournaments, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
-  }, []);
-
-  const podiumGold = sortedPlayers[0]
-    ? { ...sortedPlayers[0], badge: `1st All-Time (${sortedPlayers[0].score} pts)` }
-    : { name: "Abdelrahman Mohamed", stats: "3 🥇 | 2 🥈", badge: "Grand Champion", avatar: "/Winners/AbdelrahmanMohamed.png" };
-  const podiumSilver = sortedPlayers[1]
-    ? { ...sortedPlayers[1], badge: `2nd All-Time (${sortedPlayers[1].score} pts)` }
-    : { name: "Bosy Ayman", stats: "2 🥇 | 1 🥈", badge: "Inter-Uni Gold (AAST & Nile)", avatar: "/Winners/BosyAyman.png" };
-  const podiumBronze = sortedPlayers[2]
-    ? { ...sortedPlayers[2], badge: `3rd All-Time (${sortedPlayers[2].score} pts)` }
-    : { name: "Mohamed Ezz", stats: "2 🥇 | 0 🥈", badge: "KQ Double Champion", avatar: "/Winners/MohamedEzz.jpg" };
+    return { sortedPlayers: sorted, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
+  }, [avatarMap, defaultHistoricalEvents]);
 
   useEffect(() => {
     fetchEvents();
@@ -1083,6 +1072,7 @@ export default function EventHistory() {
         ============================== */}
         {activeTab === "halloffame" && (
           <div className="hall-of-fame-container">
+
             {/* Podium Category Toggle Bar */}
             <div className="podium-toggle-bar">
               <button

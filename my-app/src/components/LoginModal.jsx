@@ -26,8 +26,16 @@ export default function LoginModal({ onClose }) {
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminEmail", data.user.email);
       localStorage.setItem("userRole", data.user.role);
+
+      // Decode Google JWT to get profile picture and name
+      try {
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        if (payload.picture) localStorage.setItem("userAvatar", payload.picture);
+        if (payload.name) localStorage.setItem("userName", payload.name);
+      } catch (e) { /* ignore decode errors */ }
+
       onClose();
-      window.location.reload(); // Reload to refresh login states in App
+      window.location.reload();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -81,6 +89,8 @@ export default function LoginModal({ onClose }) {
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminEmail", data.user.email);
       localStorage.setItem("userRole", data.user.role);
+      if (data.user.name) localStorage.setItem("userName", data.user.name);
+      if (data.user.picture) localStorage.setItem("userAvatar", data.user.picture);
       onClose();
       window.location.reload();
     } catch (err) {

@@ -2,11 +2,12 @@
 
 import "./ClubRoles.css";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoginModal from "../components/LoginModal";
-import { Sparkles, CheckCircle2, ArrowRight, UserCheck, ShieldAlert, Clock, Award, Briefcase } from "lucide-react";
+import { CheckCircle2, ArrowRight, Clock, Briefcase } from "lucide-react";
+
 
 export default function ClubRoles() {
   const navigate = useNavigate();
@@ -142,7 +143,6 @@ export default function ClubRoles() {
   };
 
   const proceedToAuth = (isSignUp = true) => {
-    const targetRole = authPromptRole;
     setAuthPromptRole(null);
     if (isSignUp) {
       navigate("/signup");
@@ -180,7 +180,6 @@ export default function ClubRoles() {
             const existingApp = getExistingApplication(role);
             const isAccepted = existingApp && existingApp.status === "Accepted";
             const isRejected = existingApp && existingApp.status === "Rejected";
-            const isPending = existingApp && !isAccepted && !isRejected;
 
             return (
               <div key={role.id} className={`role-card glass-panel ${existingApp ? "role-card--applied" : ""}`}>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Award, Users, Target, Shield, Mail, ArrowRight } from "lucide-react";
+import { Users } from "lucide-react";
 import "./About.css";
 
 export default function About() {

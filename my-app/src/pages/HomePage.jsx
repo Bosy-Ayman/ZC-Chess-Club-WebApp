@@ -1,8 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Award, Bell, Images, Sparkles, ChevronDown, Pin, ExternalLink, Calendar, MapPin } from "lucide-react";
+import { Award, Bell, Images, Sparkles, ChevronDown, Pin, ExternalLink, Calendar, MapPin, Zap, Lightbulb, RefreshCw } from "lucide-react";
 import "./HomePage.css";
+
+const CountUp = ({ end, duration = 2000, suffix = "" }) => {
+  const [count, setCount] = useState(0);
+  const countRef = React.useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          let startTimestamp = null;
+          const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            setCount(Math.floor(progress * end));
+            if (progress < 1) {
+              window.requestAnimationFrame(step);
+            }
+          };
+          window.requestAnimationFrame(step);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (countRef.current) {
+      observer.observe(countRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  return <span ref={countRef}>{count}{suffix}</span>;
+};
+
+const CountdownTimer = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = +new Date(targetDate) - +new Date();
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return (
+    <div className="countdown-timer">
+      <div className="countdown-item"><span className="countdown-value">{timeLeft.days}</span><span className="countdown-label">Days</span></div>
+      <div className="countdown-item"><span className="countdown-value">{timeLeft.hours}</span><span className="countdown-label">Hrs</span></div>
+      <div className="countdown-item"><span className="countdown-value">{timeLeft.minutes}</span><span className="countdown-label">Min</span></div>
+      <div className="countdown-item"><span className="countdown-value">{timeLeft.seconds}</span><span className="countdown-label">Sec</span></div>
+    </div>
+  );
+};
 
 const HomePage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,6 +83,47 @@ const HomePage = () => {
   ];
 
   const [heroIndex, setHeroIndex] = useState(0);
+  const [activeTacticianTab, setActiveTacticianTab] = useState("quote");
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [tipIndex, setTipIndex] = useState(0);
+
+  const quotesList = [
+    {
+      text: "Chess is 99% tactics. Every game is a mental battle where strategy sets the trap, and calculation delivers the checkmate.",
+      author: "Garry Kasparov, 13th World Chess Champion"
+    },
+    {
+      text: "When you see a good move, look for a better one.",
+      author: "Emanuel Lasker, 2nd World Chess Champion"
+    },
+    {
+      text: "Tactics is knowing what to do when there is something to do; strategy is knowing what to do when there is nothing to do.",
+      author: "Savielly Tartakower, Chess Grandmaster"
+    },
+    {
+      text: "Play the opening like a book, the middle game like a magician, and the endgame like a machine.",
+      author: "Rudolf Spielmann, Master Tactician"
+    }
+  ];
+
+  const tipsList = [
+    {
+      title: "♟️ The Italian Game (1.e4 e5 2.Nf3 Nc6 3.Bc4)",
+      desc: "Control the center early, knight-out before bishop, castle quickly to safeguard your King, and launch tactical pawn lever attacks!"
+    },
+    {
+      title: "⚔️ The Sicilian Defense (1.e4 c5)",
+      desc: "Fight dynamically for central control from move one. Create asymmetric pawn structures and seize open tactical semi-files."
+    },
+    {
+      title: "🛡️ Principle of Two Weaknesses",
+      desc: "If your opponent defends one weakness stubbornly, create a second weakness on the opposite flank to stretch and overwhelm their defenses."
+    },
+    {
+      title: "👑 King Activity in Endgames",
+      desc: "In endgames, activate your King aggressively toward the center! A centralized King is worth as much as a minor piece."
+    }
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,6 +180,33 @@ const HomePage = () => {
   const [activeTournamentIndex, setActiveTournamentIndex] = useState(0);
   const [activeLightboxIndex, setActiveLightboxIndex] = useState(null);
 
+  const galleryImages = [
+    "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
+    "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
+    "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
+    "/Images/Tournaments/2025-2026/AASTUni.jpg",
+  ];
+
+  const handleNextLightbox = useCallback(() => {
+    setActiveLightboxIndex((prev) => (prev !== null ? (prev + 1) % galleryImages.length : null));
+  }, [galleryImages.length]);
+
+  const handlePrevLightbox = useCallback(() => {
+    setActiveLightboxIndex((prev) => (prev !== null ? (prev > 0 ? prev - 1 : galleryImages.length - 1) : null));
+  }, [galleryImages.length]);
+
+  // Keyboard navigation for Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activeLightboxIndex === null) return;
+      if (e.key === "Escape") setActiveLightboxIndex(null);
+      if (e.key === "ArrowRight") handleNextLightbox();
+      if (e.key === "ArrowLeft") handlePrevLightbox();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeLightboxIndex, handleNextLightbox, handlePrevLightbox]);
+
   const recentTournaments = [
     {
       id: "kq4-2026",
@@ -127,7 +260,7 @@ const HomePage = () => {
           name: "Salma Ashraf",
           place: "🏅 4th Place (Girls)",
           medal: "silver",
-          image: "/Icons/unknown.png",
+          image: "/Winners/SalmaAshraf.jpg",
           detail: "Inter-Uni Finalist"
         },
         {
@@ -239,20 +372,12 @@ const HomePage = () => {
 
   const activeTournament = recentTournaments[activeTournamentIndex] || recentTournaments[0];
 
-  const galleryImages = [
-    "/Images/Tournaments/2024-2025/KingQuest1_1.jpg",
-    "/Images/Tournaments/2025-2026/TeamsTournament.jpg",
-    "/Images/Tournaments/2018-2019/adhamfawzy.jpg",
-    "/Images/Tournaments/2025-2026/AASTUni.jpg",
-  ];
-
   return (
     <div className="homepage">
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Hero Section */}
       <section className="hero-section" id="hero">
-        {/* Image slideshow replaces video — SEO friendly, no thumbnail required */}
         <div className="hero-slideshow" aria-hidden="true">
           {heroSlides.map((src, i) => (
             <div
@@ -263,6 +388,7 @@ const HomePage = () => {
           ))}
         </div>
         <div className="hero-overlay"></div>
+
         <div className="hero-content">
           <div className="hero-badge">
             <Sparkles size={13} />
@@ -270,22 +396,28 @@ const HomePage = () => {
           </div>
           <h1>Welcome to ZC Chess Club</h1>
           <p>
-            Manage and participate in chess tournaments with ease. Join our
-            community of chess enthusiasts today!
+            Master tactics, participate in championship arenas, and represent Zewail City across national leagues!
           </p>
+
           <div className="hero-buttons">
-            <a href="/tournaments">
-              <button className="explore-btn">Explore Tournaments 🏆</button>
+            <a href="/tournaments" className="btn-link">
+              <button className="explore-btn">
+                <span>Explore Tournaments</span>
+                <span className="btn-emoji">🏆</span>
+              </button>
             </a>
-            <a href="/history?tab=halloffame">
-              <button className="hero-secondary-btn">👑 Hall of Fame &amp; Archives</button>
+            <a href="/history?tab=halloffame" className="btn-link">
+              <button className="hero-secondary-btn">
+                <span>Hall of Fame &amp; Archives</span>
+                <span className="btn-emoji">👑</span>
+              </button>
             </a>
           </div>
 
           {/* Quick Metrics Strip */}
           <div className="hero-quick-stats">
             <div className="hero-stat-item">
-              <span className="hero-stat-num">20+</span>
+              <span className="hero-stat-num"><CountUp end={20} suffix="+" /></span>
               <span className="hero-stat-lbl">Championships</span>
             </div>
             <div className="hero-stat-divider" />
@@ -295,14 +427,26 @@ const HomePage = () => {
             </div>
             <div className="hero-stat-divider" />
             <div className="hero-stat-item">
-              <span className="hero-stat-num">500+</span>
+              <span className="hero-stat-num"><CountUp end={500} suffix="+" /></span>
               <span className="hero-stat-lbl">Games Played</span>
             </div>
             <div className="hero-stat-divider" />
             <div className="hero-stat-item">
-              <span className="hero-stat-num">100%</span>
+              <span className="hero-stat-num"><CountUp end={100} suffix="%" /></span>
               <span className="hero-stat-lbl">Student Legacy</span>
             </div>
+          </div>
+
+          {/* Hero Slideshow Navigation Dots */}
+          <div className="hero-slide-dots" aria-label="Slideshow slide navigation">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                className={`hero-dot ${i === heroIndex ? "active" : ""}`}
+                onClick={() => setHeroIndex(i)}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
           </div>
         </div>
 
@@ -310,6 +454,38 @@ const HomePage = () => {
         <a className="scroll-indicator" href="#news" aria-label="Scroll down">
           <ChevronDown size={28} strokeWidth={1.8} />
         </a>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* Player of the Month Spotlight */}
+      <section className="potm-section" id="spotlight">
+        <div className="potm-glass-card">
+          <div className="potm-badge">
+            <Sparkles size={14} />
+            <span>Player of the Month</span>
+          </div>
+          <div className="potm-content">
+            <div className="potm-image-wrapper">
+              <img src="/Winners/AbdelrahmanMohamed.png" alt="Abdelrahman Mohamed" className="potm-image" />
+              <div className="potm-rating-badge">2000+ Rating</div>
+            </div>
+            <div className="potm-details">
+              <h2 className="potm-name">Abdelrahman Mohamed</h2>
+              <div className="potm-signature">
+                <span className="potm-label">Signature Opening:</span>
+                <span className="potm-value">Bishop's Opening, Berlin Defense (1.e4 e5 2.Bc4 Nf6 3.Qf3)</span>
+              </div>
+              <blockquote className="potm-quote">
+                "Preparation in the opening is key, but adaptability in the middlegame is what truly wins tournaments."
+              </blockquote>
+              <div className="potm-achievements">
+                <span className="potm-achievement-tag">🥇 5x Champion</span>
+                <span className="potm-achievement-tag">⚡ Blitz Specialist</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="section-divider" />
@@ -347,6 +523,7 @@ const HomePage = () => {
                 </div>
                 <h3 className="news-featured-title">{pinnedAnnouncement.title}</h3>
                 <p className="news-featured-desc">{pinnedAnnouncement.description}</p>
+                <CountdownTimer targetDate="2026-10-20T18:00:00" />
                 <div className="news-featured-footer">
                   <span className="news-date">
                     <Calendar size={13} />
@@ -389,32 +566,33 @@ const HomePage = () => {
 
       <div className="section-divider" />
 
-      {/* Winners Section */}
+      {/* Winners Section — Balanced Podium Showcase */}
       <section className="winners-section" id="winners">
         <div className="winners-section-header">
           <div className="winners-badge">
             <Award size={14} />
-            <span>Championship Honors &amp; Podiums</span>
+            <span>Championship Honors</span>
           </div>
           <h2>Recent Tournament Winners</h2>
           <p className="winners-subtitle">
-            Celebrating the latest champions and top performers across campus tournaments and inter-university showdowns.
+            Celebrating the champions and top performers across our latest flagship tournaments.
           </p>
         </div>
 
-        {/* Quick Tournament Navigation Pills */}
-        <div className="tournament-pills-bar">
-          {recentTournaments.map((t, idx) => (
-            <button
-              key={t.id}
-              className={`tournament-pill-btn ${idx === activeTournamentIndex ? "active" : ""}`}
-              onClick={() => setActiveTournamentIndex(idx)}
-            >
-              <span className="pill-icon">{t.icon}</span>
-              <span className="pill-title">{t.name}</span>
-              <span className="pill-season">{t.season}</span>
-            </button>
-          ))}
+        {/* Segmented Selector for Tournaments */}
+        <div className="tournament-pills-scroll-wrapper">
+          <div className="tournament-pills-bar">
+            {recentTournaments.map((t, idx) => (
+              <button
+                key={t.id}
+                className={`tournament-pill-btn ${idx === activeTournamentIndex ? "active" : ""}`}
+                onClick={() => setActiveTournamentIndex(idx)}
+              >
+                <span className="pill-icon">{t.icon}</span>
+                <span className="pill-title">{t.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Active Tournament Info Header */}
@@ -429,29 +607,42 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Winners Grid */}
-        <div className="winners-grid">
-          {activeTournament.winners.map((winner, wIdx) => (
-            <div key={wIdx} className={`winner-card premium-card medal-card-${winner.medal}`}>
-              <div className="winner-medal-badge">{winner.place.split(" ")[0]}</div>
-              <div className="winner-image-wrapper">
-                <img
-                  src={winner.image}
-                  alt={winner.name}
-                  className="winner-photo"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/Icons/unknown.png";
-                  }}
-                />
+        {/* Balanced Podium Showcase Grid */}
+        <div className="podium-showcase-grid">
+          {activeTournament.winners.map((winner, wIdx) => {
+            const isGold = winner.medal === "gold";
+            const isSilver = winner.medal === "silver";
+            
+            return (
+              <div 
+                key={wIdx} 
+                className={`podium-card podium-card--${winner.medal} ${isGold ? "podium-card--gold" : ""}`}
+              >
+                <div className="podium-avatar-wrapper">
+                  <img
+                    src={winner.image}
+                    alt={winner.name}
+                    className="podium-avatar"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/Icons/unknown.png";
+                    }}
+                  />
+                  <span className={`podium-medal-badge badge-${winner.medal}`}>
+                    {isGold ? "🥇" : isSilver ? "🥈" : "🥉"}
+                  </span>
+                </div>
+
+                <div className="podium-info">
+                  <div className="podium-tag-row">
+                    <span className={`podium-tag tag-${winner.medal}`}>{winner.place}</span>
+                  </div>
+                  <h4 className="podium-name">{winner.name}</h4>
+                  <p className="podium-detail">{winner.detail}</p>
+                </div>
               </div>
-              <div className="winner-info-block">
-                <span className={`winner-placement-tag tag-${winner.medal}`}>{winner.place}</span>
-                <h4 className="winner-name">{winner.name}</h4>
-                <p className="winner-title">{winner.detail}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="winners-cta-row">
@@ -461,6 +652,63 @@ const HomePage = () => {
           <a href="/history?tab=events" className="explore-archives-btn">
             📜 View Complete Tournament Archives
           </a>
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* 🧠 Interactive Tactician Section */}
+      <section className="tactician-section">
+        <div className="tactician-card glass-panel">
+          <div className="tactician-header">
+            <div className="tactician-title-badge">
+              <Zap size={15} />
+              <span>Tactician's Corner</span>
+            </div>
+            <div className="tactician-tabs">
+              <button
+                className={`tactician-tab-btn ${activeTacticianTab === "quote" ? "active" : ""}`}
+                onClick={() => setActiveTacticianTab("quote")}
+              >
+                <Award size={13} /> Grandmaster Wisdom
+              </button>
+              <button
+                className={`tactician-tab-btn ${activeTacticianTab === "tip" ? "active" : ""}`}
+                onClick={() => setActiveTacticianTab("tip")}
+              >
+                <Lightbulb size={13} /> Opening Strategy
+              </button>
+              <button
+                className="tactician-shuffle-btn"
+                onClick={() => {
+                  if (activeTacticianTab === "quote") {
+                    setQuoteIndex((prev) => (prev + 1) % quotesList.length);
+                  } else {
+                    setTipIndex((prev) => (prev + 1) % tipsList.length);
+                  }
+                }}
+                title="Shuffle insight"
+                aria-label="Next insight"
+              >
+                <RefreshCw size={13} />
+                <span>Next</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="tactician-content">
+            {activeTacticianTab === "quote" ? (
+              <blockquote className="tactician-quote">
+                <p>"{quotesList[quoteIndex].text}"</p>
+                <cite>— {quotesList[quoteIndex].author}</cite>
+              </blockquote>
+            ) : (
+              <div className="tactician-tip">
+                <h4>{tipsList[tipIndex].title}</h4>
+                <p>{tipsList[tipIndex].desc}</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -542,7 +790,7 @@ const HomePage = () => {
             {/* Navigation buttons */}
             <button 
               className="lightbox-nav-btn lightbox-prev-btn"
-              onClick={() => setActiveLightboxIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1))}
+              onClick={handlePrevLightbox}
               aria-label="Previous image"
             >
               ‹
@@ -558,7 +806,7 @@ const HomePage = () => {
 
             <button 
               className="lightbox-nav-btn lightbox-next-btn"
-              onClick={() => setActiveLightboxIndex((prev) => (prev + 1) % galleryImages.length)}
+              onClick={handleNextLightbox}
               aria-label="Next image"
             >
               ›
