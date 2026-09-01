@@ -65,6 +65,7 @@ export default function EventHistory() {
   }, []);
 
   // Avatar mapping pointing directly to photos in /Winners/ and highboard directories
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const avatarMap = {
     // Winners folder mappings
     "Abdelrahman Mohamed": "/Winners/AbdelrahmanMohamed.png",
@@ -242,6 +243,7 @@ export default function EventHistory() {
   ];
 
   // Enhanced historical events with photos, categories, and full highlights
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultHistoricalEvents = [
     {
       _id: "hist-2026-spring",
@@ -639,59 +641,6 @@ export default function EventHistory() {
         avatar: "/Winners/SalmaAshraf.jpg"
       }
     };
-
-    // Curated Hall of Fame Tournaments
-    const hofTournaments = defaultHistoricalEvents
-      .filter((t) => t.category === "tournament" && t.playersList && t.playersList.some((p) => p.name.match(/(🥇|🥈|🥉|🏅|🏆)/)))
-      .map((t) => {
-        const parsedWinners = [];
-        t.playersList
-          .filter((p) => p.name.match(/(🥇|🥈|🥉|🏅|🏆)/))
-          .forEach((p) => {
-            const parts = p.name.split(":");
-            if (parts.length > 1) {
-              const place = parts[0].trim();
-              let names = [];
-              if (parts.length > 2) {
-                names = parts[2].split(",").map((n) => n.trim().replace(/\(.*\)/, "").trim());
-              } else {
-                names = [parts[1].trim().replace(/\(.*\)/, "").trim()];
-              }
-              names.forEach((nameVal) => {
-                if (
-                  !nameVal ||
-                  nameVal.toLowerCase() === "unknown" ||
-                  nameVal.toLowerCase().includes("team") ||
-                  nameVal.toLowerCase().includes("representatives") ||
-                  nameVal.toLowerCase().includes("champion")
-                )
-                  return;
-                parsedWinners.push({
-                  place,
-                  name: nameVal,
-                  badge: parts.length > 2 ? parts[1].trim() : "",
-                  avatar: avatarMap[nameVal] || "/Icons/unknown.png"
-                });
-              });
-            } else {
-              parsedWinners.push({
-                place: "🏆 Winner",
-                name: p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim(),
-                badge: "",
-                avatar: avatarMap[p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim()] || "/Icons/unknown.png"
-              });
-            }
-          });
-
-        return {
-          title: t.title,
-          date: new Date(t.startDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
-          location: t.location,
-          image: t.image,
-          winners: parsedWinners
-        };
-      });
-
     // Curated Champions Gallery focusing on winners with photos in /Winners
     const winnersList = [
       { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "Multiple-time ZC Champion (King's Quest IV, Esports Arena, Ramadan Knockout '25)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 Champion • 2x 🥈 Runner-up", category: "boys" },
@@ -716,6 +665,7 @@ export default function EventHistory() {
     ];
 
     return { sortedPlayers: sorted, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatarMap, defaultHistoricalEvents]);
 
   useEffect(() => {
