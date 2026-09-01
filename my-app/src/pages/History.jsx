@@ -70,12 +70,12 @@ export default function EventHistory() {
     "Abdelrahman Mane3": "/Winners/AbdelrahmanMane3.png",
     "Abdelrahman Manee3": "/Winners/AbdelrahmanMane3.png",
     "Abdelwahab Hamdi": "/Winners/AbdelwahabHamdi.jpg",
-    "Ahmed Adel": "/Winners/AhmedAdel.png",
     "Ahmed Elkodariy": "/Winners/AhmedElkodariy.PNG",
     "Bosy Ayman": "/Winners/BosyAyman.png",
     "Haneen Yasser": "/Winners/HaneenYasser.png",
+    "Hanen Yasser": "/Winners/HaneenYasser.png",
     "Mazen Allam": "/Winners/MazenAllam.png",
-    "Mazen Ahmed": "/Winners/MazenAllam.png",
+    "Mazen Ayman": "/Winners/MazenAyman.jpg",
     "Mohamed Eslam": "/Winners/MohamedEslam.png",
     "Mohamed Ezz": "/Winners/MohamedEzz.jpg",
     "Mohamed Ahmed Ezz": "/Winners/MohamedEzz.jpg",
@@ -83,16 +83,27 @@ export default function EventHistory() {
     "Omar Hafez": "/Winners/OmarHafez.jpeg",
     "Raphael Robier": "/Winners/RaphaelRobier.png",
     "Youssef Yasser": "/Winners/YoussefYasser.jpg",
-    "Salma Ashraf": "/Icons/user.jpg",
+    "Ahmed Emad": "/Winners/AhmedEmad.png",
+    "Amr Khaled": "/Winners/AmrKhaled.jpg",
+    "Noureldin Mohamed": "/Winners/NourEldinMohamed.jpg",
+    "Nour Eldin Mohamed": "/Winners/NourEldinMohamed.jpg",
+    "Noureldin Newer": "/Winners/NourEldinNewer.png",
+    "Nour Eldin Newer": "/Winners/NourEldinNewer.png",
+    "NourEldin Newer": "/Winners/NourEldinNewer.png",
+    "Knights": "/Teams/25/Knights.png",
+    "Gambling": "/Teams/25/Gambling.png",
+    "Epsilon": "/Teams/25/Epsilon.png",
 
     // Leadership & past board members
     "Mohamed Adel": "/Images/highboard/20-21/MohamedAdel.png",
     "Muhammed Alaa Eldin": "/Images/highboard/20-21/MuhammedAlaaEldin.jpg",
+    "Aya Nageh": "/Images/highboard/20-21/AyaNageh.png",
     "Mohamed Ebrahim": "/Images/highboard/22-23/MohamedEbrahim.jpg",
     "Ahmed Fateen": "/Images/highboard/22-23/AhmedFateen.png",
     "Thomas Emad": "/Images/highboard/23-24/ThomasEmad.png",
     "Elaf Ahmed": "/Images/highboard/23-24/ElafAhmed.jpg",
     "Amira Elhussainy": "/Images/highboard/23-24/AmiraElhussainy.jpg",
+    "Amr Yasser": "/Images/highboard/24-25/AmrYasser.png",
     "Momen Mahmoud": "/Images/highboard/24-25/Momen.png",
     "Momen": "/Images/highboard/24-25/Momen.png",
     "Adham Elawady": "/Images/highboard/24-25/Adham.png",
@@ -110,12 +121,12 @@ export default function EventHistory() {
       year: "2026/2027",
       isCurrent: true,
       members: [
-        { name: "Ahmed Elkodariy", role: "President", major: "CSAI", batch: "'27", image: "/Winners/AhmedElkodariy.PNG" },
-        { name: "Omar Hafez", role: "Vice President", major: "CSAI", batch: "'27", image: "/Winners/OmarHafez.jpeg" },
-        { name: "Omar Ezz", role: "Head of Training", major: "CSAI", batch: "'27", image: "/Winners/OmarEzz.jpg" },
-        { name: "Haneen Yasser", role: "Head of Multimedia", major: "CSAI", batch: "'27", image: "/Winners/HaneenYasser.png" },
+        { name: "Ahmed Elkodariy", role: "President", major: "Business", batch: "'26", image: "/Winners/AhmedElkodariy.PNG" },
+        { name: "Omar Hafez", role: "Vice President", major: "CIE", batch: "'26", image: "/Winners/OmarHafez.jpeg" },
+        { name: "Omar Ezz", role: "Head of Training", major: "Nano", batch: "'26", image: "/Winners/OmarEzz.jpg" },
+        { name: "Haneen Yasser", role: "Head of Multimedia", major: "NanoTech", batch: "'24", image: "/Winners/HaneenYasser.png" },
         { name: "Raphael Robier", role: "Head of PR", major: "CSAI", batch: "'27", image: "/Winners/RaphaelRobier.png" },
-        { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" },
+        { name: "Alaa Ibrahim", role: "Head of Organization", image: "/Images/highboard/24-25/Alaa.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" }
       ]
     },
@@ -123,56 +134,57 @@ export default function EventHistory() {
       year: "2025/2026",
       isCurrent: false,
       members: [
-        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'26", image: "/Winners/BosyAyman.png" },
-        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'26", image: "/Winners/AbdelrahmanMohamed.png" },
-        { name: "Aml Ali", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Aml.png" },
-        { name: "Momen Mahmoud", role: "Head of Training", major: "Communications & Info (CIE)", batch: "'26", image: "/Images/highboard/24-25/Momen.png" },
-        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'26", image: "/Images/highboard/24-25/Rana.jpg" },
-        { name: "Alaa Ibrahim", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Alaa.png" },
-        { name: "Adham Elawady", role: "Head of PR", major: "Nanotechnology (NAN)", batch: "'26", image: "/Images/highboard/24-25/Adham.png" }
+        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'22", image: "/Winners/BosyAyman.png" },
+        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'23", image: "/Winners/AbdelrahmanMohamed.png" },
+        { name: "Aml Ali", role: "Head of HR", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Aml.png" },
+        { name: "Momen Mahmoud", role: "Head of Training", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Momen.png" },
+        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Rana.jpg" },
+        { name: "Alaa Ibrahim", role: "Head of Organization", major: "Environmental", batch: "'23", image: "/Images/highboard/24-25/Alaa.png" },
+        { name: "Adham Elawady", role: "Head of PR", major: "CSAI", batch: "'22", image: "/Images/highboard/24-25/Adham.png" }
       ]
     },
     {
       year: "2024/2025",
       isCurrent: false,
       members: [
-        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'26", image: "/Winners/BosyAyman.png" },
-        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'26", image: "/Winners/AbdelrahmanMohamed.png" },
-        { name: "Aml Ali", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Aml.png" },
-        { name: "Momen Mahmoud", role: "Head of Training", major: "Communications & Info (CIE)", batch: "'26", image: "/Images/highboard/24-25/Momen.png" },
-        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'26", image: "/Images/highboard/24-25/Rana.jpg" },
-        { name: "Alaa Ibrahim", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'26", image: "/Images/highboard/24-25/Alaa.png" },
-        { name: "Adham Elawady", role: "Head of PR", major: "Nanotechnology (NAN)", batch: "'26", image: "/Images/highboard/24-25/Adham.png" }
+        { name: "Bosy Ayman", role: "President", major: "CSAI", batch: "'22", image: "/Winners/BosyAyman.png" },
+        { name: "Abdelrahman Mohamed", role: "Vice President", major: "CSAI", batch: "'23", image: "/Winners/AbdelrahmanMohamed.png" },
+        { name: "Aml Ali", role: "Head of HR", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Aml.png" },
+        { name: "Momen Mahmoud", role: "Head of Training", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Momen.png" },
+        { name: "Rana Ahmed", role: "Head of Multimedia", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/Rana.jpg" },
+        { name: "Amr Yasser", role: "Head of Organization - Spring", major: "CSAI", batch: "'23", image: "/Images/highboard/24-25/AmrYasser.png" },
+        { name: "Alaa Ibrahim", role: "Head of Organization - Fall", major: "Environmental", batch: "'23", image: "/Images/highboard/24-25/Alaa.png" },
+        { name: "Adham Elawady", role: "Head of PR", major: "CSAI", batch: "'22", image: "/Images/highboard/24-25/Adham.png" }
       ]
     },
     {
       year: "2023/2024",
       isCurrent: false,
       members: [
-        { name: "Thomas Emad", role: "President", major: "Aerospace Engineering", batch: "'25", image: "/Images/highboard/23-24/ThomasEmad.png" },
-        { name: "Youssef Zanny", role: "Vice President", major: "Renewable Energy (REE)", batch: "'25", image: "/Icons/unknown.png" },
-        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'25", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
-        { name: "Amira Elhussainy", role: "Head of Training", major: "Nanotechnology (NAN)", batch: "'25", image: "/Images/highboard/23-24/AmiraElhussainy.jpg" },
-        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", major: "CSAI", batch: "'25", image: "/Winners/MohamedEzz.jpg" }
+        { name: "Thomas Emad", role: "President", major: "Physics", batch: "'21", image: "/Images/highboard/23-24/ThomasEmad.png" },
+        { name: "Youssef Zanny", role: "Vice President", major: "Unknown", batch: "'21", image: "/Icons/unknown.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'21", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
+        { name: "Amira Elhussainy", role: "Head of Training", major: "Nanotechnology (NanoTech)", batch: "'22", image: "/Images/highboard/23-24/AmiraElhussainy.jpg" },
+        { name: "Mohamed Ahmed Ezz", role: "Head of Organization", major: "Physics", batch: "'21", image: "/Winners/MohamedEzz.jpg" }
       ]
     },
     {
       year: "2022/2023",
       isCurrent: false,
       members: [
-        { name: "Mohamed Ebrahim", role: "President", major: "Communications & Info (CIE)", batch: "'24", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
-        { name: "Ahmed Fateen", role: "Vice President", major: "Aerospace Engineering", batch: "'24", image: "/Images/highboard/22-23/AhmedFateen.png" },
-        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'25", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
-        { name: "Aly Faragallah", role: "Head of Marketing", major: "Nanotechnology (NAN)", batch: "'24", image: "/Icons/unknown.png" },
-        { name: "Sama Yousef", role: "Head of Organization", major: "Biomedical Sciences (BMS)", batch: "'24", image: "/Icons/unknown.png" }
+        { name: "Mohamed Ebrahim", role: "President", major: "Aerospace Engineering", batch: "'20", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
+        { name: "Ahmed Fateen", role: "Vice President", major: "CIE", batch: "'19", image: "/Images/highboard/22-23/AhmedFateen.png" },
+        { name: "Elaf Ahmed", role: "Head of HR", major: "Biomedical Sciences (BMS)", batch: "'21", image: "/Images/highboard/23-24/ElafAhmed.jpg" },
+        { name: "Aly Faragallah", role: "Head of Marketing", major: "unknown", batch: "'21", image: "/Icons/unknown.png" },
+        { name: "Sama Yousef", role: "Head of Organization", major: "Unknown", batch: "'20", image: "/Images/highboard/22-23/SamaYousef.jpg" }
       ]
     },
     {
       year: "2021/2022",
       isCurrent: false,
       members: [
-        { name: "Mohamed Ebrahim", role: "President", major: "Communications & Info (CIE)", batch: "'24", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
-        { name: "Ahmed Fateen", role: "Vice President", major: "Aerospace Engineering", batch: "'24", image: "/Images/highboard/22-23/AhmedFateen.png" },
+        { name: "Mohamed Ebrahim", role: "President", major: "Aerospace Engineering", batch: "'20", image: "/Images/highboard/22-23/MohamedEbrahim.jpg" },
+        { name: "Ahmed Fateen", role: "Vice President", major: "CIE", batch: "'19", image: "/Images/highboard/22-23/AhmedFateen.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
@@ -182,9 +194,9 @@ export default function EventHistory() {
       year: "2020/2021",
       isCurrent: false,
       members: [
-        { name: "Mohamed Adel", role: "President", major: "Computer Science", batch: "'22", image: "/Images/highboard/20-21/MohamedAdel.png" },
-        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Engineering", batch: "'22", image: "/Images/highboard/20-21/MuhammedAlaaEldin.jpg" },
-        { name: "Aya Nageh", role: "Vice President", major: "Science", batch: "'22", image: "/Icons/unknown.png" },
+        { name: "Mohamed Adel", role: "President", major: "Physics", batch: "'18", image: "/Images/highboard/20-21/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Physics", batch: "'18", image: "/Images/highboard/20-21/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", major: "Communications & Info (CIE)", batch: "'19", image: "/Images/highboard/20-21/AyaNageh.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
@@ -194,9 +206,9 @@ export default function EventHistory() {
       year: "2019/2020",
       isCurrent: false,
       members: [
-        { name: "Mohamed Adel", role: "President", major: "Computer Science", batch: "'22", image: "/Images/highboard/19-20/MohamedAdel.png" },
-        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Engineering", batch: "'22", image: "/Images/highboard/19-20/MuhammedAlaaEldin.jpg" },
-        { name: "Aya Nageh", role: "Vice President", major: "Science", batch: "'22", image: "/Icons/unknown.png" },
+        { name: "Mohamed Adel", role: "President", major: "Physics", batch: "'18", image: "/Images/highboard/19-20/MohamedAdel.png" },
+        { name: "Muhammed Alaa Eldin", role: "Vice President", major: "Physics", batch: "'18", image: "/Images/highboard/19-20/MuhammedAlaaEldin.jpg" },
+        { name: "Aya Nageh", role: "Vice President", major: "Communications & Info (CIE)", batch: "'19", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Training", image: "/Icons/unknown.png" },
         { name: "Unknown", role: "Head of Organization", image: "/Icons/unknown.png" }
@@ -319,7 +331,7 @@ export default function EventHistory() {
       description: "Esports blitz chess tournament organized on campus featuring rapid clocks and dynamic digital setups.",
       playersList: [
         { name: "🥇 Champion: Abdelrahman Mohamed" },
-        { name: "🥈 Runner-up: Mazen Allam" },
+        { name: "🥈 Runner-up: Mazen Ayman" },
         { name: "🥉 3rd Place: Omar Hafez" }
       ]
     },
@@ -433,12 +445,13 @@ export default function EventHistory() {
       title: "Knockout Tournament 2021",
       type: "Rapid Tournament",
       category: "tournament",
-      startDate: "2021-03-25",
+      startDate: "2021-04-15",
       location: "Service Building",
       image: "/Images/Tournaments/2020-2021/Knockout21.jpg",
-      description: "2020/2021 Rapid Knockout Tournament crowning the fastest tacticians on campus.",
+      description: "2020/2021 Rapid Knockout Tournament crowning the fastest tacticians on campus. Special commentary by Karim Magdi and Robair Raouf, supported by Mohamed Adel and Jimmy.",
       playersList: [
-        { name: "🥇 Champion: Mohamed Adel" }
+        { name: "🥇 Champion: Moustafa Ebada" },
+        { name: "🥈 Runner-up: Ahmed Emad" }
       ]
     },
     {
@@ -454,6 +467,7 @@ export default function EventHistory() {
         { name: "👑 Women's Campus Championship" }
       ]
     },
+
     {
       _id: "hist-2019-1",
       title: "Grandmasters Simultaneous Exhibition (Simul)",
@@ -487,7 +501,7 @@ export default function EventHistory() {
 
   // Helper to parse highlight strings into rich format (emoji, role, name)
   const parseHighlight = (highlightText) => {
-    const match = highlightText.match(/(🥇|🥈|🥉|🏆|🎯|♟️|👥|👑)\s*([^:]+):\s*(.*)/);
+    const match = highlightText.match(/(🥇|🥈|🥉|🏅|🏆|🎯|♟️|👥|👑)\s*([^:]+):\s*(.*)/);
     if (match) {
       const emoji = match[1];
       const role = match[2].trim();
@@ -495,7 +509,7 @@ export default function EventHistory() {
       return { emoji, role, name, isPlacement: true };
     }
     
-    const simpleMatch = highlightText.match(/(🥇|🥈|🥉|🏆|🎯|♟️|👥|👑)\s*(.*)/);
+    const simpleMatch = highlightText.match(/(🥇|🥈|🥉|🏅|🏆|🎯|♟️|👥|👑)\s*(.*)/);
     if (simpleMatch) {
       return { emoji: simpleMatch[1], role: "", name: simpleMatch[2].trim(), isPlacement: false };
     }
@@ -506,7 +520,7 @@ export default function EventHistory() {
   // Helper for image fallback to prevent broken UI icons
   const handleImageError = (e) => {
     e.target.onerror = null;
-    e.target.src = "/Icons/user.jpg";
+    e.target.src = "/Icons/unknown.png";
   };
 
   // State for Podium Category Selection: 'both', 'boys', 'girls'
@@ -577,7 +591,7 @@ export default function EventHistory() {
           bronze: playerScores[name].bronze,
           stats,
           titles: playerScores[name].titles,
-          avatar: avatarMap[name] || "/Icons/user.jpg"
+          avatar: avatarMap[name] || "/Icons/unknown.png"
         };
       })
       .sort((a, b) => b.score - a.score || b.gold - a.gold);
@@ -622,7 +636,7 @@ export default function EventHistory() {
         name: "Salma Ashraf",
         stats: "🏅 4th Place AAST Inter-Uni",
         badge: "AAST University Finalist",
-        avatar: "/Icons/user.jpg"
+        avatar: "/Icons/unknown.png"
       }
     };
 
@@ -656,7 +670,7 @@ export default function EventHistory() {
                   place,
                   name: nameVal,
                   badge: parts.length > 2 ? parts[1].trim() : "",
-                  avatar: avatarMap[nameVal] || "/Icons/user.jpg"
+                  avatar: avatarMap[nameVal] || "/Icons/unknown.png"
                 });
               });
             } else {
@@ -664,7 +678,7 @@ export default function EventHistory() {
                 place: "🏆 Winner",
                 name: p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim(),
                 badge: "",
-                avatar: avatarMap[p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim()] || "/Icons/user.jpg"
+                avatar: avatarMap[p.name.replace(/(🥇|🥈|🥉|🏅|🏆)/, "").trim()] || "/Icons/unknown.png"
               });
             }
           });
@@ -683,7 +697,7 @@ export default function EventHistory() {
       { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "Multiple-time ZC Champion (King's Quest IV, Esports Arena, Ramadan Knockout '25)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 Champion • 2x 🥈 Runner-up", category: "boys" },
       { name: "Bosy Ayman", role: "President (24-26) & Inter-Uni Champion", desc: "1st Place Girls' Champion at both AAST & Nile University Inter-University Championships", image: "/Winners/BosyAyman.png", trophies: "2x 🥇 1st Place Inter-Uni Champion (AAST & Nile)", category: "girls" },
       { name: "Haneen Yasser", role: "Head of Multimedia (26-27) & Inter-Uni Finalist", desc: "4th Place at Nile University & 6th Place at AAST University Championships, orchestrating club brand identity", image: "/Winners/HaneenYasser.png", trophies: "🏅 4th Place (Nile) • 🏅 6th Place (AAST) • 👑 High Board", category: "girls" },
-      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Icons/user.jpg", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
+      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Icons/unknown.png", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
       { name: "Ahmed Elkodariy", role: "President (26-27) & Campus Champion", desc: "Winner of Fall 2025 Knockout & Teams Championship with Knights", image: "/Winners/AhmedElkodariy.PNG", trophies: "2x 🥇 Champion • High Board Leader", category: "boys" },
       { name: "Mohamed Ezz", role: "King's Quest Multi-Champion", desc: "Consecutive winner of King's Quest I & King's Quest II Championships", image: "/Winners/MohamedEzz.jpg", trophies: "2x 🥇 King's Quest Champion", category: "boys" },
       { name: "Omar Ezz", role: "Head of Training & Ramadan Champion", desc: "Champion of Ramadan 2026 Knockout & Teams Championship Winner", image: "/Winners/OmarEzz.jpg", trophies: "2x 🥇 Champion • Inter-Uni Finalist", category: "boys" },
@@ -694,7 +708,11 @@ export default function EventHistory() {
       { name: "Raphael Robier", role: "Head of PR & Inter-Uni Representative", desc: "Top 5 Finisher representing ZC at AAST University Championship", image: "/Winners/RaphaelRobier.png", trophies: "🏆 Inter-Uni Medalist", category: "boys" },
       { name: "Abdelrahman Mane3", role: "Teams & Rapid Finalist", desc: "3rd Place Ramadan 2025 & Silver Medalist with Team Gambling", image: "/Winners/AbdelrahmanMane3.png", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
       { name: "Youssef Yasser", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/YoussefYasser.jpg", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
-      { name: "Ahmed Adel", role: "Honorary Member & Campus Contender", desc: "Active competitor and strategic contributor to club tournaments", image: "/Winners/AhmedAdel.png", trophies: "♟️ Campus Competitor", category: "boys" }
+      { name: "Ahmed Emad", role: "Rapid Finalist", desc: "Runner-up at the 2021 Knockout Tournament", image: "/Winners/AhmedEmad.png", trophies: "1x 🥈 Runner-up", category: "boys" },
+      { name: "Noureldin Mohamed", role: "Classical Finalist", desc: "Bronze Medalist at the King's Quest I Tournament", image: "/Winners/NourEldinMohamed.jpg", trophies: "1x 🥉 Bronze", category: "boys" },
+      { name: "Amr Khaled", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/AmrKhaled.jpg", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
+      { name: "Noureldin Newer", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/NourEldinNewer.png", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
+      { name: "Mazen Ayman", role: "Esports Arena Runner-up", desc: "Silver Medalist at the 2026 Esports Blitz Tournament", image: "/Winners/MazenAyman.jpg", trophies: "1x 🥈 Runner-up", category: "boys" }
     ];
 
     return { sortedPlayers: sorted, hallOfFameChampions: hofTournaments, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
@@ -991,7 +1009,17 @@ export default function EventHistory() {
                                       <div className="highlights-tags-list">
                                         {event.playersList.slice(0, 4).map((p, i) => {
                                           const h = parseHighlight(p.name);
-                                          const userAvatar = avatarMap[h.name];
+                                          
+                                          const names = h.name ? h.name.split(',').map(n => n.trim().replace(/\(.*\)/, "").trim()) : [];
+                                          const isTeamEvent = (event.type || "").toLowerCase().includes("team");
+                                          const teamMatch = h.role ? h.role.match(/\((.*?)\)/) : null;
+                                          const potentialTeam = teamMatch ? teamMatch[1] : null;
+                                          const teamName = potentialTeam && (isTeamEvent || avatarMap[potentialTeam]) ? potentialTeam : null;
+                                          const teamLogo = teamName && avatarMap[teamName] ? avatarMap[teamName] : null;
+                                          const isTeam = isTeamEvent || (names.length > 1 && Boolean(teamName));
+                                          
+                                          const singleAvatar = avatarMap[h.name];
+                                          
                                           const tagClass =
                                             h.emoji === "🥇"
                                               ? "medal-gold"
@@ -1004,14 +1032,20 @@ export default function EventHistory() {
                                           return (
                                             <span key={i} className={`timeline-highlight-tag ${tagClass}`}>
                                               <span className="tag-emoji">{h.emoji}</span>
-                                              {userAvatar && (
-                                                <img
-                                                  src={userAvatar}
-                                                  alt={h.name}
-                                                  className="timeline-highlight-avatar"
-                                                  onError={handleImageError}
-                                                />
+                                              
+                                              {teamLogo && (
+                                                <img src={teamLogo} alt={teamName} className="timeline-highlight-avatar team-logo-avatar" onError={handleImageError} title={teamName} style={{borderRadius: '4px', marginRight: '4px'}} />
                                               )}
+                                              
+                                              {isTeam && names.length > 1 ? names.map((n, idx) => {
+                                                const uAvatar = avatarMap[n];
+                                                return uAvatar ? (
+                                                  <img key={idx} src={uAvatar} alt={n} className="timeline-highlight-avatar" onError={handleImageError} title={n} />
+                                                ) : null;
+                                              }) : (singleAvatar && (
+                                                <img src={singleAvatar} alt={h.name} className="timeline-highlight-avatar" onError={handleImageError} />
+                                              ))}
+
                                               <span className="highlight-text">
                                                 {h.role && <span className="highlight-role">{h.role}: </span>}
                                                 <strong className="highlight-name">{h.name}</strong>
@@ -1249,59 +1283,7 @@ export default function EventHistory() {
               </div>
             </div>
 
-            {/* Hall of Fame Tournament Archive Cards */}
-            <div className="hall-tournaments-section">
-              <div className="section-head-banner">
-                <span className="section-subtitle">HISTORICAL SCOREBOARDS</span>
-                <h2 className="section-title">📜 Championship Tournament Archives</h2>
-              </div>
 
-              <div className="hall-tournaments-grid">
-                {hallOfFameChampions.map((item, idx) => (
-                  <ScrollReveal key={idx}>
-                    <div className="hall-card glass-panel">
-                      <div
-                        className={`hall-card-banner ${
-                          !item.image || item.image === "/Icons/unknown.png" ? "fallback-banner" : ""
-                        }`}
-                        style={
-                          item.image && item.image !== "/Icons/unknown.png"
-                            ? { backgroundImage: `url(${item.image})` }
-                            : {}
-                        }
-                      >
-                        <span className="hall-date-badge">{item.date}</span>
-                      </div>
-
-                      <div className="hall-card-content">
-                        <h3 className="hall-tournament-title">{item.title}</h3>
-                        <div className="hall-location">📍 {item.location}</div>
-
-                        <div className="hall-winners-list">
-                          {item.winners.map((w, wIdx) => {
-                            return (
-                              <div key={wIdx} className="hall-winner-row">
-                                <span className="hall-winner-place">{w.place}</span>
-                                <div className="hall-winner-user">
-                                  <img
-                                    src={w.avatar}
-                                    alt={w.name}
-                                    className="hall-winner-avatar"
-                                    onError={handleImageError}
-                                  />
-                                  <span className="hall-winner-name">{w.name}</span>
-                                </div>
-                                {w.badge && <span className="hall-winner-tag">{w.badge}</span>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </ScrollReveal>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
@@ -1446,7 +1428,7 @@ export default function EventHistory() {
                   const participants = [];
                   selectedEventModal.playersList.forEach((p) => {
                     const h = parseHighlight(p.name);
-                    if (h.emoji.match(/(🥇|🥈|🥉|🏆)/)) {
+                    if (h.emoji.match(/(🥇|🥈|🥉|🏅|🏆)/)) {
                       placements.push(h);
                     } else {
                       participants.push(h);
@@ -1468,21 +1450,78 @@ export default function EventHistory() {
                                   : h.emoji === "🥉"
                                   ? "medal-bronze"
                                   : "medal-cup";
-                              const userImg = avatarMap[h.name];
+
+                              const names = h.name
+                                ? h.name.split(",").map((n) => n.trim().replace(/\(.*\)/, "").trim()).filter(Boolean)
+                                : [];
+                              const isTeamEvent = (selectedEventModal.type || "").toLowerCase().includes("team");
+                              const teamMatch = h.role ? h.role.match(/\((.*?)\)/) : null;
+                              const potentialTeam = teamMatch ? teamMatch[1] : null;
+                              const teamName = potentialTeam && (isTeamEvent || avatarMap[potentialTeam]) ? potentialTeam : null;
+                              const teamLogo = teamName && avatarMap[teamName] ? avatarMap[teamName] : null;
+                              const singleAvatar = avatarMap[h.name];
+                              const isTeam = isTeamEvent || (names.length > 1 && Boolean(teamName));
+
                               return (
-                                <div key={pIdx} className={`modal-winner-card ${medalClass}`}>
+                                <div key={pIdx} className={`modal-winner-card ${medalClass} ${isTeam ? "modal-winner-team-card" : ""}`}>
                                   <div className="modal-winner-avatar-wrapper">
                                     <img
-                                      src={userImg || "/Icons/user.jpg"}
-                                      alt={h.name}
-                                      className="modal-winner-avatar"
+                                      src={isTeam && teamLogo ? teamLogo : singleAvatar || "/Icons/unknown.png"}
+                                      alt={teamName || h.name}
+                                      className={`modal-winner-avatar ${isTeam ? "modal-team-avatar" : ""}`}
                                       onError={handleImageError}
+                                      style={isTeam ? { borderRadius: "8px" } : {}}
                                     />
                                     <span className="modal-winner-medal-badge">{h.emoji}</span>
                                   </div>
                                   <div className="modal-winner-info">
                                     {h.role && <span className="modal-winner-role">{h.role}</span>}
-                                    <h4 className="modal-winner-name">{h.name}</h4>
+                                    {isTeam && teamName && <h4 className="modal-winner-name">{teamName}</h4>}
+                                    {!isTeam && <h4 className="modal-winner-name">{h.name}</h4>}
+
+                                    {isTeam && names.length > 0 && (
+                                      <div
+                                        className="modal-team-members-list"
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          gap: "6px",
+                                          marginTop: "6px"
+                                        }}
+                                      >
+                                        {names.map((memberName, mIdx) => {
+                                          const memberAvatar = avatarMap[memberName] || "/Icons/unknown.png";
+                                          return (
+                                            <div
+                                              key={mIdx}
+                                              className="modal-team-member-chip"
+                                              style={{
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                background: "rgba(255, 255, 255, 0.07)",
+                                                padding: "3px 8px 3px 4px",
+                                                borderRadius: "14px",
+                                                fontSize: "0.76rem"
+                                              }}
+                                            >
+                                              <img
+                                                src={memberAvatar}
+                                                alt={memberName}
+                                                onError={handleImageError}
+                                                style={{
+                                                  width: "18px",
+                                                  height: "18px",
+                                                  borderRadius: "50%",
+                                                  objectFit: "cover"
+                                                }}
+                                              />
+                                              <span style={{ color: "#f0f0f0", fontWeight: "600" }}>{memberName}</span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               );
