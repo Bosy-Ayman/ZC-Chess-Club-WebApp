@@ -476,9 +476,9 @@ const HomePage = () => {
                 <span className="potm-label">Signature Opening:</span>
                 <span className="potm-value">Bishop's Opening, Berlin Defense (1.e4 e5 2.Bc4 Nf6 3.Qf3)</span>
               </div>
-              <blockquote className="potm-quote">
+              {/* <blockquote className="potm-quote">
                 "Preparation in the opening is key, but adaptability in the middlegame is what truly wins tournaments."
-              </blockquote>
+              </blockquote> */}
               <div className="potm-achievements">
                 <span className="potm-achievement-tag">🥇 5x Champion</span>
                 <span className="potm-achievement-tag">⚡ Blitz Specialist</span>
