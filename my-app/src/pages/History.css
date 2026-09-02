@@ -265,31 +265,44 @@
   font-size: 1.1rem;
   color: var(--gold-primary);
   pointer-events: none;
+  z-index: 2;
 }
 
+input.history-search-input,
 .history-search-input {
-  width: 100%;
-  background: rgba(28, 25, 19, 0.85);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  padding: 14px 44px 14px 48px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-  outline: none;
-  backdrop-filter: blur(8px);
-  transition: all var(--transition-fast);
+  width: 100% !important;
+  background: rgba(28, 25, 19, 0.88) !important;
+  border: 1.5px solid var(--border-subtle) !important;
+  border-radius: 9999px !important;
+  padding: 14px 44px 14px 48px !important;
+  color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 0.95rem !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  transition: all var(--transition-fast) !important;
 }
 
+input.history-search-input:focus,
 .history-search-input:focus {
-  border-color: var(--gold-primary);
-  background: rgba(35, 30, 22, 0.95);
-  box-shadow: 0 0 20px var(--gold-glow);
+  border-color: var(--gold-primary) !important;
+  background: rgba(35, 30, 22, 0.96) !important;
+  box-shadow: 0 0 22px var(--gold-glow), 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
 }
 
+input.history-search-input::placeholder,
 .history-search-input::placeholder {
-  color: var(--text-dim);
+  color: var(--text-dim) !important;
+  opacity: 1 !important;
 }
 
 .search-clear-btn {
@@ -297,23 +310,24 @@
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border: none;
   color: #fff;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  z-index: 2;
+  transition: all var(--transition-fast);
 }
 
 .search-clear-btn:hover {
   background: var(--gold-primary);
-  color: #000;
+  color: #12100c;
 }
 
 .category-filter-bar {
