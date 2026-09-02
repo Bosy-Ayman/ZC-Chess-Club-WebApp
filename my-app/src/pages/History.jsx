@@ -555,17 +555,43 @@ export default function EventHistory() {
       (champData && champData.image) ||
       "/Icons/unknown.png";
 
+    // Build comprehensive honors list:
+    // 1. Gold titles computed from tournament data (statsData.titles)
+    // 2. Parse individual achievements from champData.desc (e.g. "🥇 X • 🥈 Y • 🥉 Z")
+    let honorsList = [];
+    if (statsData && statsData.titles && statsData.titles.length > 0) {
+      honorsList = statsData.titles.map((t) => `🥇 ${t}`);
+    }
+    // Add silver/bronze achievements from champData description if present
+    if (champData && champData.desc) {
+      const descAchievements = champData.desc
+        .split("•")
+        .map((s) => s.trim())
+        .filter((s) => s && (s.includes("🥇") || s.includes("🥈") || s.includes("🥉") || s.includes("🏅") || s.includes("🏆") || s.includes("👑")));
+      descAchievements.forEach((a) => {
+        if (!honorsList.some((h) => h.toLowerCase().includes(a.toLowerCase().replace(/^[🥇🥈🥉🏅🏆👑]\s*/u, "").substring(0, 20)))) {
+          honorsList.push(a);
+        }
+      });
+    }
+    // Fallback to champData.trophies if still empty
+    if (honorsList.length === 0 && champData && champData.trophies) {
+      honorsList = champData.trophies.split("•").map((s) => s.trim()).filter(Boolean);
+    }
+    // Fallback to extraData.titles
+    if (honorsList.length === 0 && extraData.titles) {
+      honorsList = Array.isArray(extraData.titles) ? extraData.titles : [extraData.titles];
+    }
+
     const playerData = {
       name: cleanName,
       score: statsData ? statsData.score : (extraData.score || 0),
       gold: statsData ? statsData.gold : (extraData.gold || 0),
       silver: statsData ? statsData.silver : (extraData.silver || 0),
       bronze: statsData ? statsData.bronze : (extraData.bronze || 0),
-      titles: (statsData && statsData.titles && statsData.titles.length > 0)
-        ? statsData.titles
-        : (extraData.titles || (champData && champData.trophies ? [champData.trophies] : [])),
+      titles: honorsList,
       role: extraData.role || (champData ? champData.role : (statsData ? statsData.badge : "")),
-      desc: extraData.desc || (champData ? champData.desc : ""),
+      desc: extraData.desc || (champData ? champData.trophies : ""),
       major: extraData.major || "",
       batch: extraData.batch || "",
       avatar: avatar
@@ -662,8 +688,13 @@ export default function EventHistory() {
         name: "Mohamed Ezz, Ahmed Elkodariy & Omar Ezz",
         firstName: "Mohamed Ezz",
         stats: "2 🥇 | 0 🥈 | 0 🥉 (Each)",
-        badge: "Tied 2nd Place (2x 🥇 Gold Champions Each)",
-        avatar: "/Winners/MohamedEzz.jpg"
+        badge: "Tied 2nd Place — 2x 🥇 Champions Each",
+        avatar: "/Winners/MohamedEzz.jpg",
+        tied: [
+          { name: "Mohamed Ezz", avatar: "/Winners/MohamedEzz.jpg", badge: "KQ I & KQ II Champion" },
+          { name: "Ahmed Elkodariy", avatar: "/Winners/AhmedElkodariy.PNG", badge: "Fall KO '25 & Teams Champion" },
+          { name: "Omar Ezz", avatar: "/Winners/OmarEzz.jpg", badge: "Ramadan '26 & Teams Champion" }
+        ]
       },
       bronze: {
         name: "Omar Hafez",
@@ -1199,19 +1230,44 @@ export default function EventHistory() {
                   </div>
 
                   <div className="podium-grid">
-                    {/* 🥈 2nd Place Silver */}
-                    <div className="podium-place silver" onClick={() => openPlayerModal(boysPodium.silver.firstName || boysPodium.silver.name, { avatar: boysPodium.silver.avatar, role: boysPodium.silver.badge })} style={{ cursor: "pointer" }}>
-                      <div className="podium-rank-ribbon">2nd Place</div>
-                      <div className="podium-avatar-wrapper silver-border">
-                        <img
-                          src={boysPodium.silver.avatar}
-                          alt={boysPodium.silver.name}
-                          className="podium-avatar"
-                          onError={handleImageError}
-                        />
+                    {/* 🥈 2nd Place Silver — 3-way Tie */}
+                    <div className="podium-place silver">
+                      <div className="podium-rank-ribbon">🥈 Tied 2nd Place</div>
+
+                      {/* Overlapping avatar cluster */}
+                      <div className="podium-tied-avatars">
+                        {boysPodium.silver.tied.map((tp, ti) => (
+                          <div
+                            key={ti}
+                            className="podium-tied-avatar-wrap"
+                            style={{ zIndex: boysPodium.silver.tied.length - ti }}
+                            onClick={() => openPlayerModal(tp.name, { avatar: tp.avatar, role: tp.badge })}
+                            title={tp.name}
+                          >
+                            <img
+                              src={tp.avatar}
+                              alt={tp.name}
+                              className="podium-avatar podium-tied-img"
+                              onError={handleImageError}
+                            />
+                          </div>
+                        ))}
                         <span className="podium-medal">🥈</span>
                       </div>
-                      <h3 className="podium-winner-name">{boysPodium.silver.name}</h3>
+
+                      {/* Clickable names list */}
+                      <div className="podium-tied-names">
+                        {boysPodium.silver.tied.map((tp, ti) => (
+                          <span
+                            key={ti}
+                            className="podium-tied-name-btn"
+                            onClick={() => openPlayerModal(tp.name, { avatar: tp.avatar, role: tp.badge })}
+                          >
+                            {tp.name}
+                          </span>
+                        ))}
+                      </div>
+
                       <span className="podium-winner-badge silver-bg">{boysPodium.silver.badge}</span>
                       <p className="podium-event-name">{boysPodium.silver.stats}</p>
                     </div>
