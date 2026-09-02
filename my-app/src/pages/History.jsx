@@ -555,33 +555,23 @@ export default function EventHistory() {
       (champData && champData.image) ||
       "/Icons/unknown.png";
 
-    // Build comprehensive honors list:
-    // 1. Gold titles computed from tournament data (statsData.titles)
-    // 2. Parse individual achievements from champData.desc (e.g. "🥇 X • 🥈 Y • 🥉 Z")
+    // Build comprehensive, deduplicated honors list:
     let honorsList = [];
     if (statsData && statsData.titles && statsData.titles.length > 0) {
       honorsList = [...statsData.titles];
-    }
-    // Add silver/bronze achievements from champData description if present
-    if (champData && champData.desc) {
-      const descAchievements = champData.desc
+    } else if (champData && champData.trophies) {
+      honorsList = champData.trophies.split("•").map((s) => s.trim()).filter(Boolean);
+    } else if (champData && champData.desc) {
+      honorsList = champData.desc
         .split("•")
         .map((s) => s.trim())
         .filter((s) => s && (s.includes("🥇") || s.includes("🥈") || s.includes("🥉") || s.includes("🏅") || s.includes("🏆") || s.includes("👑")));
-      descAchievements.forEach((a) => {
-        if (!honorsList.some((h) => h.toLowerCase().includes(a.toLowerCase().replace(/^[🥇🥈🥉🏅🏆👑]\s*/u, "").substring(0, 20)))) {
-          honorsList.push(a);
-        }
-      });
-    }
-    // Fallback to champData.trophies if still empty
-    if (honorsList.length === 0 && champData && champData.trophies) {
-      honorsList = champData.trophies.split("•").map((s) => s.trim()).filter(Boolean);
-    }
-    // Fallback to extraData.titles
-    if (honorsList.length === 0 && extraData.titles) {
+    } else if (extraData.titles) {
       honorsList = Array.isArray(extraData.titles) ? extraData.titles : [extraData.titles];
     }
+
+    // Deduplicate honors list strictly
+    honorsList = Array.from(new Set(honorsList.map((h) => h.trim()))).filter(Boolean);
 
     const playerData = {
       name: cleanName,
@@ -875,7 +865,7 @@ export default function EventHistory() {
               </div>
             </div>
             <div className="stat-box">
-              <div className="stat-icon-wrap">♟️</div>
+              <div className="stat-icon-wrap">♟</div>
               <div className="stat-info">
                 <span className="stat-number">300+</span>
                 <span className="stat-label">ZC Competitors</span>
@@ -1691,7 +1681,7 @@ export default function EventHistory() {
                         <span className="board-member-major-tag">🎓 {selectedPlayerModal.major}</span>
                       )}
                       {selectedPlayerModal.batch && (
-                        <span className="board-member-batch-tag">🗓️ Batch {selectedPlayerModal.batch}</span>
+                        <span className="board-member-batch-tag">📅 Batch {selectedPlayerModal.batch}</span>
                       )}
                     </div>
                   )}
