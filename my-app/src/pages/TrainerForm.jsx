@@ -52,6 +52,7 @@ const TrainerForm = () => {
   return (
     <ApplicationForm
       title={roleTitle}
+      department="Training & Education"
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
     />

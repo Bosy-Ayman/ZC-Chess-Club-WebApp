@@ -76,8 +76,8 @@ const ApplicationForm = ({ title, department, roleDescription, roleSpecificConte
       batch: profile.batch || "2026",
       
       // --- Role Info ---
-      roleTitle: title,
-      department: department,
+      roleTitle: title || "Member",
+      department: department || title || "General Committee",
     };
 
     // Find and add all role-specific fields (like 'hr-experience')

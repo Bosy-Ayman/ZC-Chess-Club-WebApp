@@ -31,6 +31,7 @@ const TraineeForm = () => {
   return (
     <ApplicationForm
       title={roleTitle}
+      department="Trainee Development"
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
     />

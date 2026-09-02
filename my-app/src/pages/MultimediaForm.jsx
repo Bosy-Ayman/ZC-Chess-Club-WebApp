@@ -38,6 +38,7 @@ const MultimediaForm = () => {
   return (
     <ApplicationForm
       title={roleTitle}
+      department="Multimedia & Media"
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
     />

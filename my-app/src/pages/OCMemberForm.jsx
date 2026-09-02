@@ -45,6 +45,7 @@ const OCMemberForm = () => {
   return (
     <ApplicationForm
       title={roleTitle}
+      department="Organizing Committee"
       roleDescription={roleDesc}
       roleSpecificContent={roleSpecificContent}
     />

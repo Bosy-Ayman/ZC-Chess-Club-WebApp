@@ -92,14 +92,14 @@ app.use(connectDB);
 
 // --- MongoDB Schema & Model ---
 const ApplicationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  idNumber: { type: String, required: true },
-  phone: { type: String, required: true },
-  major: { type: String, required: true },
-  batch: { type: String, required: true },
-  roleTitle: { type: String, required: true },
-  department: { type: String, required: true },
+  name: { type: String, required: true, default: 'Applicant' },
+  email: { type: String, required: true },
+  idNumber: { type: String, default: '' },
+  phone: { type: String, default: '' },
+  major: { type: String, default: 'General' },
+  batch: { type: String, default: '2026' },
+  roleTitle: { type: String, default: 'Member' },
+  department: { type: String, default: 'General Committee' },
   status: { type: String, default: 'Pending', enum: ['Pending', 'Accepted', 'Rejected'] },
   roleSpecificData: { type: mongoose.Schema.Types.Mixed, default: {} },
   submissionDate: { type: Date, default: Date.now }
@@ -298,16 +298,20 @@ app.post('/api/applications', async (req, res) => {
   try {
     const { name, email, idNumber, phone, major, batch, roleTitle, department, ...roleSpecificData } = req.body;
 
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required to submit an application.' });
+    }
+
     const newApp = new Application({
-      name,
-      email,
-      idNumber,
-      phone,
-      major,
-      batch,
-      roleTitle,
-      department,
-      roleSpecificData
+      name: name || 'Applicant',
+      email: email.trim().toLowerCase(),
+      idNumber: idNumber || '',
+      phone: phone || '',
+      major: major || 'General',
+      batch: batch || '2026',
+      roleTitle: roleTitle || 'Member',
+      department: department || roleTitle || 'General Committee',
+      roleSpecificData: roleSpecificData || {}
     });
 
     const savedApp = await newApp.save();
