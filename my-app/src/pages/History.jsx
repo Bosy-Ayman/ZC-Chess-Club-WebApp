@@ -123,11 +123,11 @@ export default function EventHistory() {
       year: "2026/2027",
       isCurrent: true,
       members: [
-        { name: "Ahmed Elkodariy", role: "President", major: "Business", batch: "'26", image: "/Winners/AhmedElkodariy.PNG" },
-        { name: "Omar Hafez", role: "Vice President", major: "CIE", batch: "'26", image: "/Winners/OmarHafez.jpeg" },
-        { name: "Omar Ezz", role: "Head of Training", major: "Nano", batch: "'26", image: "/Winners/OmarEzz.jpg" },
+        { name: "Ahmed Elkodariy", role: "President", major: "Business", batch: "'25", image: "/Winners/AhmedElkodariy.PNG" },
+        { name: "Omar Hafez", role: "Vice President", major: "CIE", batch: "'25", image: "/Winners/OmarHafez.jpeg" },
+        { name: "Omar Ezz", role: "Head of Training", major: "Nano", batch: "'25", image: "/Winners/OmarEzz.jpg" },
         { name: "Haneen Yasser", role: "Head of Multimedia", major: "NanoTech", batch: "'24", image: "/Winners/HaneenYasser.png" },
-        { name: "Raphael Robier", role: "Head of PR", major: "CSAI", batch: "'27", image: "/Winners/RaphaelRobier.png" },
+        { name: "Raphael Robier", role: "Head of PR", major: "CSAI", batch: "'25", image: "/Winners/RaphaelRobier.png" },
         { name: "Alaa Ibrahim", role: "Head of Organization", image: "/Images/highboard/24-25/Alaa.png" },
         { name: "Unknown", role: "Head of HR", image: "/Icons/unknown.png" }
       ]
@@ -287,11 +287,11 @@ export default function EventHistory() {
         { name: "🥇 1st Place (Girls): Bosy Ayman" },
         { name: "🏅 4th Place (Girls): Salma Ashraf" },
         { name: "🏅 6th Place (Girls): Haneen Yasser" },
-        { name: "🥈 4th Place (Boys): Abdelrahman Mohamed" },
-        { name: "🥉 5th Place (Boys): Raphael Robier" },
-        { name: "🥉 6th Place (Boys): Omar Ezz" },
-        { name: "🥉 7th Place (Boys): Omar Hafez" },
-        { name: "🥉 8th Place (Boys): Ahmed Elkodariy" }
+        { name: "🏅 4th Place (Boys): Abdelrahman Mohamed" },
+        { name: "🏅 5th Place (Boys): Raphael Robier" },
+        { name: "🏅 6th Place (Boys): Omar Ezz" },
+        { name: "🏅 7th Place (Boys): Omar Hafez" },
+        { name: "🏅 8th Place (Boys): Ahmed Elkodariy" }
       ]
     },
     {
@@ -520,10 +520,58 @@ export default function EventHistory() {
     return { emoji: "♟️", role: "", name: highlightText.trim(), isPlacement: false };
   };
 
+  // Helper to format image URLs safely (handling local assets & backend uploads)
+  const getImageUrl = (imgSrc) => {
+    if (!imgSrc) return "/Icons/unknown.png";
+    if (imgSrc.startsWith("http://") || imgSrc.startsWith("https://")) {
+      return imgSrc;
+    }
+    if (imgSrc.startsWith("/uploads") || imgSrc.startsWith("uploads")) {
+      const cleanPath = imgSrc.startsWith("/") ? imgSrc : `/${imgSrc}`;
+      return `${API_BASE}${cleanPath}`;
+    }
+    return imgSrc;
+  };
+
   // Helper for image fallback to prevent broken UI icons
   const handleImageError = (e) => {
     e.target.onerror = null;
     e.target.src = "/Icons/unknown.png";
+  };
+
+  // Helper to trigger rich player trading card modal
+  const openPlayerModal = (playerName, extraData = {}) => {
+    if (!playerName || playerName.toLowerCase() === "unknown") return;
+    const cleanName = playerName.trim().replace(/\(.*\)/, "").trim();
+    if (!cleanName) return;
+
+    const statsData = sortedPlayers.find((s) => s.name.toLowerCase() === cleanName.toLowerCase());
+    const champData = championsGallery.find((c) => c.name.toLowerCase() === cleanName.toLowerCase());
+
+    const avatar =
+      extraData.avatar ||
+      (statsData && statsData.avatar) ||
+      avatarMap[cleanName] ||
+      (champData && champData.image) ||
+      "/Icons/unknown.png";
+
+    const playerData = {
+      name: cleanName,
+      score: statsData ? statsData.score : (extraData.score || 0),
+      gold: statsData ? statsData.gold : (extraData.gold || 0),
+      silver: statsData ? statsData.silver : (extraData.silver || 0),
+      bronze: statsData ? statsData.bronze : (extraData.bronze || 0),
+      titles: (statsData && statsData.titles && statsData.titles.length > 0)
+        ? statsData.titles
+        : (extraData.titles || (champData && champData.trophies ? [champData.trophies] : [])),
+      role: extraData.role || (champData ? champData.role : (statsData ? statsData.badge : "")),
+      desc: extraData.desc || (champData ? champData.desc : ""),
+      major: extraData.major || "",
+      batch: extraData.batch || "",
+      avatar: avatar
+    };
+
+    setSelectedPlayerModal(playerData);
   };
 
   // State for Podium Category Selection: 'both', 'boys', 'girls'
@@ -531,22 +579,20 @@ export default function EventHistory() {
 
   const { sortedPlayers, championsGallery, boysPodium, girlsPodium } = useMemo(() => {
     const playerScores = {};
+    const eventsToProcess = pastEvents && pastEvents.length > 0 ? pastEvents : defaultHistoricalEvents;
 
-    defaultHistoricalEvents.forEach((t) => {
+    eventsToProcess.forEach((t) => {
       if (t.playersList) {
         t.playersList.forEach((p) => {
-          const parts = p.name.split(":");
-          if (parts.length > 1) {
-            const placeStr = parts[0];
-            let names = [];
-            if (parts.length > 2) {
-              names = parts[2].split(",").map((n) => n.trim().replace(/\(.*\)/, "").trim());
-            } else {
-              names = [parts[1].trim().replace(/\(.*\)/, "").trim()];
-            }
+          if (!p.name) return;
+          const colonIdx = p.name.indexOf(":");
+          if (colonIdx !== -1) {
+            const placeStr = p.name.substring(0, colonIdx).trim();
+            const namesStr = p.name.substring(colonIdx + 1).trim();
 
-            names.forEach((name) => {
-              const clean = name.trim();
+            const rawNames = namesStr.split(",");
+            rawNames.forEach((rawName) => {
+              const clean = rawName.trim().replace(/\(.*\)/, "").trim();
               if (
                 !clean ||
                 clean.toLowerCase() === "unknown" ||
@@ -565,16 +611,19 @@ export default function EventHistory() {
 
               playerScores[clean].eventsCount += 1;
 
-              if (placeStr.includes("🥇") || placeStr.includes("1st") || placeStr.toLowerCase().includes("champion")) {
+              const lowerPlace = placeStr.toLowerCase();
+              if (placeStr.includes("🥇") || lowerPlace.includes("1st") || lowerPlace.includes("champion")) {
                 playerScores[clean].score += 3;
                 playerScores[clean].gold += 1;
                 playerScores[clean].titles.push(t.title);
-              } else if (placeStr.includes("🥈") || placeStr.includes("2nd") || placeStr.toLowerCase().includes("runner-up")) {
+              } else if (placeStr.includes("🥈") || lowerPlace.includes("2nd") || lowerPlace.includes("runner-up")) {
                 playerScores[clean].score += 2;
                 playerScores[clean].silver += 1;
-              } else if (placeStr.includes("🥉") || placeStr.includes("3rd") || placeStr.includes("4th") || placeStr.includes("5th") || placeStr.includes("🏅")) {
+              } else if (placeStr.includes("🥉") || lowerPlace.includes("3rd")) {
                 playerScores[clean].score += 1;
                 playerScores[clean].bronze += 1;
+              } else if (placeStr.includes("🏅") || lowerPlace.includes("4th") || lowerPlace.includes("5th") || lowerPlace.includes("6th") || lowerPlace.includes("7th") || lowerPlace.includes("8th")) {
+                playerScores[clean].score += 1;
               }
             });
           }
@@ -598,25 +647,29 @@ export default function EventHistory() {
       })
       .sort((a, b) => b.score - a.score || b.gold - a.gold);
 
-    // Individual Boys Champions Podium
+    // Individual Boys Champions Podium (calculated from tournament timeline)
+    // Abdelrahman Mohamed: 🥇 KQ IV + 🥇 Esports + 🥇 Ramadan '25 = 3G | 🥈 Fall KO '25 + 🥈 Teams = 2S | 0B (13 pts)
+    // Co-2nd Place Tied (6 pts, 2G each): Mohamed Ezz (KQ I & II), Ahmed Elkodariy (Fall KO & Teams), Omar Ezz (Ramadan '26 & Teams)
+    // 3rd Place (6 pts, 1G 1S 1B): Omar Hafez (Teams 🥇, Ramadan '26 🥈, Esports 🥉)
     const boysP = {
       gold: {
         name: "Abdelrahman Mohamed",
-        stats: "3 🥇 | 2 🥈 | 1 🥉",
-        badge: "Grand Champion (KQ IV, Esports, Ramadan)",
+        stats: "3 🥇 | 2 🥈 | 0 🥉",
+        badge: "Grand Champion (KQ IV, Esports, Ramadan '25)",
         avatar: "/Winners/AbdelrahmanMohamed.png"
       },
       silver: {
-        name: "Mohamed Ezz",
-        stats: "2 🥇 | 0 🥈 | 0 🥉",
-        badge: "King's Quest Multi-Champion",
+        name: "Mohamed Ezz, Ahmed Elkodariy & Omar Ezz",
+        firstName: "Mohamed Ezz",
+        stats: "2 🥇 | 0 🥈 | 0 🥉 (Each)",
+        badge: "Tied 2nd Place (2x 🥇 Gold Champions Each)",
         avatar: "/Winners/MohamedEzz.jpg"
       },
       bronze: {
-        name: "Ahmed Elkodariy",
-        stats: "2 🥇 | 0 🥈 | 1 🥉",
-        badge: "Fall '25 Champion & Knights Leader",
-        avatar: "/Winners/AhmedElkodariy.PNG"
+        name: "Omar Hafez",
+        stats: "1 🥇 | 1 🥈 | 1 🥉",
+        badge: "3rd Place (Triple Medalist)",
+        avatar: "/Winners/OmarHafez.jpeg"
       }
     };
 
@@ -641,32 +694,32 @@ export default function EventHistory() {
         avatar: "/Winners/SalmaAshraf.jpg"
       }
     };
-    // Curated Champions Gallery focusing on winners with photos in /Winners
+    // Curated Champions Gallery – trophies based on tournament timeline
     const winnersList = [
-      { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "Multiple-time ZC Champion (King's Quest IV, Esports Arena, Ramadan Knockout '25)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 Champion • 2x 🥈 Runner-up", category: "boys" },
-      { name: "Bosy Ayman", role: "President (24-26) & Inter-Uni Champion", desc: "1st Place Girls' Champion at both AAST & Nile University Inter-University Championships", image: "/Winners/BosyAyman.png", trophies: "2x 🥇 1st Place Inter-Uni Champion (AAST & Nile)", category: "girls" },
-      { name: "Haneen Yasser", role: "Head of Multimedia (26-27) & Inter-Uni Finalist", desc: "4th Place at Nile University & 6th Place at AAST University Championships, orchestrating club brand identity", image: "/Winners/HaneenYasser.png", trophies: "🏅 4th Place (Nile) • 🏅 6th Place (AAST) • 👑 High Board", category: "girls" },
-      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "4th Place Finisher representing Zewail City at AAST University Championship", image: "/Winners/SalmaAshraf.jpg", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
-      { name: "Ahmed Elkodariy", role: "President (26-27) & Campus Champion", desc: "Winner of Fall 2025 Knockout & Teams Championship with Knights", image: "/Winners/AhmedElkodariy.PNG", trophies: "2x 🥇 Champion • High Board Leader", category: "boys" },
-      { name: "Mohamed Ezz", role: "King's Quest Multi-Champion", desc: "Consecutive winner of King's Quest I & King's Quest II Championships", image: "/Winners/MohamedEzz.jpg", trophies: "2x 🥇 King's Quest Champion", category: "boys" },
-      { name: "Omar Ezz", role: "Head of Training & Ramadan Champion", desc: "Champion of Ramadan 2026 Knockout & Teams Championship Winner", image: "/Winners/OmarEzz.jpg", trophies: "2x 🥇 Champion • Inter-Uni Finalist", category: "boys" },
-      { name: "Omar Hafez", role: "Vice President & Tactics Specialist", desc: "Winner of ZC Tactics Arena & Teams Championship with Knights", image: "/Winners/OmarHafez.jpeg", trophies: "1x 🥇 • 1x 🥈 • 1x 🥉 Finalist", category: "boys" },
-      { name: "Mazen Allam", role: "Grand Finalist & Rapid Contender", desc: "Triple Silver Finalist at King's Quest I, II & Ramadan Championship", image: "/Winners/MazenAllam.png", trophies: "3x 🥈 Grand Finalist", category: "boys" },
-      { name: "Abdelwahab Hamdi", role: "Podium Master & Swiss Contender", desc: "Podium finisher at King's Quest IV & Ramadan Knockout 2026", image: "/Winners/AbdelwahabHamdi.jpg", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
-      { name: "Mohamed Eslam", role: "Swiss & Teams Contender", desc: "3rd Place at King's Quest IV & Teams Championship Silver with Gambling", image: "/Winners/MohamedEslam.png", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
-      { name: "Raphael Robier", role: "Head of PR & Inter-Uni Representative", desc: "Top 5 Finisher representing ZC at AAST University Championship", image: "/Winners/RaphaelRobier.png", trophies: "🏆 Inter-Uni Medalist", category: "boys" },
-      { name: "Abdelrahman Mane3", role: "Teams & Rapid Finalist", desc: "3rd Place Ramadan 2025 & Silver Medalist with Team Gambling", image: "/Winners/AbdelrahmanMane3.png", trophies: "1x 🥈 Silver • 1x 🥉 Bronze", category: "boys" },
-      { name: "Youssef Yasser", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/YoussefYasser.jpg", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
-      { name: "Ahmed Emad", role: "Rapid Finalist", desc: "Runner-up at the 2021 Knockout Tournament", image: "/Winners/AhmedEmad.png", trophies: "1x 🥈 Runner-up", category: "boys" },
-      { name: "Noureldin Mohamed", role: "Classical Finalist", desc: "Bronze Medalist at the King's Quest I Tournament", image: "/Winners/NourEldinMohamed.jpg", trophies: "1x 🥉 Bronze", category: "boys" },
-      { name: "Amr Khaled", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/AmrKhaled.jpg", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
-      { name: "Noureldin Newer", role: "Teams Championship Bronze", desc: "Bronze Medalist at Campus Teams Championship with Team Epsilon", image: "/Winners/NourEldinNewer.png", trophies: "1x 🥉 Bronze Medalist", category: "boys" },
-      { name: "Mazen Ayman", role: "Esports Arena Runner-up", desc: "Silver Medalist at the 2026 Esports Blitz Tournament", image: "/Winners/MazenAyman.jpg", trophies: "1x 🥈 Runner-up", category: "boys" }
+      { name: "Abdelrahman Mohamed", role: "Grand Champion & Former VP", desc: "🥇 KQ IV 2026 • 🥇 Esports 2026 • 🥇 Ramadan 2025 | 🥈 Fall KO 2025 • 🥈 Teams (Gambling)", image: "/Winners/AbdelrahmanMohamed.png", trophies: "3x 🥇 • 2x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Bosy Ayman", role: "President (24-26) & Inter-Uni Champion", desc: "🥇 1st Place AAST University Championship (Girls) • 🥇 1st Place Nile University Championship (Girls)", image: "/Winners/BosyAyman.png", trophies: "2x 🥇 • 0x 🥈 • 0x 🥉", category: "girls" },
+      { name: "Haneen Yasser", role: "Head of Multimedia (26-27) & Inter-Uni Finalist", desc: "🏅 4th Place Nile University Championship (Girls) • 🏅 6th Place AAST University Championship (Girls)", image: "/Winners/HaneenYasser.png", trophies: "🏅 4th Place (Nile) • 🏅 6th Place (AAST)", category: "girls" },
+      { name: "Salma Ashraf", role: "Inter-Uni Finalist (Girls)", desc: "🏅 4th Place AAST University Championship (Girls)", image: "/Winners/SalmaAshraf.jpg", trophies: "🏅 4th Place Inter-Uni Finalist (AAST)", category: "girls" },
+      { name: "Ahmed Elkodariy", role: "President (26-27) & Campus Champion", desc: "🥇 Fall 2025 Knockout Champion • 🥇 Teams Championship (Knights)", image: "/Winners/AhmedElkodariy.PNG", trophies: "2x 🥇 • 0x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Mohamed Ezz", role: "King's Quest Multi-Champion", desc: "🥇 King's Quest I Champion • 🥇 King's Quest II Champion", image: "/Winners/MohamedEzz.jpg", trophies: "2x 🥇 • 0x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Omar Ezz", role: "Head of Training & Ramadan Champion", desc: "🥇 Ramadan Knockout 2026 Champion • 🥇 Teams Championship (Knights)", image: "/Winners/OmarEzz.jpg", trophies: "2x 🥇 • 0x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Omar Hafez", role: "Vice President & Tactics Specialist", desc: "🥇 Teams Championship (Knights) • 🥈 Ramadan 2026 Runner-up • 🥉 Esports 2026 3rd Place", image: "/Winners/OmarHafez.jpeg", trophies: "1x 🥇 • 1x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Mazen Allam", role: "Grand Finalist & Rapid Contender", desc: "🥈 King's Quest I Runner-up • 🥈 King's Quest II Runner-up • 🥈 Ramadan 2025 Runner-up", image: "/Winners/MazenAllam.png", trophies: "0x 🥇 • 3x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Abdelwahab Hamdi", role: "Podium Master & Swiss Contender", desc: "🥈 King's Quest IV Runner-up • 🥉 Ramadan 2026 3rd Place", image: "/Winners/AbdelwahabHamdi.jpg", trophies: "0x 🥇 • 1x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Mohamed Eslam", role: "Swiss & Teams Contender", desc: "🥉 King's Quest IV 3rd Place • 🥈 Teams Championship (Gambling)", image: "/Winners/MohamedEslam.png", trophies: "0x 🥇 • 1x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Raphael Robier", role: "Head of PR & Inter-Uni Representative", desc: "🏅 5th Place AAST University Championship (Boys)", image: "/Winners/RaphaelRobier.png", trophies: "🏅 Inter-Uni Honor Finalist", category: "boys" },
+      { name: "Abdelrahman Mane3", role: "Teams & Rapid Finalist", desc: "🥉 Ramadan 2025 3rd Place • 🥈 Teams Championship (Gambling)", image: "/Winners/AbdelrahmanMane3.png", trophies: "0x 🥇 • 1x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Youssef Yasser", role: "Teams Championship Bronze", desc: "🥉 Teams Championship 3rd Place (Epsilon)", image: "/Winners/YoussefYasser.jpg", trophies: "0x 🥇 • 0x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Ahmed Emad", role: "Rapid Finalist", desc: "🥈 2021 Knockout Tournament Runner-up", image: "/Winners/AhmedEmad.png", trophies: "0x 🥇 • 1x 🥈 • 0x 🥉", category: "boys" },
+      { name: "Noureldin Mohamed", role: "Classical Finalist", desc: "🥉 King's Quest I 3rd Place", image: "/Winners/NourEldinMohamed.jpg", trophies: "0x 🥇 • 0x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Amr Khaled", role: "Teams Championship Bronze", desc: "🥉 Teams Championship 3rd Place (Epsilon)", image: "/Winners/AmrKhaled.jpg", trophies: "0x 🥇 • 0x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Noureldin Newer", role: "Teams Championship Bronze", desc: "🥉 Teams Championship 3rd Place (Epsilon)", image: "/Winners/NourEldinNewer.png", trophies: "0x 🥇 • 0x 🥈 • 1x 🥉", category: "boys" },
+      { name: "Mazen Ayman", role: "Esports Arena Runner-up", desc: "🥈 Esports Blitz 2026 Runner-up", image: "/Winners/MazenAyman.jpg", trophies: "0x 🥇 • 1x 🥈 • 0x 🥉", category: "boys" }
     ];
 
     return { sortedPlayers: sorted, championsGallery: winnersList, boysPodium: boysP, girlsPodium: girlsP };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatarMap, defaultHistoricalEvents]);
+  }, [avatarMap, defaultHistoricalEvents, pastEvents]);
 
   useEffect(() => {
     fetchEvents();
@@ -682,9 +735,25 @@ export default function EventHistory() {
         const data = await res.json();
         const completed = data.filter((t) => t.status === "Completed");
 
-        const dbIds = new Set(completed.map((t) => t._id));
-        const filteredDefault = defaultHistoricalEvents.filter((e) => !dbIds.has(e._id));
-        combined = [...completed, ...filteredDefault];
+        const completedFormatted = completed.map((t) => {
+          const matchingDefault = defaultHistoricalEvents.find(
+            (d) => d._id === t._id || d.title.toLowerCase() === t.title.toLowerCase()
+          );
+          return {
+            ...matchingDefault,
+            ...t,
+            image: t.image || (matchingDefault ? matchingDefault.image : null),
+            description: t.description || (matchingDefault ? matchingDefault.description : ""),
+            playersList: (t.playersList && t.playersList.length > 0) ? t.playersList : (matchingDefault ? matchingDefault.playersList : [])
+          };
+        });
+
+        const dbIds = new Set(completedFormatted.map((t) => t._id));
+        const dbTitles = new Set(completedFormatted.map((t) => t.title.toLowerCase()));
+        const filteredDefault = defaultHistoricalEvents.filter(
+          (e) => !dbIds.has(e._id) && !dbTitles.has(e.title.toLowerCase())
+        );
+        combined = [...completedFormatted, ...filteredDefault];
       }
 
       combined.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
@@ -906,12 +975,12 @@ export default function EventHistory() {
                               >
                                 <div
                                   className={`card-image-banner ${
-                                    !event.image || event.image === "/Icons/unknown.png" ? "fallback-banner" : ""
+                                    !getImageUrl(event.image) ? "fallback-banner" : ""
                                   }`}
                                 >
-                                  {event.image && event.image !== "/Icons/unknown.png" && (
+                                  {getImageUrl(event.image) && (
                                     <img
-                                      src={event.image}
+                                      src={getImageUrl(event.image)}
                                       alt={event.title}
                                       loading="lazy"
                                       onError={(e) => {
@@ -1060,7 +1129,7 @@ export default function EventHistory() {
 
                   <div className="podium-grid">
                     {/* 🥈 2nd Place Silver */}
-                    <div className="podium-place silver">
+                    <div className="podium-place silver" onClick={() => openPlayerModal(girlsPodium.silver.name, { avatar: girlsPodium.silver.avatar, role: girlsPodium.silver.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-rank-ribbon">2nd Place</div>
                       <div className="podium-avatar-wrapper silver-border">
                         <img
@@ -1077,7 +1146,7 @@ export default function EventHistory() {
                     </div>
 
                     {/* 🥇 1st Place Gold */}
-                    <div className="podium-place gold">
+                    <div className="podium-place gold" onClick={() => openPlayerModal(girlsPodium.gold.name, { avatar: girlsPodium.gold.avatar, role: girlsPodium.gold.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-crown-wrapper">
                         <span className="podium-crown">👑</span>
                       </div>
@@ -1097,7 +1166,7 @@ export default function EventHistory() {
                     </div>
 
                     {/* 🥉 3rd Place Bronze */}
-                    <div className="podium-place bronze">
+                    <div className="podium-place bronze" onClick={() => openPlayerModal(girlsPodium.bronze.name, { avatar: girlsPodium.bronze.avatar, role: girlsPodium.bronze.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-rank-ribbon">3rd Place</div>
                       <div className="podium-avatar-wrapper bronze-border">
                         <img
@@ -1131,7 +1200,7 @@ export default function EventHistory() {
 
                   <div className="podium-grid">
                     {/* 🥈 2nd Place Silver */}
-                    <div className="podium-place silver">
+                    <div className="podium-place silver" onClick={() => openPlayerModal(boysPodium.silver.firstName || boysPodium.silver.name, { avatar: boysPodium.silver.avatar, role: boysPodium.silver.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-rank-ribbon">2nd Place</div>
                       <div className="podium-avatar-wrapper silver-border">
                         <img
@@ -1148,7 +1217,7 @@ export default function EventHistory() {
                     </div>
 
                     {/* 🥇 1st Place Gold */}
-                    <div className="podium-place gold">
+                    <div className="podium-place gold" onClick={() => openPlayerModal(boysPodium.gold.name, { avatar: boysPodium.gold.avatar, role: boysPodium.gold.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-crown-wrapper">
                         <span className="podium-crown">👑</span>
                       </div>
@@ -1168,7 +1237,7 @@ export default function EventHistory() {
                     </div>
 
                     {/* 🥉 3rd Place Bronze */}
-                    <div className="podium-place bronze">
+                    <div className="podium-place bronze" onClick={() => openPlayerModal(boysPodium.bronze.name, { avatar: boysPodium.bronze.avatar, role: boysPodium.bronze.badge })} style={{ cursor: "pointer" }}>
                       <div className="podium-rank-ribbon">3rd Place</div>
                       <div className="podium-avatar-wrapper bronze-border">
                         <img
@@ -1203,14 +1272,7 @@ export default function EventHistory() {
                   <ScrollReveal key={cIdx}>
                     <div 
                       className="champion-profile-card glass-panel"
-                      onClick={() => {
-                        const playerData = sortedPlayers.find(s => s.name === champ.name) || {
-                          name: champ.name,
-                          score: 0, gold: 0, silver: 0, bronze: 0,
-                          titles: [], avatar: champ.image
-                        };
-                        setSelectedPlayerModal(playerData);
-                      }}
+                      onClick={() => openPlayerModal(champ.name, { avatar: champ.image, role: champ.role, desc: champ.desc })}
                       style={{ cursor: "pointer" }}
                     >
                       <div className="champion-card-top">
@@ -1297,11 +1359,12 @@ export default function EventHistory() {
                           <div
                             key={idx}
                             className={`board-member-card glass-panel ${isPresident ? "president-card" : isVP ? "vp-card" : ""}`}
-                            style={{ "--delay": `${idx * 0.06}s` }}
+                            onClick={() => openPlayerModal(member.name, { avatar: member.image, role: member.role, major: member.major, batch: member.batch })}
+                            style={{ "--delay": `${idx * 0.06}s`, cursor: member.name.toLowerCase() !== "unknown" ? "pointer" : "default" }}
                           >
                             <div className={`member-avatar-container ${isPresident ? "president-ring" : isVP ? "vp-ring" : ""}`}>
                               <img
-                                src={member.image}
+                                src={getImageUrl(member.image || avatarMap[member.name])}
                                 alt={member.name}
                                 className="board-member-avatar"
                                 onError={handleImageError}
@@ -1353,10 +1416,10 @@ export default function EventHistory() {
                 ✕
               </button>
 
-              {selectedEventModal.image && (
+              {getImageUrl(selectedEventModal.image) && (
                 <div className="modal-banner">
                   <img
-                    src={selectedEventModal.image}
+                    src={getImageUrl(selectedEventModal.image)}
                     alt={selectedEventModal.title}
                     onError={(e) => {
                       e.target.style.display = "none";
@@ -1539,7 +1602,7 @@ export default function EventHistory() {
               <div className="trading-card-inner">
                 <div className="tc-image-section">
                   <img
-                    src={selectedPlayerModal.avatar}
+                    src={getImageUrl(selectedPlayerModal.avatar)}
                     alt={selectedPlayerModal.name}
                     className="tc-avatar"
                     onError={(e) => {
@@ -1555,7 +1618,30 @@ export default function EventHistory() {
 
                 <div className="tc-info-section">
                   <h2 className="tc-name">{selectedPlayerModal.name}</h2>
-                  
+
+                  {selectedPlayerModal.role && (
+                    <div style={{ textAlign: "center", marginBottom: "12px" }}>
+                      <span className="champion-role-tag">{selectedPlayerModal.role}</span>
+                    </div>
+                  )}
+
+                  {(selectedPlayerModal.major || selectedPlayerModal.batch) && (
+                    <div className="board-member-meta-tags" style={{ justifyContent: "center", marginBottom: "14px" }}>
+                      {selectedPlayerModal.major && (
+                        <span className="board-member-major-tag">🎓 {selectedPlayerModal.major}</span>
+                      )}
+                      {selectedPlayerModal.batch && (
+                        <span className="board-member-batch-tag">🗓️ Batch {selectedPlayerModal.batch}</span>
+                      )}
+                    </div>
+                  )}
+
+                  {selectedPlayerModal.desc && (
+                    <p className="champion-desc" style={{ textAlign: "center", marginBottom: "18px" }}>
+                      {selectedPlayerModal.desc}
+                    </p>
+                  )}
+
                   <div className="tc-medals-row">
                     <div className="tc-medal">
                       <span className="tc-medal-icon">🥇</span>
@@ -1575,7 +1661,7 @@ export default function EventHistory() {
                   </div>
 
                   <div className="tc-titles-section">
-                    <h4>🏆 Championship Titles</h4>
+                    <h4>🏆 Championship Titles & Honors</h4>
                     {selectedPlayerModal.titles && selectedPlayerModal.titles.length > 0 ? (
                       <ul className="tc-titles-list">
                         {selectedPlayerModal.titles.map((title, i) => (

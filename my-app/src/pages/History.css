@@ -554,7 +554,8 @@
 .card-image-banner {
   position: relative;
   width: 100%;
-  height: 190px;
+  height: 210px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background-color: #15120c;
 }
@@ -563,6 +564,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 25%;
   transition: transform 0.5s ease;
 }
 
@@ -1959,7 +1961,7 @@
 
 /* ── Trading Card Modal ── */
 .trading-card-modal {
-  max-width: 450px !important;
+  max-width: 700px !important;
   background: linear-gradient(145deg, #1f1b13, #15120c) !important;
   border: 1px solid var(--border-gold) !important;
   padding: 0 !important;
@@ -1967,32 +1969,41 @@
 }
 
 .trading-card-inner {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 400px;
 }
 
 .tc-image-section {
   position: relative;
   width: 100%;
-  height: 280px;
-  background: radial-gradient(circle at top, rgba(243, 193, 68, 0.15), transparent 70%);
+  height: 100%;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(243, 193, 68, 0.22), transparent 75%);
+  padding: 32px 20px;
+  border-right: 1px solid rgba(243, 193, 68, 0.2);
 }
 
 .tc-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: bottom;
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+  border: 4px solid var(--gold-primary);
+  box-shadow: 0 0 30px var(--gold-glow), 0 10px 30px rgba(0,0,0,0.6);
 }
 
 .tc-score-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  margin-top: 20px;
+  position: static;
   background: var(--gold-primary);
   color: #12100c;
-  padding: 8px 12px;
+  padding: 8px 20px;
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
@@ -2014,24 +2025,28 @@
 }
 
 .tc-info-section {
-  padding: 24px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 460px;
 }
 
 .tc-name {
   font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: #fff;
-  margin: 0 0 20px 0;
-  text-align: center;
+  margin: 0 0 16px 0;
+  text-align: left;
 }
 
 .tc-medals-row {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   background: rgba(0, 0, 0, 0.3);
-  padding: 16px;
+  padding: 14px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -2060,13 +2075,14 @@
 }
 
 .tc-titles-section {
-  text-align: center;
+  text-align: left;
+  flex: 1;
 }
 
 .tc-titles-section h4 {
   font-size: 0.9rem;
   color: var(--gold-primary);
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -2077,14 +2093,14 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .tc-titles-list li {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-main);
   background: rgba(255, 255, 255, 0.03);
-  padding: 8px;
+  padding: 7px 10px;
   border-radius: 4px;
 }
 
@@ -2373,8 +2389,39 @@
   }
 
   /* Mobile Modal */
-  .event-modal-card {
-    max-height: 85vh;
+  .event-modal-card,
+  .trading-card-modal {
+    max-height: 88vh !important;
+    width: 95% !important;
+    overflow-y: auto !important;
+  }
+
+  .trading-card-inner {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tc-image-section {
+    height: 240px !important;
+    min-height: 240px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(243, 193, 68, 0.2);
+    padding: 24px 20px 16px;
+  }
+
+  .tc-info-section {
+    padding: 18px 14px;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  .tc-name {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    text-align: center !important;
+  }
+
+  .tc-titles-section {
+    text-align: center !important;
   }
 
   .modal-banner {
