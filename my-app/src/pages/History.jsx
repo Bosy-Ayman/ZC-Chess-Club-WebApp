@@ -642,8 +642,13 @@ export default function EventHistory() {
                 playerScores[clean].titles.push(`🥉 ${t.title} (3rd Place)`);
               } else if (placeStr.includes("🏅") || lowerPlace.includes("4th") || lowerPlace.includes("5th") || lowerPlace.includes("6th") || lowerPlace.includes("7th") || lowerPlace.includes("8th")) {
                 playerScores[clean].score += 1;
-                const cleanRank = placeStr.replace(/^[🏅]\s*/, "").trim();
-                playerScores[clean].titles.push(`🏅 ${t.title} (${cleanRank || "Finalist"})`);
+                const cleanRank = placeStr
+                  .replace(/[^\w\s\d]/g, "")
+                  .replace(/Boys/gi, "")
+                  .replace(/Girls/gi, "")
+                  .replace(/Category/gi, "")
+                  .trim();
+                playerScores[clean].titles.push(`🏅 ${t.title}${cleanRank ? ` (${cleanRank})` : ""}`);
               }
             });
           }
