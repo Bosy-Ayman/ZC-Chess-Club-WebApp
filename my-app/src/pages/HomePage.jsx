@@ -463,7 +463,7 @@ const HomePage = () => {
         <div className="potm-glass-card">
           <div className="potm-badge">
             <Sparkles size={14} />
-            <span>Player of the Month</span>
+            <span>Player of the season</span>
           </div>
           <div className="potm-content">
             <div className="potm-image-wrapper">

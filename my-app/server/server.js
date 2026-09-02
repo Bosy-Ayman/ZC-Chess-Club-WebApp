@@ -109,20 +109,20 @@ const Application = mongoose.model('Application', ApplicationSchema, 'chess_club
 
 // --- Tournament Schema & Model ---
 const TournamentSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  type: { type: String, required: true },
+  title: { type: String, required: true, default: 'Untitled Tournament' },
+  type: { type: String, default: 'Swiss' },
   status: { type: String, default: 'Upcoming' },
-  startDate: { type: String, required: true }, // Format: YYYY-MM-DD
+  startDate: { type: String, default: () => new Date().toISOString().split('T')[0] }, // Format: YYYY-MM-DD
   endDate: { type: String, default: 'Unknown' }, // Format: YYYY-MM-DD or 'Unknown'
-  time: { type: String, required: true },
+  time: { type: String, default: 'TBD' },
   location: { type: String, default: 'Zewail Chess Club' },
   description: { type: String, default: '' },
   players: { type: Number, default: 0 },
   detailsUrl: { type: String, default: '' },
   playersList: [{
-    name: { type: String, required: true },
-    rating: { type: Number, required: true },
-    major: { type: String, required: true }
+    name: { type: String, default: 'Player' },
+    rating: { type: Number, default: 1200 },
+    major: { type: String, default: 'General' }
   }],
   registrations: [{
     email: { type: String, required: true },
@@ -130,10 +130,10 @@ const TournamentSchema = new mongoose.Schema({
     status: { type: String, default: 'Pending', enum: ['Pending', 'Approved', 'Rejected'] }
   }],
   matches: [{
-    round: { type: Number, required: true },
-    white: { type: String, required: true },
-    black: { type: String, required: true },
-    result: { type: String, required: true },
+    round: { type: Number, default: 1 },
+    white: { type: String, default: 'TBD' },
+    black: { type: String, default: 'TBD' },
+    result: { type: String, default: 'pending' },
     bracket: { type: String, default: 'upper' }
   }],
   rounds: { type: Number, default: 0 }, // Total planned rounds
@@ -1185,12 +1185,12 @@ app.post('/api/tournaments', async (req, res) => {
     const { title, type, status, startDate, endDate, time, location, description, players, detailsUrl, rounds } = req.body;
     
     const newTournament = new Tournament({
-      title,
-      type,
+      title: title || 'Untitled Tournament',
+      type: type || 'Swiss',
       status: status || 'Upcoming',
-      startDate,
+      startDate: startDate || new Date().toISOString().split('T')[0],
       endDate: endDate || 'Unknown',
-      time,
+      time: time || 'TBD',
       location: location || 'Zewail Chess Club',
       description: description || '',
       players: players || 0,
