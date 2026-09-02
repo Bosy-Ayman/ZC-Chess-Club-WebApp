@@ -976,16 +976,41 @@ export default function EventHistory() {
                 </button>
               </div>
             ) : (
-              <div className="timeline-container">
-                {years.map((year, yearIndex) => (
-                  <div key={yearIndex} className="timeline-year-section">
-                    <div className="timeline-year-marker">
-                      <div className="year-badge">
-                        <span>📅</span> Season {year}
-                      </div>
+              <>
+                {years.length > 1 && (
+                  <div className="timeline-year-jump-bar">
+                    <span className="year-jump-label">Jump to Season:</span>
+                    <div className="year-jump-pills">
+                      {years.map((yr) => (
+                        <button
+                          key={yr}
+                          className="year-jump-pill"
+                          onClick={() => {
+                            const el = document.getElementById(`season-${yr.replace(/[^a-zA-Z0-9]/g, "-")}`);
+                            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }}
+                        >
+                          📅 {yr}
+                        </button>
+                      ))}
                     </div>
+                  </div>
+                )}
 
-                    <div className="timeline-events-grid">
+                <div className="timeline-container">
+                  {years.map((year, yearIndex) => (
+                    <div
+                      key={yearIndex}
+                      id={`season-${year.replace(/[^a-zA-Z0-9]/g, "-")}`}
+                      className="timeline-year-section"
+                    >
+                      <div className="timeline-year-marker">
+                        <div className="year-badge">
+                          <span>📅</span> Season {year}
+                        </div>
+                      </div>
+
+                      <div className="timeline-events-grid">
                       {groupedEvents[year].map((event, eventIndex) => {
                         const isLeft = globalItemCounter % 2 === 0;
                         globalItemCounter++;
@@ -1112,7 +1137,8 @@ export default function EventHistory() {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+              </>
             )}
           </div>
         )}
@@ -1726,6 +1752,24 @@ export default function EventHistory() {
                     ) : (
                       <p className="tc-no-titles">No major 1st place titles yet.</p>
                     )}
+                  </div>
+
+                  <div className="tc-modal-actions">
+                    <button
+                      className="tc-view-timeline-btn"
+                      onClick={() => {
+                        const pName = selectedPlayerModal.name;
+                        setSelectedPlayerModal(null);
+                        setActiveTab("events");
+                        setSearchQuery(pName);
+                        setTimeout(() => {
+                          const el = document.querySelector(".tab-events-view");
+                          if (el) el.scrollIntoView({ behavior: "smooth" });
+                        }, 80);
+                      }}
+                    >
+                      🔍 View All Tournaments by {selectedPlayerModal.name.split(" ")[0]} →
+                    </button>
                   </div>
                 </div>
               </div>

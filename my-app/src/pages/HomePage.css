@@ -285,26 +285,32 @@
   margin: 0 auto;
 }
 /* ========================
-   Player of the Month Spotlight
+   Player of the Month Spotlight (Sleek & Compact)
 ======================== */
 .potm-section {
-  padding: 40px 24px;
-  max-width: 900px;
+  padding: 28px 20px;
+  max-width: 760px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
 .potm-glass-card {
-  background: rgba(15, 12, 8, 0.4);
-  border: 1px solid rgba(243, 193, 68, 0.2);
-  border-radius: 24px;
-  padding: 32px;
+  background: rgba(18, 15, 10, 0.55);
+  border: 1px solid rgba(243, 193, 68, 0.22);
+  border-radius: 18px;
+  padding: 22px 24px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.potm-glass-card:hover {
+  border-color: rgba(243, 193, 68, 0.4);
+  transform: translateY(-2px);
 }
 
 .potm-glass-card::before {
@@ -314,7 +320,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(243, 193, 68, 0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(243, 193, 68, 0.08) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
 }
@@ -322,24 +328,24 @@
 .potm-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(243, 193, 68, 0.15);
+  gap: 6px;
+  background: rgba(243, 193, 68, 0.12);
   color: #f3c144;
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 24px;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
   position: relative;
   z-index: 1;
-  border: 1px solid rgba(243, 193, 68, 0.3);
+  border: 1px solid rgba(243, 193, 68, 0.28);
 }
 
 .potm-content {
   display: flex;
-  gap: 32px;
+  gap: 22px;
   align-items: center;
   position: relative;
   z-index: 1;
@@ -347,9 +353,9 @@
 
 .potm-image-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
-  border-radius: 20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
   overflow: visible;
   flex-shrink: 0;
 }
@@ -358,46 +364,50 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 20px;
-  border: 2px solid rgba(243, 193, 68, 0.4);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  object-position: top center;
+  border-radius: 16px;
+  border: 2px solid rgba(243, 193, 68, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(243, 193, 68, 0.18);
 }
 
 .potm-rating-badge {
   position: absolute;
-  bottom: -10px;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
   background: #f3c144;
   color: #0f0c08;
   font-weight: 800;
-  font-size: 0.8rem;
-  padding: 4px 12px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
   border-radius: 999px;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(243, 193, 68, 0.4);
+  box-shadow: 0 3px 10px rgba(243, 193, 68, 0.4);
 }
 
 .potm-details {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .potm-name {
   font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 2.2rem;
+  font-size: 1.45rem;
   color: #ffffff;
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
 }
 
 .potm-signature {
-  font-size: 0.9rem;
-  margin-bottom: 16px;
+  font-size: 0.82rem;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .potm-label {
@@ -408,54 +418,74 @@
   color: #c084fc;
   font-weight: 600;
   background: rgba(160, 100, 240, 0.1);
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 4px;
+  font-size: 0.78rem;
 }
 
 .potm-quote {
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.82);
   font-style: italic;
-  line-height: 1.6;
-  margin: 0 0 20px 0;
-  padding-left: 16px;
-  border-left: 3px solid rgba(243, 193, 68, 0.5);
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  padding-left: 12px;
+  border-left: 2.5px solid rgba(243, 193, 68, 0.5);
 }
 
 .potm-achievements {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .potm-achievement-tag {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   color: #ffffff;
   font-weight: 600;
 }
 
 @media (max-width: 768px) {
+  .potm-section {
+    padding: 20px 14px;
+  }
+
+  .potm-glass-card {
+    padding: 18px 16px;
+  }
+
   .potm-content {
     flex-direction: column;
     text-align: center;
-    gap: 24px;
+    gap: 16px;
+  }
+
+  .potm-image-wrapper {
+    width: 96px;
+    height: 96px;
+  }
+
+  .potm-name {
+    font-size: 1.25rem;
   }
   
   .potm-signature {
     justify-content: center;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
   }
   
   .potm-quote {
     padding-left: 0;
     border-left: none;
     border-top: 2px solid rgba(243, 193, 68, 0.3);
-    padding-top: 16px;
+    padding-top: 10px;
+    font-size: 0.84rem;
+    margin-bottom: 10px;
   }
   
   .potm-achievements {
