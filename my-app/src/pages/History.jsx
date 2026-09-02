@@ -560,7 +560,7 @@ export default function EventHistory() {
     // 2. Parse individual achievements from champData.desc (e.g. "🥇 X • 🥈 Y • 🥉 Z")
     let honorsList = [];
     if (statsData && statsData.titles && statsData.titles.length > 0) {
-      honorsList = statsData.titles.map((t) => `🥇 ${t}`);
+      honorsList = [...statsData.titles];
     }
     // Add silver/bronze achievements from champData description if present
     if (champData && champData.desc) {
@@ -641,15 +641,19 @@ export default function EventHistory() {
               if (placeStr.includes("🥇") || lowerPlace.includes("1st") || lowerPlace.includes("champion")) {
                 playerScores[clean].score += 3;
                 playerScores[clean].gold += 1;
-                playerScores[clean].titles.push(t.title);
+                playerScores[clean].titles.push(`🥇 ${t.title} (Champion)`);
               } else if (placeStr.includes("🥈") || lowerPlace.includes("2nd") || lowerPlace.includes("runner-up")) {
                 playerScores[clean].score += 2;
                 playerScores[clean].silver += 1;
+                playerScores[clean].titles.push(`🥈 ${t.title} (Runner-up)`);
               } else if (placeStr.includes("🥉") || lowerPlace.includes("3rd")) {
                 playerScores[clean].score += 1;
                 playerScores[clean].bronze += 1;
+                playerScores[clean].titles.push(`🥉 ${t.title} (3rd Place)`);
               } else if (placeStr.includes("🏅") || lowerPlace.includes("4th") || lowerPlace.includes("5th") || lowerPlace.includes("6th") || lowerPlace.includes("7th") || lowerPlace.includes("8th")) {
                 playerScores[clean].score += 1;
+                const cleanRank = placeStr.replace(/^[🏅]\s*/, "").trim();
+                playerScores[clean].titles.push(`🏅 ${t.title} (${cleanRank || "Finalist"})`);
               }
             });
           }
