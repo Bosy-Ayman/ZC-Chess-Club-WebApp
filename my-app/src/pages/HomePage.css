@@ -2118,6 +2118,144 @@
   }
 
   .tactician-card {
-    padding: 20px;
+    padding: 20px 16px;
+  }
+
+  /* Section Paddings on Mobile */
+  .potm-section,
+  .news-section,
+  .winners-section,
+  .tactician-section,
+  .pillars-section,
+  .gallery-section {
+    padding: 36px 14px;
+  }
+
+  /* Player of the Month Mobile Ratios */
+  .potm-glass-card {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .potm-image-wrapper {
+    width: 140px;
+    height: 140px;
+  }
+
+  .potm-name {
+    font-size: 1.6rem;
+  }
+
+  .potm-quote {
+    font-size: 0.9rem;
+  }
+
+  /* News & Announcements Mobile Ratios */
+  .news-featured-card {
+    border-radius: 16px;
+    margin-bottom: 20px;
+  }
+
+  .news-featured-image {
+    min-height: 220px;
+  }
+
+  .news-featured-body {
+    padding: 20px 16px;
+  }
+
+  .news-featured-title {
+    font-size: 1.3rem;
+  }
+
+  .news-featured-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  /* Countdown Timer Full-Width 4-Column Grid on Mobile */
+  .countdown-timer {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .countdown-item {
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 8px 4px !important;
+    border-radius: 8px !important;
+  }
+
+  .countdown-value {
+    font-size: 1.15rem !important;
+  }
+
+  .countdown-label {
+    font-size: 0.55rem !important;
+  }
+
+  .news-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .news-mini-card {
+    padding: 16px 18px !important;
+  }
+
+  /* Winners CTA Row Stack */
+  .winners-cta-row {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .explore-hall-btn,
+  .explore-archives-btn {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 12px 16px !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Club Pillars Grid on Mobile */
+  .pillars-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .pillar-card {
+    padding: 20px 16px !important;
+  }
+
+  /* Gallery Grid on Mobile */
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 60px 12px 28px;
+    min-height: 80svh;
+  }
+
+  .hero-content h1 {
+    font-size: 1.35rem;
+  }
+
+  .hero-content p {
+    font-size: 0.8rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
   }
 }
